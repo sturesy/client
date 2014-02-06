@@ -1,4 +1,4 @@
-client
+Sturesy-Client
 ======
 
 Sturesy java client

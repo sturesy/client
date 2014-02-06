@@ -1,13 +1,3 @@
-client
-======
-
-Sturesy java client
-
-
-
-
-
-
 
 How to start sturesy.jar:
 

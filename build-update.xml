@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+ * StuReSy - Student Response System
+ * Copyright (C) 2012-2013  StuReSy-Team
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+
+<project default="create_run_jar" name="Project StuReSy - Updater">
+
+	<property name="jarname" value="sturesy-update.jar" />
+	<property name="version" value="0.0.1" />
+	<property name="src" value="${basedir}/updater" />
+	<property name="target" value="${basedir}/target" />
+	<property name="build" value="${target}/buildupdater" />
+	<property name="include" value="${basedir}/include" />
+	<property name="junit-rev" value="4.10" />
+
+	<tstamp>
+		<format property="today" pattern="yyMMdd" />
+	</tstamp>
+
+	<path id="lib.dependency">
+		<fileset dir="${include}">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<target name="clean">
+		<delete includeemptydirs="true" failonerror="false">
+			<fileset dir="${build}" defaultexcludes="false" />
+		</delete>
+	</target>
+
+	<target name="javac" description="build classfiles" depends="clean">
+		<mkdir dir="${build}" />
+		<javac srcdir="${src}"
+		       destdir="${build}"
+		       debug="on"
+		       source="1.5"
+			   target="1.5"
+		       includeantruntime="false">
+			<classpath>
+				<path refid="lib.dependency" />
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="create_run_jar" depends="javac">
+		<delete file="${target}/${jarname}" failonerror="false" />
+		<jar destfile="${target}/${jarname}"
+		     filesetmanifest="mergewithoutmain">
+			<manifest>
+				<attribute name="Main-Class" value="net.sourceforge.sturesy.update.Startup" />
+				<attribute name="Class-Path" value="." />
+			</manifest>
+			<fileset dir="${build}" />
+		</jar>
+	</target>
+	
+</project>

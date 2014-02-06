@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+ * StuReSy - Student Response System
+ * Copyright (C) 2012-2013  StuReSy-Team
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<project default="create_zip_file" name="Create Zip-files for the testplugin">
+
+	<property name="basename" value="testplugin" />
+
+	<property name="src" value="${basedir}/" />
+	<property name="target" value="${basedir}/target" />
+	<property name="build" value="${target}/build" />
+
+
+	<property name="testplug" value="${target}/${basename}" />
+
+
+	<path id="lib.dependency">
+		<fileset dir="${basedir}/../target/" includes="*.jar" />
+	</path>
+
+
+	<target name="javac" description="build classfiles">
+		<mkdir dir="${build}" />
+		<javac srcdir="${src}"
+		       destdir="${build}"
+		       debug="on"
+		       source="1.5"
+			   target="1.5"
+		       includeantruntime="false">
+			<classpath>
+				<path refid="lib.dependency" />
+			</classpath>
+		</javac>
+	</target>
+
+
+	<target name="mkdirs" depends="javac">
+		<mkdir dir="${testplug}" />
+	</target>
+
+	<target name="java-jar" depends="mkdirs">
+		<jar destfile="${testplug}/${basename}.jar"
+		     filesetmanifest="mergewithoutmain">
+			<manifest>
+				<attribute name="Main-Class" value="testplugin.MainClass" />
+				<attribute name="Class-Path" value="." />
+			</manifest>
+			<fileset dir="${build}" />
+		</jar>
+	</target>
+
+	<target name="clean">
+		<delete includeemptydirs="true" failonerror="false">
+			<fileset dir="${target}" defaultexcludes="false" />
+		</delete>
+	</target>
+
+
+	<target name="copyfiles" depends="java-jar">
+		<copy todir="${testplug}" file="plugin.xml">
+		</copy>
+	</target>
+
+	<target name="create_zip_file" depends="clean,copyfiles">
+
+		<zip destfile="${target}/${basename}.zip" basedir="${target}">
+			<patternset excludes="**/build/" />
+		</zip>
+	</target>
+
+
+</project>

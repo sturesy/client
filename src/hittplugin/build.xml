@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+ * StuReSy - Student Response System
+ * Copyright (C) 2012-2013  StuReSy-Team
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<project default="create_zip_file" name="Create Zip-files for the hitt-plugin">
+
+	<property name="src" value="${basedir}/" />
+	<property name="target" value="${basedir}/target" />
+	<property name="build" value="${target}/build" />
+	<property name="binary" value="${basedir}/bin" />
+
+
+	<property name="hittplug" value="${target}/hittplugin" />
+
+
+	<path id="lib.dependency">
+		<fileset dir="${basedir}/libs" includes="*.jar" />
+		<fileset dir="${basedir}/../target/" includes="*.jar" />
+	</path>
+
+	<property name="rxtxcommjar" value="${basedir}/libs/RXTXcomm-custom.jar" />
+
+
+	<target name="javac" description="build classfiles">
+		<mkdir dir="${build}" />
+		<javac srcdir="${src}"
+		       destdir="${build}"
+		       debug="on"
+		       source="1.5"
+			   target="1.5"
+		       includeantruntime="false">
+			<classpath>
+				<path refid="lib.dependency" />
+			</classpath>
+		</javac>
+	</target>
+
+
+	<target name="mkdirs" depends="javac">
+		<mkdir dir="${hittplug}" />
+	</target>
+
+	<target name="java-jar" depends="mkdirs">
+		<jar destfile="${hittplug}/hittPlugin.jar" filesetmanifest="mergewithoutmain">
+			<manifest>
+				<attribute name="Main-Class" value="hitt.MainEntry" />
+				<attribute name="Class-Path" value="." />
+			</manifest>
+			<fileset dir="${build}" />
+		</jar>
+	</target>
+
+
+	<target name="copyfiles" depends="java-jar">
+
+		<!--<copy todir="${hittplug}" overwrite="true">
+			<fileset dir="${build}/">
+			</fileset>
+		</copy>-->
+
+		<copy todir="${hittplug}">
+			<fileset dir="${binary}/mac" />
+		</copy>
+		<copy todir="${hittplug}">
+			<fileset dir="${binary}/win32" excludes="*.lib" />
+		</copy>
+		<copy todir="${hittplug}">
+			<fileset dir="${binary}/win64" excludes="*.lib" />
+		</copy>
+
+		<copy todir="${hittplug}" file="${basedir}/libs/librxtxSerial.jnilib" />
+		<copy todir="${hittplug}" file="${basedir}/libs/rxtxSerial_x64.dll" />
+		<copy todir="${hittplug}" file="${basedir}/libs/rxtxSerial.dll" />
+
+
+		<copy todir="${hittplug}/i18n">
+			<fileset dir="${basedir}/i18n" />
+		</copy>
+
+		<copy todir="${hittplug}">
+			<fileset dir="${basedir}">
+				<include name="*.png" />
+				<include name="*.gif" />
+				<include name="*n.xml" />
+			</fileset>
+		</copy>
+
+
+		<copy todir="${hittplug}" file="${rxtxcommjar}">
+		</copy>
+
+		<!--<unzip src="${rxtxcommjar}" dest="${hittplug}">
+			<patternset excludes="**/META-INF**/" />
+		</unzip>-->
+
+
+	</target>
+
+
+	<target name="clean">
+		<delete includeemptydirs="true" failonerror="false">
+			<fileset dir="${target}" defaultexcludes="false" />
+		</delete>
+
+		<delete file="${target}/hittplugin.zip">
+		</delete>
+	</target>
+
+	<target name="create_zip_file" depends="clean,copyfiles">
+
+		<zip destfile="${target}/hittplugin.zip" basedir="${target}">
+			<patternset excludes="**/build/" />
+		</zip>
+	</target>
+
+
+</project>

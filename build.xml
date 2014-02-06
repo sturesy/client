@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+ * StuReSy - Student Response System
+ * Copyright (C) 2012-2013  StuReSy-Team
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+
+<project default="create_run_jar" name="Project StuReSy">
+
+	<property name="name" value="StuReSy"/>
+	<property name="name.lowercase" value="sturesy"/>
+	<property name="main.class" value="sturesy.Startup"/>
+	<property name="version" value="0.5.3" />
+	<property name="src" value="${basedir}/src/src-main/" />
+	<property name="testsrc" value="${basedir}/test" />
+	<property name="target" value="${basedir}/target" />
+	<property name="build" value="${target}/build" />
+	<property name="test" value="${target}/testbuild" />
+	<property name="include" value="${basedir}/include" />
+	<property name="checkstyle.dir" value="${include}/checkstyle" />
+	<property name="instrumented" value="${target}/instrumented" />
+	<property name="junit-rev" value="4.10" />
+	<property name="reports.dir" value="${target}/reports" />
+	<property name="report.cobertura.dir"
+	          value="${reports.dir}/coverage/withUI" />
+	<property name="report.cobertura.dir.withoutUI"
+	          value="${reports.dir}/coverage/withoutUI" />
+	<property name="report.cobertura.xml.dir"
+	          value="${report.cobertura.dir}/xml" />
+	<property name="report.cobertura.html.dir"
+	          value="${report.cobertura.dir}/html" />
+	<property name="report.cobertura.xml.dir.withoutUI"
+	          value="${report.cobertura.dir.withoutUI}/xml" />
+	<property name="report.cobertura.html.dir.withoutUI"
+	          value="${report.cobertura.dir.withoutUI}/html" />
+	<property name="report.junit.dir" value="${reports.dir}/junit" />
+
+	<property name="junit.package.exlcude" value="test/**" />
+
+	<path id="lib.dependency">
+		<fileset dir="${include}">
+			<include name="*.jar" />
+			<include name="cobertura/*.jar" />
+		</fileset>
+	</path>
+
+	<tstamp>
+		<format property="today" pattern="yyMMdd" />
+	</tstamp>
+
+	<property name="xpp3"         		value="${basedir}/include/xpp3-1.1.4c.jar" />
+	<property name="zxing-core"   		value="${basedir}/include/zxing-core.jar" />
+	<property name="zxing-javase" 		value="${basedir}/include/zxing-javase.jar" />
+	<property name="jcommon"      		value="${basedir}/include/jcommon-1.0.17.jar" />
+	<property name="jfreechart"   		value="${basedir}/include/jfreechart-1.0.14.jar" />
+	<property name="commonscodec" 		value="${basedir}/include/commons-codec-1.7.jar" />
+	<property name="commonslang" 		value="${basedir}/include/commons-lang3-3.1.jar" />
+	<property name="commonscollections" value="${basedir}/include/commons-collections-3.2.1.jar" />
+	<property name="shef" 				value="${basedir}/include/SHEF.jar" />
+	<property name="shef-jtidy" 		value="${basedir}/include/jtidy-8.0.jar" />
+	<property name="shef-novaworx" 		value="${basedir}/include/novaworx-syntax-0.0.7.jar" />
+	<property name="shef-sam" 			value="${basedir}/include/sam.jar" />
+
+	<property name="asm"				value="${basedir}/include/cobertura/asm-3.0.jar" />
+	<property name="log4j"	          	value="${basedir}/include/cobertura/log4j-1.2.9.jar" />
+	<property name="asm-tree"	        value="${basedir}/include/cobertura/asm-tree-3.0.jar" />
+	<property name="cobertura"          value="${basedir}/include/cobertura/cobertura.jar" />
+	<property name="jarkarta-oro-2.0.8" value="${basedir}/include/cobertura/jakarta-oro-2.0.8.jar" />
+	<property name="miglayout-4.0"      value="${basedir}/include/miglayout-4.0.jar" />
+
+
+	<target name="clean">
+		<delete includeemptydirs="true" failonerror="false">
+			<fileset dir="${build}" defaultexcludes="false" />
+		</delete>
+	</target>
+
+	<target name="checkstyle" depends="clean">
+		<taskdef resource="checkstyletask.properties"
+		         classpath="${checkstyle.dir}/checkstyle-5.6-all.jar" />
+		<mkdir dir="${reports.dir}" />
+		<checkstyle config="${checkstyle.dir}/checkstyle-config.xml"
+		            maxErrors="600">
+			<fileset dir="${src}"
+			         includes="**/*.java"
+			         excludes="**/*Test*.java **/VerticalLayout.java **/FileClassLoader.java"  />
+			<formatter type="xml" toFile="${reports.dir}/checkstyle.xml" />
+		</checkstyle>
+	</target>
+
+	<target name="javac" description="build classfiles" depends="checkstyle">
+		<mkdir dir="${build}" />
+		<javac srcdir="${src}"
+		       destdir="${build}"
+		       debug="on"
+		       source="1.5"
+			   target="1.5"
+		       excludes="${junit.package.exlcude}"
+			   encoding="UTF-8"
+		       includeantruntime="false">
+			<classpath>
+				<path refid="lib.dependency" />
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="make-test-dir">
+		<mkdir dir="${test}" />
+	</target>
+
+	<target name="javac-src-for-test">
+		<javac srcdir="${src}"
+		       destdir="${test}"
+		       debug="on"
+		       source="1.5"
+			   target="1.5"
+		       excludes="${junit.package.exlcude}"
+			   encoding="UTF-8"
+		       includeantruntime="false">
+			<classpath>
+				<path refid="lib.dependency" />
+			</classpath>
+		</javac>
+	</target>
+	<target name="javac-test"
+	        description="builds test classfiles"
+	        depends="clear.testbuild,make-test-dir,javac-src-for-test">
+
+		<javac srcdir="${testsrc}"
+		       destdir="${test}"
+		       debug="on"
+			   source="1.5"
+			   target="1.5"
+		       includeantruntime="false">
+			<classpath>
+				<path refid="lib.dependency" />
+			</classpath>
+		</javac>
+	</target>
+	<target name="copy-test-ressources">
+		<copydir dest="${test}/resource/" src="${src}/resource/" />
+		<copydir dest="${test}/resource/" src="${testsrc}/resource/" />
+	</target>
+	<target name="test"
+	        depends="javac-test,create-report-folder,copy-test-ressources">
+
+		<junit printsummary="yes" haltonerror="no" haltonfailure="no">
+			<classpath>
+				<path refid="lib.dependency" />
+				<pathelement location="${test}" />
+				<pathelement location="${test}/resource/" />
+			</classpath>
+			<formatter type="xml" />
+			<batchtest fork="yes" todir="${report.junit.dir}">
+				<fileset dir="${test}">
+					<include name="**/*Test.class" />
+					<include name="**/Test*.class" />
+				</fileset>
+			</batchtest>
+		</junit>
+	</target>
+
+	<!-- Make instrument for Cobertura engine -->
+	<target name="check-if-reports-exist">
+		<available property="reports.dir.exist" file="${reports.dir}" />
+	</target>
+	<target name="check-if-testbuild-exist">
+		<available property="testbuild.dir.exist" file="${test}" />
+	</target>
+	<target name="check-if-instrumented-exist">
+		<available property="instrumented.dir.exist" file="${instrumented}" />
+	</target>
+	<target name="check-if-cobertura-withoutUI-exist">
+		<available property="report.cobertura.dir.withoutUI.exist"
+		           file="${report.cobertura.dir.withoutUI}" />
+	</target>
+	<target name="check-if-cobertura-exist">
+		<available property="report.cobertura.dir.exist"
+		           file="${report.cobertura.dir}" />
+	</target>
+
+	<target name="clear.reports"
+	        depends="check-if-reports-exist"
+	        if="${reports.dir.exist}">
+		<delete includeemptydirs="true">
+			<fileset dir="${reports.dir}" defaultexcludes="false" />
+		</delete>
+	</target>
+	<target name="clear.coverage-withui"
+	        depends="check-if-cobertura-exist"
+	        if="${report.cobertura.dir.exist}">
+		<delete includeemptydirs="true">
+			<fileset dir="${report.cobertura.dir}" defaultexcludes="false" />
+		</delete>
+	</target>
+	<target name="clear.coverage-withoutui"
+	        depends="check-if-cobertura-withoutUI-exist"
+	        if="${report.cobertura.dir.withoutUI.exist}">
+		<delete includeemptydirs="true">
+			<fileset dir="${report.cobertura.dir.withoutUI}"
+			         defaultexcludes="false" />
+		</delete>
+	</target>
+	<target name="clear.testbuild"
+	        depends="check-if-testbuild-exist"
+	        if="${testbuild.dir.exist}">
+		<delete includeemptydirs="true">
+			<fileset dir="${test}" defaultexcludes="false" />
+		</delete>
+	</target>
+	<target name="clear.instrumented"
+	        depends="check-if-instrumented-exist"
+	        if="${instrumented.dir.exist}">
+		<delete file="${basedir}/cobertura.ser" />
+		<delete includeemptydirs="true">
+			<fileset dir="${instrumented}" defaultexcludes="false" />
+		</delete>
+	</target>
+
+	<target name="make-instrument" depends="install-cobertura">
+		<mkdir dir="${instrumented}" />
+		<mkdir dir="${test}" />
+		<!-- Instrument the application classes, writing the instrumented classes into ${build.instrumented.dir}. -->
+		<cobertura-instrument datafile="${basedir}/cobertura.ser"
+		                      todir="${instrumented}">
+			<!-- The following line causes instrument to ignore any source line containing a reference to log4j, 
+		                for the purposes of coverage reporting. -->
+			<ignore regex="org.apache.log4j.*" />
+
+			<fileset dir="${test}">
+				<!-- Instrument all the application classes, but don't instrument the test classes. -->
+				<include name="**/*.class" />
+				<exclude name="**/*Test.class" />
+				<exclude name="**/Test*.class" />
+			</fileset>
+		</cobertura-instrument>
+	</target>
+	<target name="make-instrument-without-ui" depends="install-cobertura">
+		<mkdir dir="${instrumented}" />
+		<mkdir dir="${test}" />
+		<!-- Instrument the application classes, writing the instrumented classes into ${build.instrumented.dir}. -->
+		<cobertura-instrument datafile="${basedir}/cobertura.ser"
+		                      todir="${instrumented}">
+			<!-- The following line causes instrument to ignore any source line containing a reference to log4j, 
+	                for the purposes of coverage reporting. -->
+			<ignore regex="org.apache.log4j.*" />
+
+			<fileset dir="${test}">
+				<!-- Instrument all the application classes, but don't instrument the test classes. -->
+				<include name="**/*.class" />
+				<exclude name="**/*Test.class" />
+				<exclude name="**/Test*.class" />
+				<exclude name="**/*UI.class" />
+				<exclude name="**/*UI$*.class" />
+				<exclude name="**/JFontChooser*.class" />
+				<exclude name="**/VerticalLayout*.class" />
+			</fileset>
+		</cobertura-instrument>
+	</target>
+	<target name="install-cobertura">
+		<path id="cobertura.classpath">
+			<fileset dir="${basedir}/include/">
+				<include name="**/*.jar" />
+			</fileset>
+		</path>
+		<taskdef classpathref="cobertura.classpath"
+		         resource="tasks.properties" />
+	</target>
+
+	<target name="create-report-folder">
+		<mkdir dir="${reports.dir}" />
+		<mkdir dir="${report.junit.dir}" />
+		<mkdir dir="${report.cobertura.dir}" />
+		<mkdir dir="${report.cobertura.xml.dir}" />
+		<mkdir dir="${report.cobertura.html.dir}" />
+		<mkdir dir="${report.cobertura.html.dir.withoutUI}" />
+		<mkdir dir="${report.cobertura.html.dir}" />
+
+	</target>
+	<target name="run-tests"
+	        depends="install-cobertura,create-report-folder,make-test-dir, javac-test">
+		<path id="classpath.test">
+			<fileset dir="${basedir}/include"
+			         includes="${basedir}/include/**/*.jar">
+				<include name="${instrumented}/sturesy/*.class" />
+				<include name="${test}/test/*.class" />
+			</fileset>
+			<fileset dir="${src}/resource/" includes="${src}/resource/**/*" />
+			<fileset dir="${testsrc}/resource/"
+			         includes="${testsrc}/resource/**/*" />
+			<path location="${test}" />
+		</path>
+		<junit fork="yes"
+		       dir="${basedir}"
+		       failureProperty="test.failed"
+		       printsummary="yes">
+			<classpath location="${basedir}/include/junit-${junit.rev}.jar" />
+			<!-- Specify the name of the coverage data file to use. 
+	                The value specified below is the default. -->
+			<sysproperty key="net.sourceforge.cobertura.datafile"
+			             file="${basedir}/cobertura.ser" />
+
+			<!-- Note the classpath order: instrumented classes are before the original (uninstrumented) classes. -->
+			<classpath location="${instrumented}" />
+			<classpath location="${test}" />
+			<classpath location="${src}/resource/" />
+			<classpath location="${testsrc}/resource/" />
+			<!--
+	            The instrumented classes reference classes used by the
+	            Cobertura runtime, so Cobertura and its dependencies
+	            must be on your classpath.
+	        -->
+			<classpath refid="cobertura.classpath" />
+
+			<!-- Generate xml files for each junit tests runs -->
+			<formatter type="xml" />
+			<batchtest fork="yes" todir="${report.junit.dir}">
+				<fileset dir="${test}">
+					<include name="**/*Test.class" />
+					<include name="**/Test*.class" />
+				</fileset>
+			</batchtest>
+		</junit>
+
+		<!-- Generate Cobertura xml file containing the coverage data -->
+		<!-- <cobertura-report format="xml" srcdir="${src}" destdir="${report.cobertura.xml.dir.withoutUI}" /> -->
+
+		<!-- Generate Cobertura html file report  containing the coverage data -->
+		<!-- <cobertura-report format="html" srcdir="${src}" destdir="${report.cobertura.html.dir.withoutUI}" />-->
+	</target>
+	<target name="generate-cobertura-reports">
+		<!-- Generate Cobertura xml file containing the coverage data -->
+		<cobertura-report format="xml"
+		                  srcdir="${src}"
+		                  destdir="${report.cobertura.xml.dir}" />
+		<!-- Generate Cobertura html file report  containing the coverage data -->
+		<cobertura-report format="html"
+		                  srcdir="${src}"
+		                  destdir="${report.cobertura.html.dir}" />
+	</target>
+	<target name="generate-cobertura-without-ui">
+		<!-- Generate Cobertura xml file containing the coverage data -->
+		<cobertura-report format="xml"
+		                  srcdir="${src}"
+		                  destdir="${report.cobertura.xml.dir.withoutUI}" />
+
+		<!-- Generate Cobertura html file report  containing the coverage data -->
+		<cobertura-report format="html"
+		                  srcdir="${src}"
+		                  destdir="${report.cobertura.html.dir.withoutUI}" />
+	</target>
+	<target name="run-coverage-withoutUI"
+	        depends="clear.coverage-withoutui,javac-test,javac-src-for-test,install-cobertura,make-instrument-without-ui,run-tests,generate-cobertura-without-ui,clear.testbuild,clear.instrumented" />
+	<target name="run-coverage"
+	        depends="clear.coverage-withui,javac-test,javac-src-for-test,install-cobertura,make-instrument,run-tests,generate-cobertura-reports,clear.testbuild,clear.instrumented" />
+
+	<target name="create_run_jar" depends="javac">
+		<delete file="${target}/${name.lowercase}.jar" failonerror="false" />
+		<jar destfile="${target}/${name.lowercase}.jar"
+		     filesetmanifest="mergewithoutmain">
+			<manifest>
+				<attribute name="Main-Class" value="${main.class}" />
+				<attribute name="Class-Path" value="." />
+			</manifest>
+			<fileset dir="${build}" />
+			<zipfileset excludes="META-INF/**/*,XPP3*VERSION" src="${xpp3}" />
+			<zipfileset excludes="META-INF/**/*" src="${jcommon}" />
+			<zipfileset excludes="META-INF/**/*" src="${jfreechart}" />
+			<zipfileset excludes="META-INF/**/*" src="${zxing-core}" />
+			<zipfileset excludes="META-INF/**/*" src="${zxing-javase}" />
+			<zipfileset excludes="META-INF/**/*" src="${commonscodec}" />
+			<zipfileset excludes="META-INF/**/*" src="${commonslang}" />
+			<zipfileset excludes="META-INF/**/*" src="${commonscollections}" />
+			<zipfileset excludes="META-INF/**/*" src="${shef}" />
+			<zipfileset excludes="META-INF/**/*,tidy.gif" src="${shef-jtidy}" />
+			<zipfileset excludes="META-INF/**/*" src="${shef-novaworx}" />
+			<zipfileset excludes="META-INF/**/*" src="${shef-sam}" />
+			<zipfileset excludes="META-INF/**/*" src="${miglayout-4.0}" />
+			<fileset dir="${src}/resource/" />
+		</jar>
+	</target>
+
+	<target name="mac.app.bundle" depends="create_run_jar" description="Creates Mac Application - using Oracle Bundler">
+
+		<delete includeemptydirs="true" failonerror="false">
+			<fileset dir="${target}/app/${name}.app" defaultexcludes="false" />
+		</delete>
+
+		<taskdef name="bundleapp"
+		         classname="com.oracle.appbundler.AppBundlerTask"
+		         classpath="${basedir}/include/appbundler-1.0.jar" />
+
+		<bundleapp outputdirectory="${target}/app/"
+		           name="${name}"
+		           displayname="${name}"
+		           taskname="${name}"
+		           identifier="${name.lowercase}"
+		           mainclassname="${main.class}"
+		           copyright="2012-2013 StuReSy-Team"
+		           icon="${src}/resource/image/sturesy.icns"
+		           shortversion="${version}">
+			<option value="-Dapple.laf.useScreenMenuBar=true" />
+			<option value="-Dswing.aatext=true"/>
+			<option value="-Dfile.encoding=UTF-8"/>
+			<option value="-Xdock:name=${name}"/>
+			<classpath file="${target}/${name.lowercase}.jar" />
+		</bundleapp>
+	</target>
+
+	<target name="mac.app.jarbundler" depends="create_run_jar" description="Creates Mac Application - using Jarbundler">
+		<taskdef name="jarbundler" 
+			classpath="${basedir}/include/jarbundler-2.2.0.jar" 
+			classname="net.sourceforge.jarbundler.JarBundler" />
+		<mkdir dir="${target}/app" />
+		<jarbundler dir="${target}/app/" 
+			name="StuReSy" 
+			shortname="StuReSy" 
+			mainclass="sturesy.Startup" 
+			icon="${src}/resource/image/sturesy.icns" 
+			version="${version}" build="${today}" 
+			infostring="${version}" 
+			copyright="2012-2013 StuReSy-Team" 
+			bundleid="sturesy" 
+			developmentregion="English" 
+			jvmversion="1.5+" 
+			antialiasedgraphics="true" 
+			antialiasedtext="true" 
+			liveresize="true" 
+			growbox="true" 
+			growboxintrudes="true" 
+			screenmenu="true" 
+			vmoptions="-Dappdir=$APP_PACKAGE/Contents/Resources -Dswing.aatext=true -Dfile.encoding=UTF-8" 
+			workingdirectory="$APP_PACKAGE/Contents/Resources" 
+			extraclasspath="/System/Library/Java">
+			
+			<jarfileset dir="${basedir}/target/">
+				<include name="*.jar" />
+			</jarfileset>
+		</jarbundler>
+	</target>
+
+</project>

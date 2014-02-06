@@ -1,0 +1,4 @@
+<h3 style="text-align: center;">Contributors:</h3>
+<p>
+Wolf Posdorfer<br>
+Jens Dallmann</p>

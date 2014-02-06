@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<questionset>
+    <questionmodel>
+        <question>Test</question>
+        <answer>a</answer>
+        <answer>b</answer>
+        <correct>1</correct>
+        <afont>Tahoma-PLAIN-20</afont>
+        <qfont>Tahoma-PLAIN-18</qfont>
+        <duration>-1</duration>
+    </questionmodel>
+</questionset>

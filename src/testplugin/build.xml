@@ -21,7 +21,7 @@
 
 	<property name="basename" value="testplugin" />
 
-	<property name="src" value="${basedir}/" />
+	<property name="src" value="${basedir}/src" />
 	<property name="target" value="${basedir}/target" />
 	<property name="build" value="${target}/build" />
 
@@ -30,7 +30,7 @@
 
 
 	<path id="lib.dependency">
-		<fileset dir="${basedir}/../target/" includes="*.jar" />
+		<fileset dir="${basedir}/../../target/" includes="*.jar" />
 	</path>
 
 

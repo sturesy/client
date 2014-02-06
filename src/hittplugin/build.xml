@@ -19,7 +19,7 @@
 
 <project default="create_zip_file" name="Create Zip-files for the hitt-plugin">
 
-	<property name="src" value="${basedir}/" />
+	<property name="src" value="${basedir}/src" />
 	<property name="target" value="${basedir}/target" />
 	<property name="build" value="${target}/build" />
 	<property name="binary" value="${basedir}/bin" />
@@ -27,10 +27,13 @@
 
 	<property name="hittplug" value="${target}/hittplugin" />
 
+	
+	<echo>${src}</echo>
+		<echo>${target}</echo>
 
 	<path id="lib.dependency">
 		<fileset dir="${basedir}/libs" includes="*.jar" />
-		<fileset dir="${basedir}/../target/" includes="*.jar" />
+		<fileset dir="${basedir}/../../target/" includes="*.jar" />
 	</path>
 
 	<property name="rxtxcommjar" value="${basedir}/libs/RXTXcomm-custom.jar" />

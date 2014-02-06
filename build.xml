@@ -151,7 +151,7 @@
 		</javac>
 	</target>
 	<target name="copy-test-ressources">
-		<copydir dest="${test}/resource/" src="${src}/resource/" />
+		<copydir dest="${test}/resource/" src="${src}/../resource/" />
 		<copydir dest="${test}/resource/" src="${testsrc}/resource/" />
 	</target>
 	<target name="test"
@@ -298,7 +298,7 @@
 				<include name="${instrumented}/sturesy/*.class" />
 				<include name="${test}/test/*.class" />
 			</fileset>
-			<fileset dir="${src}/resource/" includes="${src}/resource/**/*" />
+			<fileset dir="${src}/../resource/" includes="${src}/../resource/**/*" />
 			<fileset dir="${testsrc}/resource/"
 			         includes="${testsrc}/resource/**/*" />
 			<path location="${test}" />
@@ -316,7 +316,7 @@
 			<!-- Note the classpath order: instrumented classes are before the original (uninstrumented) classes. -->
 			<classpath location="${instrumented}" />
 			<classpath location="${test}" />
-			<classpath location="${src}/resource/" />
+			<classpath location="${src}/../resource/" />
 			<classpath location="${testsrc}/resource/" />
 			<!--
 	            The instrumented classes reference classes used by the
@@ -389,7 +389,7 @@
 			<zipfileset excludes="META-INF/**/*" src="${shef-novaworx}" />
 			<zipfileset excludes="META-INF/**/*" src="${shef-sam}" />
 			<zipfileset excludes="META-INF/**/*" src="${miglayout-4.0}" />
-			<fileset dir="${src}/resource/" />
+			<fileset dir="${src}/../resource/" />
 		</jar>
 	</target>
 
@@ -410,7 +410,7 @@
 		           identifier="${name.lowercase}"
 		           mainclassname="${main.class}"
 		           copyright="2012-2013 StuReSy-Team"
-		           icon="${src}/resource/image/sturesy.icns"
+		           icon="${src}/../resource/image/sturesy.icns"
 		           shortversion="${version}">
 			<option value="-Dapple.laf.useScreenMenuBar=true" />
 			<option value="-Dswing.aatext=true"/>
@@ -429,7 +429,7 @@
 			name="StuReSy" 
 			shortname="StuReSy" 
 			mainclass="sturesy.Startup" 
-			icon="${src}/resource/image/sturesy.icns" 
+			icon="${src}/../resource/image/sturesy.icns" 
 			version="${version}" build="${today}" 
 			infostring="${version}" 
 			copyright="2012-2013 StuReSy-Team" 

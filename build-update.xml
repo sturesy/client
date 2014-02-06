@@ -22,7 +22,7 @@
 
 	<property name="jarname" value="sturesy-update.jar" />
 	<property name="version" value="0.0.1" />
-	<property name="src" value="${basedir}/updater" />
+	<property name="src" value="${basedir}/src/updater" />
 	<property name="target" value="${basedir}/target" />
 	<property name="build" value="${target}/buildupdater" />
 	<property name="include" value="${basedir}/include" />

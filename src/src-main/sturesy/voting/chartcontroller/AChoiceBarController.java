@@ -102,6 +102,29 @@ public abstract class AChoiceBarController
     }
 
     /**
+     * Creates a dataset from given votes and Answers
+     * 
+     * @param votesarr
+     *            the votes
+     * @param answers
+     *            the answers
+     * @return CategoryDataset
+     */
+    protected CategoryDataset createDataSet(double[] votesarr, List<String> answers)
+    {
+        CategoryDataset dataset = null;
+        if (_showPercent)
+        {
+            dataset = createDatasetPercent(votesarr, answers);
+        }
+        else
+        {
+            dataset = createDatasetAbsolute(votesarr, answers);
+        }
+        return dataset;
+    }
+
+    /**
      * Creates a Dataset containing absolute values
      * 
      * @param votes

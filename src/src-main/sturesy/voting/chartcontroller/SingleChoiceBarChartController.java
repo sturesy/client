@@ -19,6 +19,8 @@ package sturesy.voting.chartcontroller;
 
 import java.awt.event.ActionListener;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import javax.swing.JPanel;
@@ -75,30 +77,36 @@ public class SingleChoiceBarChartController extends AChoiceBarController impleme
     @Override
     public void updateUI()
     {
-        double[] votesarr = new double[_question.getAnswerSize()];
+        double[] votesarr = prepareVotesForDataSet(_question.getAnswerSize(), _votes);
+
+        CategoryDataset dataset = createDataSet(votesarr, _question.getAnswers());
+
+        final String unescapeHtml4 = StringEscapeUtils.unescapeHtml4(HTMLStripper.stripHTML2(_question.getQuestion()));
+        List<Integer> answers = Arrays.asList(_question.getCorrectAnswer());
+
+        _gui.createNewChartPanel(dataset, unescapeHtml4, _backgroundcolor, _showCorrectAnswer, answers, _showPercent);
+    }
+
+    /**
+     * Creates an array of the given votes
+     * 
+     * @param answerSize
+     * @param votes
+     * @return votesArray
+     */
+    private double[] prepareVotesForDataSet(int answerSize, Collection<Vote> votes)
+    {
+        double[] votesarr = new double[answerSize];
         Arrays.fill(votesarr, 0);
 
-        for (Vote vote : _votes)
+        for (Vote vote : votes)
         {
             if (vote.getVote() < votesarr.length && vote.getVote() >= 0)
             {
                 votesarr[vote.getVote()]++;
             }
         }
-
-        CategoryDataset dataset = null;
-        if (_showPercent)
-        {
-            dataset = createDatasetPercent(votesarr, _question.getAnswers());
-        }
-        else
-        {
-            dataset = createDatasetAbsolute(votesarr, _question.getAnswers());
-        }
-
-        _gui.createNewChartPanel(dataset,
-                StringEscapeUtils.unescapeHtml4(HTMLStripper.stripHTML2(_question.getQuestion())), _backgroundcolor,
-                _showCorrectAnswer, Arrays.asList(_question.getCorrectAnswer()), _showPercent);
+        return votesarr;
     }
 
 }

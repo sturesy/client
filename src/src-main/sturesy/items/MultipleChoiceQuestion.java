@@ -82,7 +82,8 @@ public class MultipleChoiceQuestion extends QuestionModel
 
     /**
      * @return List of correct answers or an emtpy list if no correct answer was
-     *         provided
+     *         provided.<br>
+     *         Returns original List
      */
     public List<Integer> getCorrectAnswers()
     {

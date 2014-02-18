@@ -61,8 +61,8 @@ public class VotingEvaluationController implements ActionListener
     public VotingEvaluationController()
     {
         _controllers.put(SingleChoiceQuestion.class, new SingleChoiceBarChartController(this));
-        _controllers.put(MultipleChoiceQuestion.class, new MultipleChoiceBarChartController());
-        _controllers.put(TextQuestion.class, new TextBarChartController());
+        _controllers.put(MultipleChoiceQuestion.class, new MultipleChoiceBarChartController(this));
+        _controllers.put(TextQuestion.class, new TextBarChartController(this));
 
         _mainPanel = new JPanel(new BorderLayout());
     }

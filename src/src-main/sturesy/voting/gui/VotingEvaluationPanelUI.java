@@ -54,7 +54,7 @@ public class VotingEvaluationPanelUI extends JPanel
 {
 
     private static final long serialVersionUID = -5556355720966529589L;
-    private ChartPanel _chartpanel;
+    protected ChartPanel _chartpanel;
     private ActionListener _menuItemActionListener;
 
     /**

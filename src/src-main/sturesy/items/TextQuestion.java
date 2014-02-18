@@ -95,6 +95,9 @@ public class TextQuestion extends QuestionModel
         return 1;
     }
 
+    /**
+     * Always returns <code>true</code> for TextQuestions
+     */
     @Override
     public boolean hasCorrectAnswer()
     {
@@ -134,6 +137,11 @@ public class TextQuestion extends QuestionModel
         return _tolerance;
     }
 
+    /**
+     * Set the tolerance, in variance of characters
+     * 
+     * @param tolerance
+     */
     public void setTolerance(int tolerance)
     {
         _tolerance = tolerance;
@@ -147,6 +155,11 @@ public class TextQuestion extends QuestionModel
         return _ignoreCase;
     }
 
+    /**
+     * Set if the case should be ignored
+     * 
+     * @param ignoreCase
+     */
     public void setIgnoreCase(boolean ignoreCase)
     {
         _ignoreCase = ignoreCase;
@@ -160,6 +173,11 @@ public class TextQuestion extends QuestionModel
         return _ignoreSpaces;
     }
 
+    /**
+     * Set if whitespaces should be ignored
+     * 
+     * @param ignoreSpaces
+     */
     public void setIgnoreSpaces(boolean ignoreSpaces)
     {
         _ignoreSpaces = ignoreSpaces;
@@ -169,28 +187,26 @@ public class TextQuestion extends QuestionModel
      * Does the given String match the Answer withing the percentage of this
      * TextQuestion
      * 
-     * @param s
+     * @param stringToMatch
      *            the string to match
      * @return <code>true</code> if s matches the set percentage,
      *         <code>false</code> otherwise
      */
-    public boolean matchesPercentage(String s)
+    public boolean matchesPercentage(String stringToMatch)
     {
         String original = _answer;
-        float levenshtein_distance;
 
         if (_ignoreCase)
         {
             original = original.toLowerCase();
-            s = s.toLowerCase();
+            stringToMatch = stringToMatch.toLowerCase();
         }
         if (_ignoreSpaces)
         {
             original = original.replace(" ", "");
-            s = s.replace(" ", "");
+            stringToMatch = stringToMatch.replace(" ", "");
         }
-        levenshtein_distance = calculateLevenshteinDistance(original, s);
-        return levenshtein_distance <= _tolerance;
+        return calculateLevenshteinDistance(original, stringToMatch) <= _tolerance;
     }
 
     /**

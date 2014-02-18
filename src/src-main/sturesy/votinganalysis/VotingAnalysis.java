@@ -94,8 +94,8 @@ public class VotingAnalysis implements Controller
     }
 
     public VotingAnalysis(QuestionSet questionSet, Map<Integer, Set<Vote>> votes,
-            VotingAnalysisCRUDService votingAnalysisCRUDService, VotingEvaluationController evalPanel, VotingAnalysisUI ui,
-            TimeChart timeChart)
+            VotingAnalysisCRUDService votingAnalysisCRUDService, VotingEvaluationController evalPanel,
+            VotingAnalysisUI ui, TimeChart timeChart)
     {
         _votingAnalysisCRUDService = votingAnalysisCRUDService;
         _votes = votes;
@@ -141,14 +141,14 @@ public class VotingAnalysis implements Controller
     {
         _frame.setLabelText(_currentQuestion + 1, _questionSet.size());
         QuestionModel questionModel = _questionSet.getIndex(_currentQuestion);
-        
-        
+
         _evalPanel.setCurrentQuestion(questionModel);
-        
-        Set<Vote> votesToDisplay = _votes.get(_currentQuestion);
+
         String question = questionModel.getQuestion();
         List<String> answers = questionModel.getAnswers();
         Object[][] tablevalues = null;
+
+        Set<Vote> votesToDisplay = _votes.get(_currentQuestion);
         if (votesToDisplay != null)
         {
             tablevalues = createVoteTableValues(questionModel, votesToDisplay, question, answers);
@@ -160,6 +160,8 @@ public class VotingAnalysis implements Controller
             _frame.setMedianText(buildTimeMedianMean(0));
             _timeChart.applyVotesToChart(new HashSet<Vote>());
         }
+        _evalPanel.setAnswerVisible(true);
+
         UneditableTableModel tablemodel = new UneditableTableModel(tablevalues, new String[] { "ID",
                 Localize.getString("label.votes"), DELTA_STRING + " in s" });
         TableRowSorter<TableModel> tablerrowsorter = createConfiguredTableRowSorter(tablemodel);

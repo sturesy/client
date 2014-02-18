@@ -77,7 +77,6 @@ public class WebSettings implements ISettingsScreen
 
         initWebSettingsUI();
         registerListeners();
-        checkHost();
     }
 
     /**
@@ -147,7 +146,7 @@ public class WebSettings implements ISettingsScreen
      */
     private void checkHost()
     {
-        if (_checkHost == null || _checkHost.isDone() || _checkHost.isPending())
+        if (_gui.isWebPluginEnabled() && _checkHost == null || _checkHost.isDone() || _checkHost.isPending())
         {
             setupBackgroundWorker();
             _checkHost.execute();

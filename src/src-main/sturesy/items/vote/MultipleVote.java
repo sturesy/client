@@ -83,6 +83,9 @@ public class MultipleVote extends Vote
         this("", 0, (short[]) null);
     }
 
+    /**
+     * @return the votes as List
+     */
     public ArrayList<Short> asList()
     {
         ArrayList<Short> list = new ArrayList<Short>();

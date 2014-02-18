@@ -48,7 +48,7 @@ public abstract class Vote
     }
 
     /**
-     * @return Returns the ID of this voting
+     * @return Returns the ID of this Voter
      */
     public String getGuid()
     {

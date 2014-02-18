@@ -146,10 +146,23 @@ public abstract class QuestionModel
         return _answerFont;
     }
 
+    /**
+     * The amount of answers
+     * 
+     * @return some integer between 2 and 10
+     */
     public abstract int getAnswerSize();
 
+    /**
+     * @return Does this question have a correct answer
+     */
     public abstract boolean hasCorrectAnswer();
 
+    /**
+     * Returns the Answers
+     * 
+     * @return List of answers
+     */
     public abstract List<String> getAnswers();
 
     /**

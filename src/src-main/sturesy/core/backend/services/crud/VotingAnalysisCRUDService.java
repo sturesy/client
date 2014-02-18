@@ -19,19 +19,17 @@ package sturesy.core.backend.services.crud;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
+import javax.swing.table.TableModel;
 
 import sturesy.core.backend.services.FileIOService;
-import sturesy.items.Vote;
 
 /**
  * A Create Read update delete service for voting analysis content. Not every
  * method is supported by default maybe it has to be extended for new
  * functionality.
  * 
- * @author jens.dallmann
+ * @author jens.dallmann, w.posdorfer
  */
 public class VotingAnalysisCRUDService
 {
@@ -66,60 +64,83 @@ public class VotingAnalysisCRUDService
     /**
      * Creates a csv file with the result of a voting
      * 
-     * @param votes
-     *            the votes for which the result file should be build
+     * @param model
+     *            the votes for which the result file should be build, coming
+     *            directly from the TableModel
      * @param file
      *            the file where it has to be stored
      * @return String if an error occurs the result is an error message, if no
-     *         error occurs it will return null
+     *         error occurs it will return <code>null</code>
      */
-    public String saveVotingResult(Set<Vote> votes, File file)
+    public String saveVotingResult(TableModel model, File file)
     {
-        String result = null;
-        if (CollectionUtils.isNotEmpty(votes))
+        if (model.getRowCount() == 0)
         {
-            String content = createCSVContent(votes);
-            try
+            return NO_VOTES_TO_EXPORT;
+        }
+
+        StringBuilder builder = new StringBuilder();
+
+        for (int column = 0; column < model.getColumnCount(); column++)
+        {
+            builder.append(model.getColumnName(column));
+
+            if (column != model.getColumnCount() - 1)
             {
-                if (file != null)
-                {
-                    _fileService.createCSVFileIfNotExist(file);
-                    _fileService.writeToFile(file, content);
-                }
-                else
-                {
-                    result = NO_FILE_TO_EXPORT_TO;
-                }
+                builder.append(",");
             }
-            catch (IOException e1)
+            else
             {
-                result = ERROR_EXPORTING_TO_CSV;
+                builder.append("\n");
             }
         }
-        else
+        for (int row = 0; row < model.getRowCount(); row++)
         {
-            result = NO_VOTES_TO_EXPORT;
+            for (int column = 0; column < model.getColumnCount(); column++)
+            {
+                builder.append(model.getValueAt(row, column)).append(",");
+            }
+            builder.deleteCharAt(builder.length() - 1);
+            builder.append("\n");
+        }
+
+        return saveVotingResult(builder.toString(), file);
+    }
+
+    /**
+     * Writes votingresults to a file
+     * 
+     * @param content
+     *            already commaseperated values
+     * @param file
+     *            destination file
+     * @return if an error occurs the result is an error message, if no error
+     *         occurs it will return <code>null</code>
+     */
+    private String saveVotingResult(String content, File file)
+    {
+        String result = null;
+        try
+        {
+            if (content.isEmpty())
+            {
+                result = NO_VOTES_TO_EXPORT;
+            }
+            else if (file != null)
+            {
+                file = _fileService.createCSVFileIfNotExist(file);
+                _fileService.writeToFile(file, content);
+            }
+            else
+            {
+                result = NO_FILE_TO_EXPORT_TO;
+            }
+        }
+        catch (IOException e1)
+        {
+            result = ERROR_EXPORTING_TO_CSV;
         }
         return result;
     }
 
-    /**
-     * places the votes in a comma separated string
-     * 
-     * @param votes
-     *            the votes to be parse
-     * @return comma separated string
-     */
-    private String createCSVContent(Set<Vote> votes)
-    {
-        StringBuffer content = new StringBuffer();
-        for (Vote v : votes)
-        {
-            String guid = v.getGuid();
-            char voteAsUpperCase = (char) ('A' + v.getVote());
-            long timediff = v.getTimeDiff();
-            content.append(guid + "," + voteAsUpperCase + "," + timediff + "\n");
-        }
-        return content.toString();
-    }
 }

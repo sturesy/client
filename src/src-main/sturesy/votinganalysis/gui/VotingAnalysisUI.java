@@ -205,6 +205,16 @@ public class VotingAnalysisUI extends JFrame
     }
 
     /**
+     * Returns the Tablemodel of the Table
+     * 
+     * @return tablemodel
+     */
+    public TableModel getTableModel()
+    {
+        return _table.getModel();
+    }
+
+    /**
      * Returns the Median Label
      * 
      * @return JLabel

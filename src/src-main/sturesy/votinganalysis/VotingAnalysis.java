@@ -25,8 +25,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -36,17 +36,23 @@ import javax.swing.table.TableRowSorter;
 import org.apache.commons.collections.CollectionUtils;
 
 import sturesy.core.Controller;
-import sturesy.core.GenericComparator;
 import sturesy.core.Localize;
 import sturesy.core.backend.services.crud.VotingAnalysisCRUDService;
 import sturesy.core.ui.UneditableTableModel;
+import sturesy.items.MultipleChoiceQuestion;
 import sturesy.items.QuestionModel;
 import sturesy.items.QuestionSet;
+import sturesy.items.SingleChoiceQuestion;
+import sturesy.items.TextQuestion;
 import sturesy.items.Vote;
 import sturesy.util.Settings;
 import sturesy.util.ValidVotePredicate;
 import sturesy.voting.VotingEvaluationController;
 import sturesy.votinganalysis.gui.VotingAnalysisUI;
+import sturesy.votinganalysis.tabledata.ITableDataProvider;
+import sturesy.votinganalysis.tabledata.MultipleVoteTableData;
+import sturesy.votinganalysis.tabledata.SingleVoteTableData;
+import sturesy.votinganalysis.tabledata.TextVoteTableData;
 
 /**
  * Class for Analysing Votings, in different Visual Diagrams
@@ -56,9 +62,6 @@ import sturesy.votinganalysis.gui.VotingAnalysisUI;
  */
 public class VotingAnalysis implements Controller
 {
-
-    private static final String DELTA_STRING = "\u0394";
-
     private static final String LABEL_MEDIAN_RESSOURCE_KEY = "label.median";
 
     private static final String LABEL_MEAN_RESSOURCE_KEY = "label.mean";
@@ -77,8 +80,15 @@ public class VotingAnalysis implements Controller
 
     private VotingAnalysisCRUDService _votingAnalysisCRUDService;
 
+    private Map<Class<? extends QuestionModel>, ITableDataProvider> _tableDataProvider = new HashMap<Class<? extends QuestionModel>, ITableDataProvider>();
+
     public VotingAnalysis(QuestionSet qset, Map<Integer, Set<Vote>> votes)
     {
+
+        _tableDataProvider.put(MultipleChoiceQuestion.class, new MultipleVoteTableData());
+        _tableDataProvider.put(SingleChoiceQuestion.class, new SingleVoteTableData());
+        _tableDataProvider.put(TextQuestion.class, new TextVoteTableData());
+
         _votingAnalysisCRUDService = new VotingAnalysisCRUDService();
         _questionSet = qset;
         _votes = votes;
@@ -91,6 +101,19 @@ public class VotingAnalysis implements Controller
         _frame = new VotingAnalysisUI(_questionSet.size(), _evalPanel.getPanel(), _timeChart.getPanel());
 
         init();
+    }
+
+    private ITableDataProvider getTableDataProvider()
+    {
+        ITableDataProvider result = _tableDataProvider.get(_questionSet.getIndex(_currentQuestion).getClass());
+        if (result == null)
+        {
+            return new SingleVoteTableData();
+        }
+        else
+        {
+            return result;
+        }
     }
 
     public VotingAnalysis(QuestionSet questionSet, Map<Integer, Set<Vote>> votes,
@@ -144,14 +167,15 @@ public class VotingAnalysis implements Controller
 
         _evalPanel.setCurrentQuestion(questionModel);
 
-        String question = questionModel.getQuestion();
-        List<String> answers = questionModel.getAnswers();
         Object[][] tablevalues = null;
-
         Set<Vote> votesToDisplay = _votes.get(_currentQuestion);
         if (votesToDisplay != null)
         {
-            tablevalues = createVoteTableValues(questionModel, votesToDisplay, question, answers);
+            _evalPanel.applyVotesToChart(votesToDisplay, questionModel);
+            _timeChart.applyVotesToChart(votesToDisplay);
+            setAverageTextsOnWidget(votesToDisplay);
+
+            tablevalues = getTableDataProvider().createVoteTableValues(questionModel, votesToDisplay);
         }
         else
         {
@@ -162,44 +186,11 @@ public class VotingAnalysis implements Controller
         }
         _evalPanel.setAnswerVisible(true);
 
-        UneditableTableModel tablemodel = new UneditableTableModel(tablevalues, new String[] { "ID",
-                Localize.getString("label.votes"), DELTA_STRING + " in s" });
-        TableRowSorter<TableModel> tablerrowsorter = createConfiguredTableRowSorter(tablemodel);
+        String[] tableHeaders = getTableDataProvider().createTableHeaders(questionModel);
+        UneditableTableModel tablemodel = new UneditableTableModel(tablevalues, tableHeaders);
+        TableRowSorter<TableModel> tablerrowsorter = getTableDataProvider().createConfiguredTableRowSorter(tablemodel);
         _frame.setTableModel(tablemodel, tablerrowsorter);
 
-    }
-
-    private TableRowSorter<TableModel> createConfiguredTableRowSorter(UneditableTableModel tablemodel)
-    {
-        TableRowSorter<TableModel> tablerrowsorter = new TableRowSorter<TableModel>(tablemodel);
-        tablerrowsorter.setComparator(0, new GenericComparator<String>());
-        tablerrowsorter.setComparator(1, new GenericComparator<String>());
-        tablerrowsorter.setComparator(2, new GenericComparator<Integer>());
-        return tablerrowsorter;
-    }
-
-    private Object[][] createVoteTableValues(QuestionModel questionModel, Set<Vote> votesToDisplay, String question,
-            List<String> answers)
-    {
-        _evalPanel.applyVotesToChart(votesToDisplay, questionModel);
-        _timeChart.applyVotesToChart(votesToDisplay);
-
-        setAverageTextsOnWidget(votesToDisplay);
-
-        Vote[] votes = votesToDisplay.toArray(new Vote[0]);
-        Object[][] tablevalues = new Object[votes.length][3];
-
-        for (int i = 0; i < votes.length; i++)
-        {
-            final Vote vote = votes[i];
-            if (vote.getVote() < questionModel.getAnswerSize())
-            {
-                tablevalues[i][0] = vote.getGuid();
-                tablevalues[i][1] = "" + (char) ('A' + vote.getVote());
-                tablevalues[i][2] = vote.getTimeDiff() / 1000;
-            }
-        }
-        return tablevalues;
     }
 
     private void setAverageTextsOnWidget(Set<Vote> votesToDisplay)
@@ -224,9 +215,11 @@ public class VotingAnalysis implements Controller
     private void exportCSV()
     {
 
-        Set<Vote> votes = _votes.get(_currentQuestion);
+//        Set<Vote> votes = _votes.get(_currentQuestion);
         File file = _frame.acceptSaveFromUser();
-        String result = _votingAnalysisCRUDService.saveVotingResult(votes, file);
+
+        String result = _votingAnalysisCRUDService.saveVotingResult(_frame.getTableModel(), file); // _votingAnalysisCRUDService.saveVotingResult(votes,
+                                                                                                   // file);
         if (result != null)
         {
             _frame.showMessageWindowError(result);

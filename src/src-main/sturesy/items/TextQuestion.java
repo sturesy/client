@@ -229,28 +229,29 @@ public class TextQuestion extends QuestionModel
      *            String b
      * @return levenshtein distance
      */
-    private int calculateLevenshteinDistance(String a, String b)
+    public static int calculateLevenshteinDistance(String a, String b)
     {
-        if (a.length() == 0)
+        int[] costs = new int[b.length() + 1];
+        for (int j = 0; j < costs.length; j++)
         {
-            return b.length();
+            costs[j] = j;
         }
-        if (b.length() == 0)
+        for (int i = 1; i <= a.length(); i++)
         {
-            return a.length();
+            costs[0] = i;
+            int nw = i - 1;
+            for (int j = 1; j <= b.length(); j++)
+            {
+                int min1 = 1 + Math.min(costs[j], costs[j - 1]);
+
+                int min2 = a.charAt(i - 1) == b.charAt(j - 1) ? nw : nw + 1;
+
+                int cj = Math.min(min1, min2);
+                nw = costs[j];
+                costs[j] = cj;
+            }
         }
-
-        int cost = 0;
-        if (a.charAt(a.length() - 1) != b.charAt(b.length() - 1))
-        {
-            cost = 1;
-        }
-
-        int i1 = calculateLevenshteinDistance(a.substring(0, a.length() - 1), b) + 1;
-        int i2 = calculateLevenshteinDistance(a, b.substring(0, b.length() - 1)) + 1;
-        int i3 = calculateLevenshteinDistance(a.substring(0, a.length() - 1), b.substring(0, b.length() - 1)) + cost;
-
-        return Math.min(i1, Math.min(i2, i3));
+        return costs[b.length()];
     }
 
 }

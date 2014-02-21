@@ -32,12 +32,12 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
+import net.miginfocom.swing.MigLayout;
 import sturesy.Macintosh;
 import sturesy.core.Localize;
 import sturesy.core.backend.Loader;
 import sturesy.core.ui.JGap;
 import sturesy.core.ui.MessageWindow;
-import sturesy.core.ui.VerticalLayout;
 
 /**
  * Graphical component of the voting analysis
@@ -47,11 +47,11 @@ import sturesy.core.ui.VerticalLayout;
 public class VotingAnalysisUI extends JFrame
 {
 
+    private static final long serialVersionUID = 8859194873010623035L;
     /**
      * Iconsize for Icons {@value #ICONSIZE}
      */
     private static final int ICONSIZE = 16;
-    private static final long serialVersionUID = 8859194873010623035L;
     /**
      * The "Next Question" Button
      */
@@ -109,7 +109,7 @@ public class VotingAnalysisUI extends JFrame
         toolbarpanel.add(_currentQuestionLabel);
         toolbarpanel.add(_nextButton);
 
-        JPanel scrollpaneView = new JPanel(new VerticalLayout());
+        JPanel scrollpaneView = new JPanel(new MigLayout("flowy,align center"));
 
         _table = new JTable(new DefaultTableModel());
         JPanel tablePanel = new JPanel(new BorderLayout());
@@ -135,9 +135,9 @@ public class VotingAnalysisUI extends JFrame
 
         scrollpaneView.add(evalp);
         scrollpaneView.add(timechart);
-        scrollpaneView.add(mathPanel);
-        scrollpaneView.add(_exportCSV);
-        scrollpaneView.add(tablePanel);
+        scrollpaneView.add(mathPanel, "align center");
+        scrollpaneView.add(_exportCSV, "align center");
+        scrollpaneView.add(tablePanel, "grow");
 
         add(toolbarpanel, BorderLayout.NORTH);
         add(_centerPanel, BorderLayout.CENTER);

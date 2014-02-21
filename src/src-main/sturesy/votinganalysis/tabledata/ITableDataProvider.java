@@ -40,5 +40,7 @@ public interface ITableDataProvider
     String[] createTableHeaders(QuestionModel questionModel);
 
     TableRowSorter<TableModel> createConfiguredTableRowSorter(UneditableTableModel tablemodel);
+    
+    int[] getPreferredTableWidth(UneditableTableModel tablemodel);
 
 }

@@ -111,4 +111,20 @@ public class MultipleVoteTableData implements ITableDataProvider
         return tablerrowsorter;
     }
 
+    @Override
+    public int[] getPreferredTableWidth(UneditableTableModel tablemodel)
+    {
+        int[] result = new int[tablemodel.getColumnCount()];
+        result[0] = 150;
+        result[1] = 100;
+        result[2] = 80;
+
+        for (int i = 3; i < tablemodel.getColumnCount(); i++)
+        {
+            result[i] = 20;
+        }
+
+        return result;
+    }
+
 }

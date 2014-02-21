@@ -73,4 +73,10 @@ public class TextVoteTableData implements ITableDataProvider
         return tablerrowsorter;
     }
 
+    @Override
+    public int[] getPreferredTableWidth(UneditableTableModel tablemodel)
+    {
+        return new int[] { 150, 150, 100 };
+    }
+
 }

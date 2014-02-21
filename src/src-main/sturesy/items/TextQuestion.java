@@ -206,7 +206,18 @@ public class TextQuestion extends QuestionModel
             original = original.replace(" ", "");
             stringToMatch = stringToMatch.replace(" ", "");
         }
-        return calculateLevenshteinDistance(original, stringToMatch) <= _tolerance;
+
+        if (original.length() + _tolerance < stringToMatch.length())
+        {
+            // impossible to match the tolerance, because the stringToMatch is
+            // much longer, so we save computation time
+            return false;
+        }
+        else
+        {
+            int distance = calculateLevenshteinDistance(original, stringToMatch);
+            return distance <= _tolerance;
+        }
     }
 
     /**

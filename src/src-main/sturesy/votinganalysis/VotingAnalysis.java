@@ -189,7 +189,7 @@ public class VotingAnalysis implements Controller
         String[] tableHeaders = getTableDataProvider().createTableHeaders(questionModel);
         UneditableTableModel tablemodel = new UneditableTableModel(tablevalues, tableHeaders);
         TableRowSorter<TableModel> tablerrowsorter = getTableDataProvider().createConfiguredTableRowSorter(tablemodel);
-        _frame.setTableModel(tablemodel, tablerrowsorter);
+        _frame.setTableModel(tablemodel, tablerrowsorter, getTableDataProvider().getPreferredTableWidth(tablemodel));
 
     }
 
@@ -215,7 +215,7 @@ public class VotingAnalysis implements Controller
     private void exportCSV()
     {
 
-//        Set<Vote> votes = _votes.get(_currentQuestion);
+        // Set<Vote> votes = _votes.get(_currentQuestion);
         File file = _frame.acceptSaveFromUser();
 
         String result = _votingAnalysisCRUDService.saveVotingResult(_frame.getTableModel(), file); // _votingAnalysisCRUDService.saveVotingResult(votes,

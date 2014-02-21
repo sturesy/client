@@ -195,12 +195,15 @@ public class VotingAnalysisUI extends JFrame
      * @param trs
      *            tablerowsorter which handles the sorting
      */
-    public void setTableModel(final TableModel model, TableRowSorter<TableModel> trs)
+    public void setTableModel(final TableModel model, TableRowSorter<TableModel> trs, int[] tablewidth)
     {
         _table.setModel(model);
-        _table.getColumnModel().getColumn(0).setPreferredWidth(150);
-        _table.getColumnModel().getColumn(1).setPreferredWidth(80);
-        _table.getColumnModel().getColumn(2).setPreferredWidth(100);
+
+        for (int i = 0; i < tablewidth.length; i++)
+        {
+            _table.getColumnModel().getColumn(i).setMinWidth(tablewidth[i]);
+            // _table.getColumnModel().getColumn(i).setPreferredWidth(tablewidth[i]);
+        }
         _table.setRowSorter(trs);
     }
 

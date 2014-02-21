@@ -71,4 +71,10 @@ public class SingleVoteTableData implements ITableDataProvider
         tablerrowsorter.setComparator(2, new GenericComparator<Integer>());
         return tablerrowsorter;
     }
+
+    @Override
+    public int[] getPreferredTableWidth(UneditableTableModel tablemodel)
+    {
+        return new int[] { 150, 80, 100 };
+    }
 }

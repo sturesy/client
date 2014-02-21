@@ -116,6 +116,10 @@ public class AbstractQuestionLoadDialogController
                 }
                 setNewQuestionSetNamesToLoadDialog(newQuestionListContent);
             }
+            else
+            {
+                setNewQuestionSetNamesToLoadDialog(new ArrayList<String>());
+            }
         }
     }
 

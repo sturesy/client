@@ -165,19 +165,29 @@ public class SubsettedJListPair extends SubsettedListPairObservable
 
     public void subsetSourceListKeyEvent(int keyCode)
     {
-        boolean keyUpOrDown = isKeyUpOrDown(keyCode);
-        if (keyUpOrDown)
+        if (isKeyUpOrDown(keyCode))
         {
             informSourceListChanged(true);
+        }
+        else if (keyCode == KeyEvent.VK_RIGHT)
+        {
+            _ui.requestFocusContentList();
         }
         informSourceListKeyEvent(keyCode);
     }
 
     private boolean isKeyUpOrDown(int keyCode)
     {
-        boolean isKeyUp = keyCode == KeyEvent.VK_UP;
-        boolean isKeyDown = keyCode == KeyEvent.VK_DOWN;
-        return isKeyUp || isKeyDown;
+        return keyCode == KeyEvent.VK_UP || keyCode == KeyEvent.VK_DOWN;
+    }
+
+    public void subsetContentListKeyEvent(int keyCode)
+    {
+        if (keyCode == KeyEvent.VK_LEFT)
+        {
+            _ui.requestFocusSourceList();
+        }
+        informContentListKeyEvent(keyCode);
     }
 
     /**
@@ -203,7 +213,7 @@ public class SubsettedJListPair extends SubsettedListPairObservable
         {
             public void keyReleased(KeyEvent keyEvent)
             {
-                informContentListKeyEvent(keyEvent.getKeyCode());
+                subsetContentListKeyEvent(keyEvent.getKeyCode());
             }
         });
         _ui.getSourceList().addListSelectionListener(new ListSelectionListener()

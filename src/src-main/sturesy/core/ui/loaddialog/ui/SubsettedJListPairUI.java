@@ -231,4 +231,21 @@ public class SubsettedJListPairUI
         int contentSelectionIndex = _contentList.getSelectedIndex();
         return sourceSelectionIndex != -1 && contentSelectionIndex != -1;
     }
+
+    /**
+     * Tells the Sourcelist to request focus
+     */
+    public void requestFocusSourceList()
+    {
+        _sourceList.requestFocus();
+    }
+
+    /**
+     * Tells the Content list to request focus
+     */
+    public void requestFocusContentList()
+    {
+        _contentList.requestFocus();
+    }
+
 }

@@ -286,7 +286,7 @@ public class QuestionEditor implements Controller
                 _gui.getQuestionJList().setSelectedIndex(0);
                 _editPanel.updateQuestionModel(_questionSet.getQuestionModels().get(0));
 
-                _gui.repaint();
+                _gui.getFrame().repaint();
             }
         }
     }
@@ -411,7 +411,7 @@ public class QuestionEditor implements Controller
         if (dialog.isFileLoaded())
         {
             QuestionImportController controller = new QuestionImportController(dialog.getLoadedQuestionSet());
-            controller.displayController(_gui, null);
+            controller.displayController(_gui.getFrame(), null);
 
             if (controller.isLoadButtonPressed())
             {
@@ -451,7 +451,7 @@ public class QuestionEditor implements Controller
         VotingController votingpreview;
         votingpreview = new VotingController(null);
         votingpreview.setQuestionSet(_questionSet, null, null, null);
-        votingpreview.displayController(_gui, null);
+        votingpreview.displayController(_gui.getFrame(), null);
     }
 
     private boolean canMoveDown(int index)
@@ -465,29 +465,29 @@ public class QuestionEditor implements Controller
     private void windowIsClosing()
     {
         Settings settings = _settings;
-        settings.setProperty(Settings.QUESTIONEDITORSIZE, _gui.getSize());
+        settings.setProperty(Settings.QUESTIONEDITORSIZE, _gui.getFrame().getSize());
         settings.setProperty(Settings.QUESTIONEDITORDIVIDER, _gui.getSplitPaneDividerLocation());
         settings.save();
     }
 
     public void setVisible(boolean b)
     {
-        _gui.setVisible(b);
+        _gui.getFrame().setVisible(b);
     }
 
     public JFrame getFrame()
     {
-        return _gui;
+        return _gui.getFrame();
     }
 
     @Override
     public void displayController(Component relativeTo, WindowListener listener)
     {
 
-        _gui.setSize(_settings.getDimension(Settings.QUESTIONEDITORSIZE));
-        _gui.setLocationRelativeTo(relativeTo);
+        _gui.getFrame().setSize(_settings.getDimension(Settings.QUESTIONEDITORSIZE));
+        _gui.getFrame().setLocationRelativeTo(relativeTo);
         setVisible(true);
-        _gui.addWindowListener(listener);
+        _gui.getFrame().addWindowListener(listener);
     }
 
     /**
@@ -537,7 +537,7 @@ public class QuestionEditor implements Controller
                 getMoveQuestionUpAction();
             }
         });
-        _gui.addWindowListener(new WindowAdapter()
+        _gui.getFrame().addWindowListener(new WindowAdapter()
         {
             public void windowClosing(WindowEvent e)
             {

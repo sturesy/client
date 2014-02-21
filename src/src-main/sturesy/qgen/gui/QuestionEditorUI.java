@@ -41,6 +41,7 @@ import sturesy.Macintosh;
 import sturesy.core.Localize;
 import sturesy.core.backend.Loader;
 import sturesy.core.ui.JGap;
+import sturesy.core.ui.SFrame;
 import sturesy.core.ui.VerticalLayout;
 
 /**
@@ -49,10 +50,13 @@ import sturesy.core.ui.VerticalLayout;
  * @author w.posdorfer
  * 
  */
-public class QuestionEditorUI extends JFrame
+public class QuestionEditorUI
 {
 
     private static final long serialVersionUID = -1532068724096551094L;
+
+    private JFrame _frame;
+
     private JLabel _questionTitle;
     private JList _questionJList;
     private JButton _plusbutton;
@@ -78,9 +82,11 @@ public class QuestionEditorUI extends JFrame
      */
     public QuestionEditorUI(DefaultListModel listmodel, JPanel editpanel, int dividerlocation)
     {
-        Macintosh.enableFullScreen(this);
-        setIconImage(Loader.getImageIcon(Loader.IMAGE_STURESY).getImage());
-        setTitle(Localize.getString(Localize.QUESTIONEDITOR));
+        _frame = new SFrame();
+
+        Macintosh.enableFullScreen(_frame);
+        _frame.setIconImage(Loader.getImageIcon(Loader.IMAGE_STURESY).getImage());
+        _frame.setTitle(Localize.getString(Localize.QUESTIONEDITOR));
 
         JPanel leftpanel = setupLeftPanel(listmodel);
 
@@ -91,10 +97,10 @@ public class QuestionEditorUI extends JFrame
         _splitpane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftpanel, editpanel);
         _splitpane.setDividerLocation(dividerlocation);
 
-        setLayout(new BorderLayout());
+        _frame.setLayout(new BorderLayout());
 
-        add(_splitpane, BorderLayout.CENTER);
-        add(southpanel, BorderLayout.SOUTH);
+        _frame.add(_splitpane, BorderLayout.CENTER);
+        _frame.add(southpanel, BorderLayout.SOUTH);
 
         setUpMenuBar();
     }
@@ -126,7 +132,7 @@ public class QuestionEditorUI extends JFrame
         menubar.add(fileMenu);
         menubar.add(importMenu);
         menubar.add(previewMenu);
-        setJMenuBar(menubar);
+        _frame.setJMenuBar(menubar);
     }
 
     /**
@@ -291,5 +297,13 @@ public class QuestionEditorUI extends JFrame
     public enum MenuItems
     {
         SAVEQUESTIONSET, LOADQUESTIONSET, NEWQUESTIONSET, IMPORTQUESTIONSET, IMPORTQUESTION, IMPORTQTI, PREVIEWQUESTION;
+    }
+
+    /**
+     * @return the frame containing elements
+     */
+    public JFrame getFrame()
+    {
+        return _frame;
     }
 }

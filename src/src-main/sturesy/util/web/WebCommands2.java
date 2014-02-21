@@ -30,6 +30,8 @@ import java.net.URLEncoder;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -39,9 +41,11 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.json.JSONObject;
 
 import sturesy.core.Log;
+import sturesy.core.ui.HTMLStripper;
 import sturesy.items.MultipleChoiceQuestion;
 import sturesy.items.QuestionModel;
 import sturesy.items.SingleChoiceQuestion;
@@ -87,11 +91,11 @@ public class WebCommands2
 
         return sendJSONObject(url, js, password);
     }
-    
+
     public static String redeemToken(String url, String token)
     {
         JSONObject js = new JSONObject();
-        js.put("token",token);
+        js.put("token", token);
         js.put("command", "redeem");
         js.put("time", System.currentTimeMillis() / 1000);
 
@@ -106,8 +110,15 @@ public class WebCommands2
         js.put("time", System.currentTimeMillis() / 1000);
 
         js.put("type", model.getType());
-        js.put("question", model.getQuestion());
-        js.put("answers", model.getAnswers());
+
+        js.put("question", prepareForSend(model.getQuestion()));
+
+        List<String> newAnswers = new ArrayList<String>();
+        for (String s : model.getAnswers())
+        {
+            newAnswers.add(prepareForSend(s));
+        }
+        js.put("answers", newAnswers);
         js.put("correct", model.hasCorrectAnswer());
 
         if (model instanceof MultipleChoiceQuestion)
@@ -118,7 +129,7 @@ public class WebCommands2
         else if (model instanceof TextQuestion)
         {
             TextQuestion tq = (TextQuestion) model;
-            js.put("answer", tq.getAnswer());
+            js.put("answer", prepareForSend(tq.getAnswer()));
         }
         else if (model instanceof SingleChoiceQuestion)
         {
@@ -263,6 +274,11 @@ public class WebCommands2
             Log.error(e);
             return "";
         }
+    }
+
+    public static String prepareForSend(String s)
+    {
+        return StringEscapeUtils.unescapeHtml4(HTMLStripper.stripHTML2(s));
     }
 
     /**

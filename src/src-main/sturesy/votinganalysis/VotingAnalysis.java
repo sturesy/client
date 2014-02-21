@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.JFrame;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
@@ -240,9 +241,9 @@ public class VotingAnalysis implements Controller
         }
     }
 
-    public VotingAnalysisUI getFrame()
+    public JFrame getFrame()
     {
-        return _frame;
+        return _frame.getFrame();
     }
 
     @Override
@@ -282,11 +283,11 @@ public class VotingAnalysis implements Controller
                 exportCSV();
             }
         });
-        _frame.addWindowListener(new WindowAdapter()
+        _frame.getFrame().addWindowListener(new WindowAdapter()
         {
             public void windowClosing(WindowEvent e)
             {
-                Settings.getInstance().setProperty(Settings.EVALUATEWINDOWSIZE, _frame.getSize());
+                Settings.getInstance().setProperty(Settings.EVALUATEWINDOWSIZE, _frame.getFrame().getSize());
             }
         });
     }

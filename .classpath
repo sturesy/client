@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src/hittplugin/src"/>
+	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="src" path="src/testplugin/src"/>
 	<classpathentry kind="src" path="src/updater"/>
 	<classpathentry kind="src" path="src/src-main"/>
@@ -18,5 +19,7 @@
 	<classpathentry kind="lib" path="include/commons-codec-1.7.jar"/>
 	<classpathentry kind="lib" path="include/commons-collections-3.2.1.jar"/>
 	<classpathentry kind="lib" path="include/commons-lang3-3.1.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="include/mockito-all-1.9.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

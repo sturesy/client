@@ -48,7 +48,7 @@ import sturesy.services.TechnicalVotingServiceImpl;
 import sturesy.services.TimeSource;
 import sturesy.services.VotingTimeListener;
 import sturesy.util.Settings;
-import sturesy.util.web.WebCommands;
+import sturesy.util.web.WebCommands2;
 import sturesy.util.web.WebVotingHandler;
 import sturesy.voting.gui.QRWindowUI;
 import sturesy.voting.gui.VotingUI;
@@ -158,11 +158,12 @@ public class VotingController implements Injectable, TimeSource, VotingTimeListe
         else if (lectureID == WebVotingHandler.NOLECTUREID)
         {
             _gui.setTitle("StuReSy");
+            _gui.getShowQRButton().setVisible(false);
         }
         else
         {
             _gui.setTitle("StuReSy - " + _settings.getString(Settings.CLIENTADDRESS) + "?lecture="
-                    + WebCommands.encode(lectureID.getLectureID()));
+                    + WebCommands2.encode(lectureID.getLectureID()));
         }
         _lectureID = lectureID;
         _lecturefile = lecturefile;

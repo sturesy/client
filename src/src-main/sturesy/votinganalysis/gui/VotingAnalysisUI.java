@@ -38,20 +38,23 @@ import sturesy.core.Localize;
 import sturesy.core.backend.Loader;
 import sturesy.core.ui.JGap;
 import sturesy.core.ui.MessageWindow;
+import sturesy.core.ui.SFrame;
 
 /**
  * Graphical component of the voting analysis
  * 
  * @author w.posdorfer
  */
-public class VotingAnalysisUI extends JFrame
+public class VotingAnalysisUI
 {
-
-    private static final long serialVersionUID = 8859194873010623035L;
     /**
      * Iconsize for Icons {@value #ICONSIZE}
      */
     private static final int ICONSIZE = 16;
+    /**
+     * The JFrame containing everything
+     */
+    private JFrame _frame;
     /**
      * The "Next Question" Button
      */
@@ -97,9 +100,11 @@ public class VotingAnalysisUI extends JFrame
      */
     public VotingAnalysisUI(int qamount, JPanel evalp, JPanel timechart)
     {
-        Macintosh.enableFullScreen(this);
-        setIconImage(Loader.getImageIcon(Loader.IMAGE_STURESY).getImage());
-        setLayout(new BorderLayout());
+        _frame = new SFrame();
+
+        Macintosh.enableFullScreen(_frame);
+        _frame.setIconImage(Loader.getImageIcon(Loader.IMAGE_STURESY).getImage());
+        _frame.setLayout(new BorderLayout());
         JPanel toolbarpanel = new JPanel();
         _nextButton = new JButton(Loader.getImageIconResized(Loader.IMAGE_NEXT, ICONSIZE, ICONSIZE, Image.SCALE_SMOOTH));
         _previousButton = new JButton(Loader.getImageIconResized(Loader.IMAGE_PREVIOUS, ICONSIZE, ICONSIZE,
@@ -139,8 +144,8 @@ public class VotingAnalysisUI extends JFrame
         scrollpaneView.add(_exportCSV, "align center");
         scrollpaneView.add(tablePanel, "grow");
 
-        add(toolbarpanel, BorderLayout.NORTH);
-        add(_centerPanel, BorderLayout.CENTER);
+        _frame.add(toolbarpanel, BorderLayout.NORTH);
+        _frame.add(_centerPanel, BorderLayout.CENTER);
     }
 
     /**
@@ -267,14 +272,23 @@ public class VotingAnalysisUI extends JFrame
     public File acceptSaveFromUser()
     {
         JFileChooser jfc = new JFileChooser();
-
-        jfc.showSaveDialog(this);
-
+        jfc.showSaveDialog(_frame);
         return jfc.getSelectedFile();
     }
 
+    /**
+     * Shows an error-message
+     * 
+     * @param message
+     *            the message to display
+     */
     public void showMessageWindowError(String message)
     {
         MessageWindow.showMessageWindowError(message, 1500);
+    }
+
+    public JFrame getFrame()
+    {
+        return _frame;
     }
 }

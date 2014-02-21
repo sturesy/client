@@ -74,7 +74,6 @@ public class MainScreen extends WindowAdapter
     private QuestionEditor _qgen;
     private SettingsController _settingswindow;
     private VotingController _votingwindow;
-    private VotingAnalysis _votinganalysis;
 
     public MainScreen()
     {
@@ -306,23 +305,14 @@ public class MainScreen extends WindowAdapter
      */
     private void getEvaluateAction()
     {
-        if (_votinganalysis == null)
-        {
-            File lecturesDirectory = SturesyManager.getLecturesDirectory();
-            AnalysisLoadDialog dialog = new AnalysisLoadDialog(lecturesDirectory);
-            dialog.show();
+        File lecturesDirectory = SturesyManager.getLecturesDirectory();
+        AnalysisLoadDialog dialog = new AnalysisLoadDialog(lecturesDirectory);
+        dialog.show();
 
-            if (dialog.getLoadedQuestionSet() != null && dialog.getVotes() != null)
-            {
-                _votinganalysis = new VotingAnalysis(dialog.getLoadedQuestionSet(), dialog.getVotes());
-
-                _votinganalysis.displayController(_gui, this);
-                _gui.setVisible(false);
-            }
-        }
-        else
+        if (dialog.getLoadedQuestionSet() != null && dialog.getVotes() != null)
         {
-            _votinganalysis.getFrame().toFront();
+            VotingAnalysis va = new VotingAnalysis(dialog.getLoadedQuestionSet(), dialog.getVotes());
+            va.displayController(_gui, this);
         }
     }
 
@@ -453,10 +443,6 @@ public class MainScreen extends WindowAdapter
         if (_qgen != null && e.getSource() == _qgen.getFrame())
         {
             _qgen = null;
-        }
-        else if (_votinganalysis != null && e.getSource() == _votinganalysis.getFrame())
-        {
-            _votinganalysis = null;
         }
         else if (_votingwindow != null && e.getSource() == _votingwindow.getFrame())
         {

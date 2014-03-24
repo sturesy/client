@@ -2,3 +2,7 @@
 /target
 /bin
 /.settings
+/logs
+/plugins
+/sturesy.properties
+/lid.xml

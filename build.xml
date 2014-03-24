@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
  * StuReSy - Student Response System
- * Copyright (C) 2012-2013  StuReSy-Team
+ * Copyright (C) 2012-2014  StuReSy-Team
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -409,7 +409,7 @@
 		           taskname="${name}"
 		           identifier="${name.lowercase}"
 		           mainclassname="${main.class}"
-		           copyright="2012-2013 StuReSy-Team"
+		           copyright="2012-2014 StuReSy-Team"
 		           icon="${src}/../resource/image/sturesy.icns"
 		           shortversion="${version}">
 			<option value="-Dapple.laf.useScreenMenuBar=true" />
@@ -432,7 +432,7 @@
 			icon="${src}/../resource/image/sturesy.icns" 
 			version="${version}" build="${today}" 
 			infostring="${version}" 
-			copyright="2012-2013 StuReSy-Team" 
+			copyright="2012-2014 StuReSy-Team" 
 			bundleid="sturesy" 
 			developmentregion="English" 
 			jvmversion="1.5+" 

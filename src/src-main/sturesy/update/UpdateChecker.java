@@ -31,7 +31,7 @@ import sturesy.core.Localize;
 import sturesy.core.Log;
 import sturesy.util.Settings;
 import sturesy.util.Version;
-import sturesy.util.web.WebCommands;
+import sturesy.util.web.WebCommands2;
 
 /**
  * Checks if updates are available
@@ -46,7 +46,6 @@ public class UpdateChecker
 
     private UpdateInfos _updateinfos = new UpdateInfos();
 
-
     /**
      * Query Server for updates
      * 
@@ -56,8 +55,10 @@ public class UpdateChecker
      */
     public void checkForUpdate(boolean silent)
     {
-        String result = WebCommands.sendPost(UPDATECHECKURL, "");
+        String result = WebCommands2.sendPost(UPDATECHECKURL, "", "");
 
+        System.out.println(result);
+        
         markLastUpdate();
 
         StringReader reader = new StringReader(result);
@@ -130,7 +131,7 @@ public class UpdateChecker
                 {
                     _updateinfos._mirrorList.add(xpp.nextText());
                 }
-                else if(name.equals("mac.download"))
+                else if (name.equals("mac.download"))
                 {
                     _updateinfos._macDownloadURL = xpp.nextText();
                 }

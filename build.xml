@@ -23,7 +23,7 @@
 	<property name="name" value="StuReSy"/>
 	<property name="name.lowercase" value="sturesy"/>
 	<property name="main.class" value="sturesy.Startup"/>
-	<property name="version" value="0.5.3" />
+	<property name="version" value="0.6.0" />
 	<property name="src" value="${basedir}/src/src-main/" />
 	<property name="testsrc" value="${basedir}/test" />
 	<property name="target" value="${basedir}/target" />

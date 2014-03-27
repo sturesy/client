@@ -57,8 +57,6 @@ public class UpdateChecker
     {
         String result = WebCommands2.sendPost(UPDATECHECKURL, "", "");
 
-        System.out.println(result);
-        
         markLastUpdate();
 
         StringReader reader = new StringReader(result);

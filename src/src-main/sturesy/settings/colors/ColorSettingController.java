@@ -18,8 +18,6 @@
 package sturesy.settings.colors;
 
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -127,13 +125,7 @@ public class ColorSettingController implements ISettingsScreen
             });
         }
 
-        _ui.getRestoreDefaults().addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                restoreDefaults();
-            }
-        });
+        _ui.getRestoreDefaults().addActionListener(e -> restoreDefaults());
     }
 
     private abstract class MouseClick extends MouseAdapter

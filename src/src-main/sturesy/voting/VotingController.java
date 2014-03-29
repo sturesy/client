@@ -20,8 +20,6 @@ package sturesy.voting;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -455,62 +453,13 @@ public class VotingController implements Injectable, TimeSource, VotingTimeListe
                 votingWindowClosing();
             }
         });
-        _gui.getToggleShowCorrectAnswer().addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                toggleShowCorrectAnswer();
-            }
-        });
-        _gui.getToggleQuestionChart().addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                showQuestionChartAction();
-            }
-        });
-        _gui.getNextQButton().addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                getNextAction();
-            }
-        });
-        _gui.getPrevQButton().addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                getPreviousAction();
-            }
-        });
-        _gui.getStartStopButton().addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                votingStartStopAction();
-            }
-        });
-        _gui.getShowQRButton().addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                showQRAction();
-            }
-        });
-        _gui.getClearVotesButton().addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                clearVotingsAction();
-            }
-        });
+        _gui.getToggleShowCorrectAnswer().addActionListener(e -> toggleShowCorrectAnswer());
+        _gui.getToggleQuestionChart().addActionListener(e -> showQuestionChartAction());
+        _gui.getNextQButton().addActionListener(e -> getNextAction());
+        _gui.getPrevQButton().addActionListener(e -> getPreviousAction());
+        _gui.getStartStopButton().addActionListener(e -> votingStartStopAction());
+        _gui.getShowQRButton().addActionListener(e -> showQRAction());
+        _gui.getClearVotesButton().addActionListener(e -> clearVotingsAction());
         _votingService.registerTimeListener(this);
     }
 }

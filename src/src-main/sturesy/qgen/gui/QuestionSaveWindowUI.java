@@ -22,8 +22,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.io.File;
 
@@ -115,141 +113,110 @@ public class QuestionSaveWindowUI extends JDialog
         add(titlefieldpanel, BorderLayout.CENTER);
         add(southpanel, BorderLayout.SOUTH);
 
-        plusButton.addActionListener(getPlusButtonAction());
-        minusButton.addActionListener(getMinusButtonAction());
-        saveButton.addActionListener(getSaveButtonAction());
-        cancelButton.addActionListener(getCancelButtonAction());
+        plusButton.addActionListener(e -> plusButtonAction());
+        minusButton.addActionListener(e -> minusButtonAction());
+        saveButton.addActionListener(e -> saveButtonAction());
+        cancelButton.addActionListener(e -> cancelButtonAction());
 
         this.pack();
         setModal(true);
     }
 
-    private ActionListener getCancelButtonAction()
+    /**
+     * Action on cancelbutton<br>
+     * disposes this window
+     */
+    private void cancelButtonAction()
     {
-
-        return new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                QuestionSaveWindowUI.this.dispose();
-            }
-        };
+        dispose();
     }
 
     /**
      * Adds a new Lecture to the maindirectory
      */
-    private ActionListener getPlusButtonAction()
+    private void plusButtonAction()
     {
-        return new ActionListener()
+        String str = JOptionPane.showInputDialog(QuestionSaveWindowUI.this,
+                Localize.getString("label.provide.lecture.name"), Localize.getString("label.lecture"), 1);
+
+        File f = new File(_lecturesDirectory + "/" + str);
+
+        if (str == null)
+            return;
+
+        while (f.exists())
         {
+            str = JOptionPane.showInputDialog(QuestionSaveWindowUI.this,
+                    Localize.getString("label.provide.lecture.name.another", str),
+                    Localize.getString("label.lecture.random.name"), 1);
 
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                String str = JOptionPane.showInputDialog(QuestionSaveWindowUI.this,
-                        Localize.getString("label.provide.lecture.name"), Localize.getString("label.lecture"), 1);
+            if (str == null)
+                return;
 
-                File f = new File(_lecturesDirectory + "/" + str);
+            f = new File(_lecturesDirectory + "/" + str);
+        }
+        f.mkdir();
+        _lecturelistmodel.addElement(f.getName());
+        _lecturelist.setSelectedValue(f.getName(), true);
 
-                if (str == null)
-                    return;
-
-                while (f.exists())
-                {
-                    str = JOptionPane.showInputDialog(QuestionSaveWindowUI.this,
-                            Localize.getString("label.provide.lecture.name.another", str),
-                            Localize.getString("label.lecture.random.name"), 1);
-
-                    if (str == null)
-                        return;
-
-                    f = new File(_lecturesDirectory + "/" + str);
-                }
-                f.mkdir();
-                _lecturelistmodel.addElement(f.getName());
-                _lecturelist.setSelectedValue(f.getName(), true);
-
-            }
-        };
     }
 
     /**
      * Removes selected Lecture from Directory, also deleting all of its
      * contents
      */
-    private ActionListener getMinusButtonAction()
+    private void minusButtonAction()
     {
-        return new ActionListener()
+        int result = JOptionPane.showConfirmDialog(QuestionSaveWindowUI.this,
+                Localize.getString("label.confirm.deletion"), Localize.getString("label.title.confirm.deletion"),
+                JOptionPane.YES_NO_OPTION);
+
+        if (result == JOptionPane.YES_OPTION)
         {
+            String name = (String) _lecturelist.getSelectedValue();
 
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                int result = JOptionPane.showConfirmDialog(QuestionSaveWindowUI.this,
-                        Localize.getString("label.confirm.deletion"),
-                        Localize.getString("label.title.confirm.deletion"), JOptionPane.YES_NO_OPTION);
-
-                if (result == JOptionPane.YES_OPTION)
-                {
-                    String name = (String) _lecturelist.getSelectedValue();
-
-                    File deleteFile = new File(_lecturesDirectory + "/" + name);
-                    if (deleteFile.exists())
-                        deleteFile.delete();
-                    _lecturelistmodel.removeElement(_lecturelist.getSelectedValue());
-                    _lecturelist.setSelectedIndex(0);
-                }
-            }
-        };
+            File deleteFile = new File(_lecturesDirectory + "/" + name);
+            if (deleteFile.exists())
+                deleteFile.delete();
+            _lecturelistmodel.removeElement(_lecturelist.getSelectedValue());
+            _lecturelist.setSelectedIndex(0);
+        }
     }
 
     /**
      * Saves the given Questionset by its name and selected Lecture, also
      * closing this window
      */
-    private ActionListener getSaveButtonAction()
+    private void saveButtonAction()
     {
-        return new ActionListener()
+        if (_lecturelist.getSelectedIndex() == -1)
         {
+            MessageWindow.showMessageWindowError(Localize.getString("error.select.lecture"), 1500);
+            return;
+        }
+        if (_titleField.getText().length() == 0)
+        {
+            MessageWindow.showMessageWindowError(Localize.getString("error.input.name"), 1500);
+            return;
+        }
 
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
+        String title = _titleField.getText().endsWith(".xml") ? _titleField.getText() : _titleField.getText() + ".xml";
+        _savedFile = new File(_lecturesDirectory + "/" + _lecturelist.getSelectedValue() + "/" + title);
 
-                if (_lecturelist.getSelectedIndex() == -1)
-                {
-                    MessageWindow.showMessageWindowError(Localize.getString("error.select.lecture"), 1500);
-                    return;
-                }
-                if (_titleField.getText().length() == 0)
-                {
-                    MessageWindow.showMessageWindowError(Localize.getString("error.input.name"), 1500);
-                    return;
-                }
+        try
+        {
+            QuestionCRUDService questionWriter = new QuestionCRUDService();
+            questionWriter.createAndUpdateQuestionSet(_savedFile, _questionSet);
+            MessageWindow.showMessageWindowSuccess(Localize.getString("message.save.questionset"), 1500);
+        }
+        catch (Exception e1)
+        {
+            MessageWindow.showMessageWindow(Localize.getString("error.save.questionset"), 2000, Color.RED);
+            Log.error("Error saving Questionset", e1);
+        }
 
-                String title = _titleField.getText().endsWith(".xml") ? _titleField.getText() : _titleField.getText()
-                        + ".xml";
-                _savedFile = new File(_lecturesDirectory + "/" + _lecturelist.getSelectedValue() + "/" + title);
-
-                try
-                {
-                    QuestionCRUDService questionWriter = new QuestionCRUDService();
-                    questionWriter.createAndUpdateQuestionSet(_savedFile, _questionSet);
-                    MessageWindow.showMessageWindowSuccess(Localize.getString("message.save.questionset"), 1500);
-                }
-                catch (Exception e1)
-                {
-                    MessageWindow.showMessageWindow(Localize.getString("error.save.questionset"), 2000, Color.RED);
-                    Log.error("Error saving Questionset", e1);
-                }
-
-                WindowEvent wev = new WindowEvent(QuestionSaveWindowUI.this, WindowEvent.WINDOW_CLOSING);
-                Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);
-
-            }
-        };
+        WindowEvent wev = new WindowEvent(QuestionSaveWindowUI.this, WindowEvent.WINDOW_CLOSING);
+        Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);
     }
 
     public File getFile()

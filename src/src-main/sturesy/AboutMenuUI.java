@@ -34,17 +34,26 @@ import sturesy.util.Settings;
  * @author w.posdorfer
  * 
  */
-public class AboutMenuUI extends JFrame
+public final class AboutMenuUI extends JFrame
 {
 
     private static final String SETTINGS_WINDOW_SIZE_PROPERTY = "settings.window.size";
     private static final long serialVersionUID = -7803978813785904826L;
 
+    /**
+     * private constructor
+     */
     private AboutMenuUI()
     {
         this(Settings.getInstance().getDimension(SETTINGS_WINDOW_SIZE_PROPERTY));
     }
 
+    /**
+     * create an aboutmenu
+     * 
+     * @param d
+     *            with this size
+     */
     private AboutMenuUI(Dimension d)
     {
         About about = new About(d);

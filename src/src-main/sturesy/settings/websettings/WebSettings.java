@@ -18,8 +18,6 @@
 package sturesy.settings.websettings;
 
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.net.MalformedURLException;
@@ -193,13 +191,7 @@ public class WebSettings implements ISettingsScreen
      */
     private void registerListeners()
     {
-        _gui.getServerCorrect().addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                checkHost();
-            }
-        });
+        _gui.getServerCorrect().addActionListener(e -> checkHost());
         _gui.getServerField().addKeyListener(new KeyAdapter()
         {
             public void keyReleased(KeyEvent e)

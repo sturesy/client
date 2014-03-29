@@ -21,8 +21,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -55,21 +53,8 @@ public class ColorPickerFrame
         southpanel.add(cancelButton);
         _dialog.add(southpanel, BorderLayout.SOUTH);
 
-        saveButton.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                buttonClicked(true);
-            }
-        });
-        cancelButton.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                buttonClicked(false);
-            }
-        });
-
+        saveButton.addActionListener(e -> buttonClicked(true));
+        cancelButton.addActionListener(e -> buttonClicked(false));
     }
 
     private void buttonClicked(boolean save)

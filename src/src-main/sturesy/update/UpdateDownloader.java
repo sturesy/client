@@ -20,8 +20,6 @@ package sturesy.update;
 import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -216,7 +214,7 @@ public class UpdateDownloader implements Controller
     /**
      * Action invoked on restart-button
      */
-    private void restartAction()
+    private void restartSystemAction()
     {
         try
         {
@@ -254,28 +252,21 @@ public class UpdateDownloader implements Controller
         _gui.getFrame().setVisible(true);
     }
 
+    private void restartButtonAction()
+    {
+        if (true) // TODO restart download action
+            restartSystemAction();
+        // else
+        // executeDownload();
+    }
+
     /**
      * Adds Listeners to gui-elements
      */
     private void addListeners()
     {
-        _gui.getCancelButton().addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                cancelAction();
-            }
-        });
-        _gui.getRestartButton().addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                if (true) // TODO restart download action
-                    restartAction();
-                else
-                    executeDownload();
-            }
-        });
+        _gui.getCancelButton().addActionListener(e -> cancelAction());
+        _gui.getRestartButton().addActionListener(e -> restartButtonAction());
         _gui.getFrame().addWindowListener(new WindowAdapter()
         {
             public void windowClosing(WindowEvent e)

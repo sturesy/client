@@ -19,7 +19,6 @@ package sturesy.qgen;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.HashMap;
@@ -214,24 +213,11 @@ public class EditQuestionController
      */
     private void addListeners()
     {
-        _gui.getResetButton().addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                resetButtonAction(e);
-            }
-        });
+        _gui.getResetButton().addActionListener(e -> resetButtonAction(e));
         new TextSelectionFocusListener(_gui.getQuestionField());
         new TextSelectionFocusListener(_gui.getDurationField());
         new FocusTransferalKeyListener(_gui.getQuestionField());
         _gui.getQuestionField().addFocusListener(_focusListener);
-
-        _gui.getHTMLButton().addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                showSHEFEditorAction(_focusListener.getComponent());
-            }
-        });
+        _gui.getHTMLButton().addActionListener(e -> showSHEFEditorAction(_focusListener.getComponent()));
     }
 }

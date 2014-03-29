@@ -175,21 +175,21 @@ public class QuestionEditor implements Controller
         {
             public void actionPerformed(ActionEvent e)
             {
-                addQuestionToList(new SingleChoiceQuestion());
+                addSingleChoice();
             }
         }));
         menu.add(new JMenuItem2(Localize.getString("label.multiple.choice"), new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
             {
-                addQuestionToList(new MultipleChoiceQuestion());
+                addMultipleChoice();
             }
         }));
         menu.add(new JMenuItem2(Localize.getString("label.text.choice"), new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
             {
-                addQuestionToList(new TextQuestion());
+                addTextQuestion();
             }
         }));
         menu.add(new JSeparator());
@@ -197,30 +197,60 @@ public class QuestionEditor implements Controller
         {
             public void actionPerformed(ActionEvent e)
             {
-                addQuestionToList(new SingleChoiceQuestion("", Arrays.asList(Localize.getString("label.yes"),
-                        Localize.getString("label.no")), QuestionModel.NOCORRECTANSWER, QuestionModel.UNLIMITED));
+                addLabelYesNoScale();
             }
         }));
         menu.add(new JMenuItem2(Localize.getString("label.num.scale"), new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
             {
-                addQuestionToList(new SingleChoiceQuestion("", Arrays.asList("1", "2", "3", "4", "5", "6"),
-                        QuestionModel.NOCORRECTANSWER, QuestionModel.UNLIMITED));
+                addNumberScale();
             }
         }));
         menu.add(new JMenuItem2(Localize.getString("label.likert.scale"), new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
             {
-                addQuestionToList(new SingleChoiceQuestion("", Arrays.asList(
-                        Localize.getString("label.likert.strong.disagree"),
-                        Localize.getString("label.likert.disagree"), Localize.getString("label.likert.medium"),
-                        Localize.getString("label.likert.agree"), Localize.getString("label.likert.strong.agree")),
-                        QuestionModel.NOCORRECTANSWER, QuestionModel.UNLIMITED));
+                addLikertScale();
             }
         }));
         menu.show(_gui.getPlusbutton(), _gui.getPlusbutton().getX(), _gui.getPlusbutton().getY());
+    }
+
+    private void addLikertScale()
+    {
+        addQuestionToList(new SingleChoiceQuestion("", Arrays.asList(
+                Localize.getString("label.likert.strong.disagree"), Localize.getString("label.likert.disagree"),
+                Localize.getString("label.likert.medium"), Localize.getString("label.likert.agree"),
+                Localize.getString("label.likert.strong.agree")), QuestionModel.NOCORRECTANSWER,
+                QuestionModel.UNLIMITED));
+    }
+
+    private void addNumberScale()
+    {
+        addQuestionToList(new SingleChoiceQuestion("", Arrays.asList("1", "2", "3", "4", "5", "6"),
+                QuestionModel.NOCORRECTANSWER, QuestionModel.UNLIMITED));
+    }
+
+    private void addTextQuestion()
+    {
+        addQuestionToList(new TextQuestion());
+    }
+
+    private void addMultipleChoice()
+    {
+        addQuestionToList(new MultipleChoiceQuestion());
+    }
+
+    private void addSingleChoice()
+    {
+        addQuestionToList(new SingleChoiceQuestion());
+    }
+
+    private void addLabelYesNoScale()
+    {
+        addQuestionToList(new SingleChoiceQuestion("", Arrays.asList(Localize.getString("label.yes"),
+                Localize.getString("label.no")), QuestionModel.NOCORRECTANSWER, QuestionModel.UNLIMITED));
     }
 
     private void addQuestionToList(QuestionModel question)
@@ -495,20 +525,8 @@ public class QuestionEditor implements Controller
      */
     private void addListeners()
     {
-        _gui.getPlusbutton().addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                getPlusButtonAction();
-            }
-        });
-        _gui.getMinusbutton().addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                getMinusButtonAction();
-            }
-        });
+        _gui.getPlusbutton().addActionListener(e -> getPlusButtonAction());
+        _gui.getMinusbutton().addActionListener(e -> getMinusButtonAction());
         _gui.getQuestionJList().addListSelectionListener(new ListSelectionListener()
         {
             public void valueChanged(ListSelectionEvent e)
@@ -523,20 +541,8 @@ public class QuestionEditor implements Controller
                 reactToQuestionListKeyEvent(e);
             }
         });
-        _gui.getMoveQuestionDown().addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                getMoveQuestionDownAction();
-            }
-        });
-        _gui.getMoveQuestionUp().addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                getMoveQuestionUpAction();
-            }
-        });
+        _gui.getMoveQuestionDown().addActionListener(e -> getMoveQuestionDownAction());
+        _gui.getMoveQuestionUp().addActionListener(e -> getMoveQuestionUpAction());
         _gui.getFrame().addWindowListener(new WindowAdapter()
         {
             public void windowClosing(WindowEvent e)
@@ -544,55 +550,13 @@ public class QuestionEditor implements Controller
                 windowIsClosing();
             }
         });
-        _gui.getMenuItem(MenuItems.LOADQUESTIONSET).addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                getLoadButtonAction();
-            }
-        });
-        _gui.getMenuItem(MenuItems.SAVEQUESTIONSET).addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                getSaveButtonAction(e);
-            }
-        });
-        _gui.getMenuItem(MenuItems.NEWQUESTIONSET).addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                getNewButtonAction();
-            }
-        });
-        _gui.getMenuItem(MenuItems.IMPORTQTI).addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                importQTIAction();
-            }
-        });
-        _gui.getMenuItem(MenuItems.IMPORTQUESTION).addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                importQuestionAction();
-            }
-        });
-        _gui.getMenuItem(MenuItems.IMPORTQUESTIONSET).addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                importQuestionSetAction();
-            }
-        });
-        _gui.getMenuItem(MenuItems.PREVIEWQUESTION).addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                previewQuestionAction();
-            }
-        });
+        _gui.getMenuItem(MenuItems.LOADQUESTIONSET).addActionListener(e -> getLoadButtonAction());
+        _gui.getMenuItem(MenuItems.SAVEQUESTIONSET).addActionListener(e -> getSaveButtonAction(e));
+        _gui.getMenuItem(MenuItems.NEWQUESTIONSET).addActionListener(e -> getNewButtonAction());
+        _gui.getMenuItem(MenuItems.IMPORTQTI).addActionListener(e -> importQTIAction());
+        _gui.getMenuItem(MenuItems.IMPORTQUESTION).addActionListener(e -> importQuestionAction());
+        _gui.getMenuItem(MenuItems.IMPORTQUESTIONSET).addActionListener(e -> importQuestionSetAction());
+        _gui.getMenuItem(MenuItems.PREVIEWQUESTION).addActionListener(e -> previewQuestionAction());
     }
 
 }

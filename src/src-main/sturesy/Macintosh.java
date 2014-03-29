@@ -231,4 +231,11 @@ public class Macintosh
             }
         }
     }
+
+    /**
+     * Utility Class
+     */
+    private Macintosh()
+    {
+    }
 }

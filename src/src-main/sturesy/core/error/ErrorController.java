@@ -17,8 +17,6 @@
  */
 package sturesy.core.error;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -102,12 +100,6 @@ public class ErrorController
      */
     private void registerListeners()
     {
-        _gui.getOkButton().addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                _gui.hideDialog();
-            }
-        });
+        _gui.getOkButton().addActionListener(e -> _gui.hideDialog());
     }
 }

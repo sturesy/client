@@ -6,3 +6,6 @@
 /plugins
 /sturesy.properties
 /lid.xml
+/src/hittplugin/target
+/src/testplugin/target
+/src/src-main-no-lambda

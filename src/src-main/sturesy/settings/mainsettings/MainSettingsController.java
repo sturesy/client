@@ -19,8 +19,6 @@ package sturesy.settings.mainsettings;
 
 import java.awt.Component;
 import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 
@@ -152,26 +150,8 @@ public class MainSettingsController extends ObservableMainSettings implements IS
     private void registerListeners()
     {
         _gui.getMainDirButton();
-        _gui.getMainDirButton().addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                selectMaindir();
-            }
-        });
-        _gui.getImportPlugin().addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                importPlugin();
-            }
-        });
-        _gui.getCheckForUpdates().addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                checkForUpdates();
-            }
-        });
+        _gui.getMainDirButton().addActionListener(e -> selectMaindir());
+        _gui.getImportPlugin().addActionListener(e -> importPlugin());
+        _gui.getCheckForUpdates().addActionListener(e -> checkForUpdates());
     }
 }

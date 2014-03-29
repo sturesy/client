@@ -25,8 +25,6 @@ import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.Toolkit;
 import java.awt.TrayIcon;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -160,34 +158,10 @@ public class MainScreen extends WindowAdapter
         MenuItem evaluatemenu = new MenuItem(Localize.getString(Localize.VOTINGANALYSIS));
         MenuItem settingsmenu = new MenuItem(Localize.getString(Localize.SETTINGS));
 
-        qgenmenu.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                getQuestionEditorAction();
-            }
-        });
-        votingmenu.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                getVotingAction();
-            }
-        });
-        evaluatemenu.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                getEvaluateAction();
-            }
-        });
-        settingsmenu.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                getSettingsAction();
-            }
-        });
+        qgenmenu.addActionListener(e -> getQuestionEditorAction());
+        votingmenu.addActionListener(e -> getVotingAction());
+        evaluatemenu.addActionListener(e -> getEvaluateAction());
+        settingsmenu.addActionListener(e -> getSettingsAction());
 
         return new MenuItem[] { votingmenu, evaluatemenu, qgenmenu, settingsmenu };
     }
@@ -208,19 +182,13 @@ public class MainScreen extends WindowAdapter
         }
 
         MenuItem update = new MenuItem(Localize.getString("label.update"));
-        update.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                new UpdateChecker().checkForUpdate(false);
-            }
-        });
+        update.addActionListener(e -> new UpdateChecker().checkForUpdate(false));
         menu.add(update);
 
         if (!Operatingsystem.isMac())
         {
             MenuItem about = new MenuItem("About");
-            about.addActionListener(getAboutAction());
+            about.addActionListener(e -> AboutMenuUI.showMenu());
             menu.add(about);
         }
 
@@ -252,21 +220,14 @@ public class MainScreen extends WindowAdapter
         {
             Log.error("Error setting SystemTrayicon", e);
         }
-        mainscreen.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                _gui.setVisible(true);
-            }
-        });
-        close.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                WindowEvent wev = new WindowEvent(_gui, WindowEvent.WINDOW_CLOSING);
-                Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);
-            }
-        });
+        mainscreen.addActionListener(e -> _gui.setVisible(true));
+        close.addActionListener(e -> closeWindow());
+    }
+
+    private void closeWindow()
+    {
+        WindowEvent wev = new WindowEvent(_gui, WindowEvent.WINDOW_CLOSING);
+        Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);
     }
 
     /**
@@ -387,54 +348,14 @@ public class MainScreen extends WindowAdapter
     }
 
     /**
-     * Opens the AboutMenu
-     * 
-     * @return
-     */
-    private ActionListener getAboutAction()
-    {
-        return new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                AboutMenuUI.showMenu();
-            }
-        };
-    }
-
-    /**
      * register Listeners for the JButtons of the Gui
      */
     private void registerListeners()
     {
-        _gui.getSettings().addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                getSettingsAction();
-            }
-        });
-        _gui.getVoting().addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                getVotingAction();
-            }
-        });
-        _gui.getEvaluate().addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                getEvaluateAction();
-            }
-        });
-        _gui.getQuestion().addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                getQuestionEditorAction();
-            }
-        });
+        _gui.getSettings().addActionListener(e -> getSettingsAction());
+        _gui.getVoting().addActionListener(e -> getVotingAction());
+        _gui.getEvaluate().addActionListener(e -> getEvaluateAction());
+        _gui.getQuestion().addActionListener(e -> getQuestionEditorAction());
     }
 
     @Override

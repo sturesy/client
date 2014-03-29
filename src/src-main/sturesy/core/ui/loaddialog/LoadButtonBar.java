@@ -17,8 +17,6 @@
  */
 package sturesy.core.ui.loaddialog;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 
 import javax.swing.JButton;
@@ -166,27 +164,13 @@ public class LoadButtonBar extends LoadButtonBarObservable
     {
         _filter = filter;
     }
-    
+
     /**
      * adds action listeners to the internal and external load button
      */
     private void registerListener()
     {
-       _ui.getLoadInternalFileButton().addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent arg0)
-            {
-                loadInternalFile();
-            }
-        });
-        _ui.getLoadExternalFileButton().addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                loadExternalFile();
-            }
-        });
+        _ui.getLoadInternalFileButton().addActionListener(e -> loadInternalFile());
+        _ui.getLoadExternalFileButton().addActionListener(e -> loadExternalFile());
     }
 }

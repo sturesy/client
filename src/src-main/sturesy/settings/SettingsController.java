@@ -20,8 +20,6 @@ package sturesy.settings;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -33,7 +31,6 @@ import java.util.Set;
 
 import javax.swing.JFrame;
 import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import org.apache.commons.collections.CollectionUtils;
 
@@ -131,6 +128,12 @@ public class SettingsController implements Controller
         }
     }
 
+    private void saveAndClose()
+    {
+        saveSettings(); // SAVE
+        cancel(); // CLOSE
+    }
+
     public void listSelectionChanged()
     {
         ISettingsScreen selectedSettingsScreenValue = (ISettingsScreen) _ui.getSelectedSettingsScreenValue();
@@ -150,35 +153,28 @@ public class SettingsController implements Controller
         _ui.show(listener, d, relativeTo);
     }
 
+    /**
+     * the action performed on a list selection change
+     * 
+     * @param e
+     *            some event
+     */
+    private void listSelectionChangedAction(ListSelectionEvent e)
+    {
+        if (e.getValueIsAdjusting() && _ui.getSelectedSettingsScreenValue() != null)
+        {
+            listSelectionChanged();
+        }
+    }
+
+    /**
+     * Registers Listeners
+     */
     private void registerListener()
     {
-        _ui.getSaveButton().addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                saveSettings();
-            }
-        });
-        _ui.getSaveAndCloseButton().addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                saveSettings(); // SAVE
-                cancel(); // CLOSE
-            }
-        });
-        _ui.getCancelButton().addActionListener(new ActionListener()
-        {
-
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                cancel();
-            }
-
-        });
+        _ui.getSaveButton().addActionListener(e -> saveSettings());
+        _ui.getSaveAndCloseButton().addActionListener(e -> saveAndClose());
+        _ui.getCancelButton().addActionListener(e -> cancel());
         _ui.getFrame().addWindowListener(new WindowAdapter()
         {
             @Override
@@ -188,17 +184,7 @@ public class SettingsController implements Controller
                 super.windowClosing(e);
             }
         });
-        _ui.getIconList().addListSelectionListener(new ListSelectionListener()
-        {
-            @Override
-            public void valueChanged(ListSelectionEvent e)
-            {
-                if (e.getValueIsAdjusting() && _ui.getSelectedSettingsScreenValue() != null)
-                {
-                    listSelectionChanged();
-                }
-            }
-        });
+        _ui.getIconList().addListSelectionListener(e -> listSelectionChangedAction(e));
     }
 
 }

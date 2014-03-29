@@ -19,8 +19,6 @@ package sturesy.settings.websettings;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Collection;
@@ -85,8 +83,7 @@ public class TokenRedemption
         {
             Settings settings = Settings.getInstance();
             String serverAddress = settings.getString(Settings.SERVERADDRESS);
-            String result = WebCommands2.redeemToken(serverAddress, _ui.getTokenfield()
-                    .getText());
+            String result = WebCommands2.redeemToken(serverAddress, _ui.getTokenfield().getText());
             try
             {
                 String name = result.split(";")[0];
@@ -137,20 +134,8 @@ public class TokenRedemption
                 }
             }
         });
-        _ui.getOkbutton().addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                okButtonAction();
-            }
-        });
-        _ui.getCancelButton().addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                cancelButtonAction();
-            }
-        });
+        _ui.getOkbutton().addActionListener(e -> okButtonAction());
+        _ui.getCancelButton().addActionListener(e -> cancelButtonAction());
     }
 
 }

@@ -18,8 +18,6 @@
 package sturesy.qgen.qimport;
 
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -105,20 +103,8 @@ public class QuestionImportController implements Controller
 
     private void registerListeners()
     {
-        _gui.getCancelButton().addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                buttonAction(false);
-            }
-        });
-        _gui.getLoadButton().addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                buttonAction(true);
-            }
-        });
+        _gui.getCancelButton().addActionListener(e -> buttonAction(false));
+        _gui.getLoadButton().addActionListener(e -> buttonAction(true));
         _gui.getDialog().addWindowListener(new WindowAdapter()
         {
             public void windowClosed(WindowEvent e)

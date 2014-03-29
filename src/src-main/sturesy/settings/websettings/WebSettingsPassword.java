@@ -19,7 +19,6 @@ package sturesy.settings.websettings;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
@@ -135,25 +134,23 @@ public class WebSettingsPassword
             JMenuItem deleteItem = new JMenuItem(Localize.getString("button.delete"));
 
             menu.add(deleteItem);
-            deleteItem.addActionListener(new ActionListener()
-            {
-                @SuppressWarnings("unchecked")
-                public void actionPerformed(ActionEvent e)
-                {
-
-                    String lid = (String) _ui.getTable().getValueAt(row, 0);
-                    String pw = (String) ((Vector<String>) ((DefaultTableModel) _ui.getTable().getModel())
-                            .getDataVector().elementAt(row)).elementAt(1);
-                    String url = (String) _ui.getTable().getValueAt(row, 2);
-
-                    _lectureIds.remove(new LectureID(lid, pw, url));
-                    ((PasswordTableModel) _ui.getTable().getModel()).removeRow(row);
-                    menu.setVisible(false);
-                }
-            });
+            deleteItem.addActionListener(f -> deleteLectureAction(row, menu));
 
             menu.show(e.getComponent(), e.getX(), e.getY());
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void deleteLectureAction(final int row, final JPopupMenu menu)
+    {
+        String lid = (String) _ui.getTable().getValueAt(row, 0);
+        String pw = (String) ((Vector<String>) ((DefaultTableModel) _ui.getTable().getModel()).getDataVector()
+                .elementAt(row)).elementAt(1);
+        String url = (String) _ui.getTable().getValueAt(row, 2);
+
+        _lectureIds.remove(new LectureID(lid, pw, url));
+        ((PasswordTableModel) _ui.getTable().getModel()).removeRow(row);
+        menu.setVisible(false);
     }
 
     /**
@@ -195,20 +192,8 @@ public class WebSettingsPassword
      */
     private void addListeners()
     {
-        _ui.getRedeemToken().addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                redeemTokenAction(e);
-            }
-        });
-        _ui.getManualAdd().addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                manualAdduttonAction(e);
-            }
-        });
+        _ui.getRedeemToken().addActionListener(e -> redeemTokenAction(e));
+        _ui.getManualAdd().addActionListener(e -> manualAdduttonAction(e));
         _ui.getPasswordVisibleBox().addItemListener(new ItemListener()
         {
             public void itemStateChanged(ItemEvent e)

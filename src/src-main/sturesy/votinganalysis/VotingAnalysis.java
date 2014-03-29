@@ -19,8 +19,6 @@ package sturesy.votinganalysis;
 
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -262,27 +260,9 @@ public class VotingAnalysis implements Controller
      */
     private void registerListeners()
     {
-        _frame.getNextButton().addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                nextButtonAction();
-            }
-        });
-        _frame.getPreviousButton().addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                previousButtonAction();
-            }
-        });
-        _frame.getExportCSV().addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                exportCSV();
-            }
-        });
+        _frame.getNextButton().addActionListener(e -> nextButtonAction());
+        _frame.getPreviousButton().addActionListener(e -> previousButtonAction());
+        _frame.getExportCSV().addActionListener(e -> exportCSV());
         _frame.getFrame().addWindowListener(new WindowAdapter()
         {
             public void windowClosing(WindowEvent e)

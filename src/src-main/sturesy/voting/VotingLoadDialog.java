@@ -17,8 +17,6 @@
  */
 package sturesy.voting;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
@@ -83,40 +81,7 @@ public class VotingLoadDialog extends AbstractQuestionLoadDialogController
         {
             final int ans = i;
             JMenuItem jmen = new JMenuItem(i + " " + Localize.getString("label.answers"));
-            jmen.addActionListener(new ActionListener()
-            {
-
-                @Override
-                public void actionPerformed(ActionEvent e)
-                {
-                    QuestionSet qset = new QuestionSet();
-
-                    SingleChoiceQuestion qmodel = new SingleChoiceQuestion();
-                    ArrayList<String> arrlist = new ArrayList<String>();
-                    for (int j = 0; j < ans; j++)
-                    {
-                        arrlist.add(Localize.getString("label.answer") + " " + (char) ('A' + j));
-                    }
-                    qmodel.setAnswers(arrlist);
-                    qset.addQuestionModel(qmodel);
-                    File f = new File(_lecturesDirectory + "/spontaneous.xml");
-                    if (!f.exists())
-                    {
-                        try
-                        {
-                            f.createNewFile();
-                        }
-                        catch (IOException e1)
-                        {
-                            Log.error("error creating spontanous.xml", e1);
-                        }
-                    }
-                    setLoadedFile(f);
-                    setLoadedQuestionSet(qset);
-                    jpop.setVisible(false);
-                    closeLoadDialog();
-                }
-            });
+            jmen.addActionListener(e -> jMenuActionSpontaneous(jpop, ans));
             jpop.add(jmen);
         }
         setLoadedDialogNonModal();
@@ -124,6 +89,41 @@ public class VotingLoadDialog extends AbstractQuestionLoadDialogController
         jpop.show(source, source.getX(), source.getY());
     }
 
+    private void jMenuActionSpontaneous(final JPopupMenu jpop, final int ans)
+    {
+        QuestionSet qset = new QuestionSet();
+
+        SingleChoiceQuestion qmodel = new SingleChoiceQuestion();
+        ArrayList<String> arrlist = new ArrayList<String>();
+        for (int j = 0; j < ans; j++)
+        {
+            arrlist.add(Localize.getString("label.answer") + " " + (char) ('A' + j));
+        }
+        qmodel.setAnswers(arrlist);
+        qset.addQuestionModel(qmodel);
+        File f = new File(_lecturesDirectory + "/spontaneous.xml");
+        if (!f.exists())
+        {
+            try
+            {
+                f.createNewFile();
+            }
+            catch (IOException e1)
+            {
+                Log.error("error creating spontanous.xml", e1);
+            }
+        }
+        setLoadedFile(f);
+        setLoadedQuestionSet(qset);
+        jpop.setVisible(false);
+        closeLoadDialog();
+    }
+
+    /**
+     * Get lectures for current Host
+     * 
+     * @return Vector of LectureIDs
+     */
     private Vector<LectureID> getLectures()
     {
         Vector<LectureID> result = new Vector<LectureID>();
@@ -159,20 +159,20 @@ public class VotingLoadDialog extends AbstractQuestionLoadDialogController
         return _labeledCombobox.getSelectedItem();
     }
 
+    /**
+     * Show this Dialog
+     */
     public void show()
     {
         showLoadDialog();
     }
 
+    /**
+     * Register Listeners
+     */
     private void registerListeners()
     {
-        _spontaneousButton.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                spontaneousAction((JButton) e.getSource());
-            }
-        });
+        _spontaneousButton.addActionListener(e -> spontaneousAction((JButton) e.getSource()));
         _labeledCombobox.addKeyListener(new KeyAdapter()
         {
             public void keyReleased(KeyEvent e)

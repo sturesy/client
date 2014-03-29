@@ -19,8 +19,6 @@ package sturesy.settings.websettings;
 
 import java.awt.Component;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
@@ -147,38 +145,24 @@ public class NewLectureController
 
     public void registerListeners()
     {
-        _ui.getConfirmButton().addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                confirmAction();
-            }
-        });
-        _ui.getCancelButton().addActionListener(new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                cancelAction();
-            }
-        });
+        _ui.getConfirmButton().addActionListener(e -> confirmAction());
+        _ui.getCancelButton().addActionListener(e -> cancelAction());
 
         KeyAdapter enterKeyAdapter = new KeyAdapter()
         {
             public void keyReleased(KeyEvent e)
             {
-                if(e.getKeyCode() == KeyEvent.VK_ENTER)
+                if (e.getKeyCode() == KeyEvent.VK_ENTER)
                 {
                     confirmAction();
                 }
-                else if(e.getKeyCode() == KeyEvent.VK_ESCAPE)
+                else if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
                 {
                     cancelAction();
                 }
             }
         };
-        
+
         _ui.getIdTextfield().addKeyListener(enterKeyAdapter);
         _ui.getPasswordTextfield().addKeyListener(enterKeyAdapter);
     }

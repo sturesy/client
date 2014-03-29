@@ -24,7 +24,8 @@
 	<property name="name.lowercase" value="sturesy"/>
 	<property name="main.class" value="sturesy.Startup"/>
 	<property name="version" value="0.6.0" />
-	<property name="src" value="${basedir}/src/src-main/" />
+	<property name="sourceWithLambda" value="${basedir}/src/src-main/" />
+	<property name="src" value="${basedir}/src/src-main-no-lambda/" />
 	<property name="testsrc" value="${basedir}/test" />
 	<property name="target" value="${basedir}/target" />
 	<property name="build" value="${target}/build" />
@@ -34,18 +35,12 @@
 	<property name="instrumented" value="${target}/instrumented" />
 	<property name="junit-rev" value="4.10" />
 	<property name="reports.dir" value="${target}/reports" />
-	<property name="report.cobertura.dir"
-	          value="${reports.dir}/coverage/withUI" />
-	<property name="report.cobertura.dir.withoutUI"
-	          value="${reports.dir}/coverage/withoutUI" />
-	<property name="report.cobertura.xml.dir"
-	          value="${report.cobertura.dir}/xml" />
-	<property name="report.cobertura.html.dir"
-	          value="${report.cobertura.dir}/html" />
-	<property name="report.cobertura.xml.dir.withoutUI"
-	          value="${report.cobertura.dir.withoutUI}/xml" />
-	<property name="report.cobertura.html.dir.withoutUI"
-	          value="${report.cobertura.dir.withoutUI}/html" />
+	<property name="report.cobertura.dir" value="${reports.dir}/coverage/withUI" />
+	<property name="report.cobertura.dir.withoutUI" value="${reports.dir}/coverage/withoutUI" />
+	<property name="report.cobertura.xml.dir" value="${report.cobertura.dir}/xml" />
+	<property name="report.cobertura.html.dir" value="${report.cobertura.dir}/html" />
+	<property name="report.cobertura.xml.dir.withoutUI" value="${report.cobertura.dir.withoutUI}/xml" />
+	<property name="report.cobertura.html.dir.withoutUI" value="${report.cobertura.dir.withoutUI}/html" />
 	<property name="report.junit.dir" value="${reports.dir}/junit" />
 
 	<property name="junit.package.exlcude" value="test/**" />
@@ -85,15 +80,23 @@
 	<target name="clean">
 		<delete includeemptydirs="true" failonerror="false">
 			<fileset dir="${build}" defaultexcludes="false" />
+			<fileset dir="${src}" defaultexcludes="false" />
 		</delete>
 	</target>
+	
+	<target name="replace.lambda" depends="clean">
+		<!-- Create the compatible source code -->
+		<java jar="include/replacelambda-0.0.1.jar" failonerror="true" fork="true">
+			<arg line="inputDir=${sourceWithLambda} outputDir=${src}"></arg>
+		</java>
+	</target>
 
-	<target name="checkstyle" depends="clean">
+	<target name="checkstyle" depends="replace.lambda,clean">
 		<taskdef resource="checkstyletask.properties"
 		         classpath="${checkstyle.dir}/checkstyle-5.6-all.jar" />
 		<mkdir dir="${reports.dir}" />
 		<checkstyle config="${checkstyle.dir}/checkstyle-config.xml"
-		            maxErrors="600">
+		            maxErrors="625">
 			<fileset dir="${src}"
 			         includes="**/*.java"
 			         excludes="**/*Test*.java **/VerticalLayout.java **/FileClassLoader.java"  />
@@ -101,13 +104,14 @@
 		</checkstyle>
 	</target>
 
-	<target name="javac" description="build classfiles" depends="checkstyle">
+	<target name="javac" description="build classfiles" depends="replace.lambda,checkstyle">
+		<!-- compile source code -->
 		<mkdir dir="${build}" />
 		<javac srcdir="${src}"
 		       destdir="${build}"
 		       debug="on"
-		       source="1.5"
-			   target="1.5"
+		       source="1.6"
+			   target="1.6"
 		       excludes="${junit.package.exlcude}"
 			   encoding="UTF-8"
 		       includeantruntime="false">
@@ -125,8 +129,8 @@
 		<javac srcdir="${src}"
 		       destdir="${test}"
 		       debug="on"
-		       source="1.5"
-			   target="1.5"
+		       source="1.6"
+			   target="1.6"
 		       excludes="${junit.package.exlcude}"
 			   encoding="UTF-8"
 		       includeantruntime="false">
@@ -445,7 +449,7 @@
 			vmoptions="-Dappdir=$APP_PACKAGE/Contents/Resources -Dswing.aatext=true -Dfile.encoding=UTF-8" 
 			workingdirectory="$APP_PACKAGE/Contents/Resources" 
 			extraclasspath="/System/Library/Java">
-			
+
 			<jarfileset dir="${basedir}/target/">
 				<include name="*.jar" />
 			</jarfileset>

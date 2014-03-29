@@ -19,8 +19,6 @@ package sturesy.qgen;
 
 import java.awt.BorderLayout;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -95,30 +93,32 @@ public class ShefHTML
     }
 
     /**
+     * Action performed on Save Button
+     */
+    private void saveAction()
+    {
+        String text = _htmlpane.getText();
+
+        if (!text.startsWith(HTML_START))
+        {
+            text = HTML_START + text;
+        }
+        if (!text.endsWith(HTML_END))
+        {
+            text = text + HTML_END;
+        }
+
+        _textcomponent.setText(text);
+
+        WindowEvent wev = new WindowEvent(_frame, WindowEvent.WINDOW_CLOSING);
+        Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);
+    }
+
+    /**
      * Registers listeners
      */
     private void registerListeners()
     {
-        _save.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                String text = _htmlpane.getText();
-
-                if (!text.startsWith(HTML_START))
-                {
-                    text = HTML_START + text;
-                }
-                if (!text.endsWith(HTML_END))
-                {
-                    text = text + HTML_END;
-                }
-
-                _textcomponent.setText(text);
-
-                WindowEvent wev = new WindowEvent(_frame, WindowEvent.WINDOW_CLOSING);
-                Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(wev);
-            }
-        });
+        _save.addActionListener(e -> saveAction());
     }
 }

@@ -24,8 +24,7 @@
 	<property name="name.lowercase" value="sturesy"/>
 	<property name="main.class" value="sturesy.Startup"/>
 	<property name="version" value="0.6.0" />
-	<property name="sourceWithLambda" value="${basedir}/src/src-main/" />
-	<property name="src" value="${basedir}/src/src-main-no-lambda/" />
+	<property name="src" value="${basedir}/src/src-main/" />
 	<property name="testsrc" value="${basedir}/test" />
 	<property name="target" value="${basedir}/target" />
 	<property name="build" value="${target}/build" />
@@ -68,35 +67,39 @@
 	<property name="shef-jtidy" 		value="${basedir}/include/jtidy-8.0.jar" />
 	<property name="shef-novaworx" 		value="${basedir}/include/novaworx-syntax-0.0.7.jar" />
 	<property name="shef-sam" 			value="${basedir}/include/sam.jar" />
+	<property name="miglayout-4.0"      value="${basedir}/include/miglayout-4.0.jar" />
 
 	<property name="asm"				value="${basedir}/include/cobertura/asm-3.0.jar" />
 	<property name="log4j"	          	value="${basedir}/include/cobertura/log4j-1.2.9.jar" />
 	<property name="asm-tree"	        value="${basedir}/include/cobertura/asm-tree-3.0.jar" />
 	<property name="cobertura"          value="${basedir}/include/cobertura/cobertura.jar" />
 	<property name="jarkarta-oro-2.0.8" value="${basedir}/include/cobertura/jakarta-oro-2.0.8.jar" />
-	<property name="miglayout-4.0"      value="${basedir}/include/miglayout-4.0.jar" />
 
 
 	<target name="clean">
 		<delete includeemptydirs="true" failonerror="false">
 			<fileset dir="${build}" defaultexcludes="false" />
-			<fileset dir="${src}" defaultexcludes="false" />
+			<!-- fileset dir="${src}" defaultexcludes="false" /-->
 		</delete>
 	</target>
-	
-	<target name="replace.lambda" depends="clean">
-		<!-- Create the compatible source code -->
-		<java jar="include/replacelambda-0.0.1.jar" failonerror="true" fork="true">
-			<arg line="inputDir=${sourceWithLambda} outputDir=${src}"></arg>
-		</java>
+
+	<target name="retrolambda">
+		<property name="jarclasspath" value="${xpp3}:${zxing-core}:${zxing-javase}:${jcommon}:${jfreechart}:${commonscodec}:${commonslang}:${commonscollections}:${shef}:${shef-jtidy}:${shef-novaworx}:${shef-sam}:${miglayout-4.0}"/>
+		<exec executable="java">
+			<arg value="-Dretrolambda.inputDir=${build}" />
+			<arg value="-Dretrolambda.classpath=${build}:${jarclasspath}" />
+			<arg value="-Dretrolambda.bytecodeVersion=50" />
+			<arg value="-javaagent:include/retrolambda-1.1.4.jar" />
+			<arg line="-jar include/retrolambda-1.1.4.jar"/>
+		</exec>
 	</target>
 
-	<target name="checkstyle" depends="replace.lambda,clean">
+	<target name="checkstyle" depends="clean">
 		<taskdef resource="checkstyletask.properties"
 		         classpath="${checkstyle.dir}/checkstyle-5.6-all.jar" />
 		<mkdir dir="${reports.dir}" />
 		<checkstyle config="${checkstyle.dir}/checkstyle-config.xml"
-		            maxErrors="625">
+		            maxErrors="1000">
 			<fileset dir="${src}"
 			         includes="**/*.java"
 			         excludes="**/*Test*.java **/VerticalLayout.java **/FileClassLoader.java"  />
@@ -104,14 +107,14 @@
 		</checkstyle>
 	</target>
 
-	<target name="javac" description="build classfiles" depends="replace.lambda,checkstyle">
+	<target name="javac" description="build classfiles" depends="checkstyle, retrolambda">
 		<!-- compile source code -->
 		<mkdir dir="${build}" />
 		<javac srcdir="${src}"
 		       destdir="${build}"
 		       debug="on"
-		       source="1.6"
-			   target="1.6"
+		       source="1.8"
+			   target="1.8"
 		       excludes="${junit.package.exlcude}"
 			   encoding="UTF-8"
 		       includeantruntime="false">

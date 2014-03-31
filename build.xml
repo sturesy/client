@@ -68,6 +68,7 @@
 	<property name="shef-novaworx" 		value="${basedir}/include/novaworx-syntax-0.0.7.jar" />
 	<property name="shef-sam" 			value="${basedir}/include/sam.jar" />
 	<property name="miglayout-4.0"      value="${basedir}/include/miglayout-4.0.jar" />
+	<property name="json"      			value="${basedir}/include/json.jar" />
 
 	<property name="asm"				value="${basedir}/include/cobertura/asm-3.0.jar" />
 	<property name="log4j"	          	value="${basedir}/include/cobertura/log4j-1.2.9.jar" />
@@ -83,7 +84,7 @@
 		</delete>
 	</target>
 
-	<target name="retrolambda">
+	<target name="retrolambda" depends="javac">
 		<property name="jarclasspath" value="${xpp3}:${zxing-core}:${zxing-javase}:${jcommon}:${jfreechart}:${commonscodec}:${commonslang}:${commonscollections}:${shef}:${shef-jtidy}:${shef-novaworx}:${shef-sam}:${miglayout-4.0}"/>
 		<exec executable="java">
 			<arg value="-Dretrolambda.inputDir=${build}" />
@@ -107,7 +108,7 @@
 		</checkstyle>
 	</target>
 
-	<target name="javac" description="build classfiles" depends="checkstyle, retrolambda">
+	<target name="javac" description="build classfiles" depends="checkstyle">
 		<!-- compile source code -->
 		<mkdir dir="${build}" />
 		<javac srcdir="${src}"
@@ -374,7 +375,7 @@
 	<target name="run-coverage"
 	        depends="clear.coverage-withui,javac-test,javac-src-for-test,install-cobertura,make-instrument,run-tests,generate-cobertura-reports,clear.testbuild,clear.instrumented" />
 
-	<target name="create_run_jar" depends="javac">
+	<target name="create_run_jar" depends="javac, retrolambda">
 		<delete file="${target}/${name.lowercase}.jar" failonerror="false" />
 		<jar destfile="${target}/${name.lowercase}.jar"
 		     filesetmanifest="mergewithoutmain">
@@ -396,6 +397,7 @@
 			<zipfileset excludes="META-INF/**/*" src="${shef-novaworx}" />
 			<zipfileset excludes="META-INF/**/*" src="${shef-sam}" />
 			<zipfileset excludes="META-INF/**/*" src="${miglayout-4.0}" />
+			<zipfileset excludes="META-INF/**/*" src="${json}" />
 			<fileset dir="${src}/../resource/" />
 		</jar>
 	</target>

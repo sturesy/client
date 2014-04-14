@@ -36,6 +36,7 @@ import sturesy.core.plugin.proxy.PLog;
 import sturesy.core.plugin.proxy.PSettings;
 import sturesy.items.LectureID;
 import sturesy.items.QuestionModel;
+import sturesy.items.SingleChoiceQuestion;
 
 /**
  * Polling Plugin for the H-iTT Devices
@@ -61,6 +62,8 @@ public class HittPolling implements IPollPlugin
     private int _baudrate;
 
     private SerialPort _serialPort;
+
+    private boolean _isQuestionSupported = false;
 
     public HittPolling()
     {
@@ -93,13 +96,14 @@ public class HittPolling implements IPollPlugin
     @Override
     public void prepareVoting(LectureID lecturenid, final QuestionModel model)
     {
-        // We can fully ignore this
+
+        _isQuestionSupported = (model instanceof SingleChoiceQuestion);
     }
 
     @Override
     public void startPolling()
     {
-        if (!_usable)
+        if (!_usable || !_isQuestionSupported)
         {
             return;
         }
@@ -144,7 +148,7 @@ public class HittPolling implements IPollPlugin
     @Override
     public void stopPolling()
     {
-        if (_comPort != null && _usable)
+        if (_comPort != null && _usable && _isQuestionSupported)
         {
             ((SerialPort) _comPort).removeEventListener();
             _comPort.close();

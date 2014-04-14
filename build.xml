@@ -42,6 +42,7 @@
 	<property name="report.cobertura.html.dir.withoutUI" value="${report.cobertura.dir.withoutUI}/html" />
 	<property name="report.junit.dir" value="${reports.dir}/junit" />
 
+	
 	<property name="junit.package.exlcude" value="test/**" />
 
 	<path id="lib.dependency">
@@ -76,7 +77,8 @@
 	<property name="cobertura"          value="${basedir}/include/cobertura/cobertura.jar" />
 	<property name="jarkarta-oro-2.0.8" value="${basedir}/include/cobertura/jakarta-oro-2.0.8.jar" />
 
-
+	<property name="launch4j.dir" location="${basedir}/include/launch4j" />
+	
 	<target name="clean">
 		<delete includeemptydirs="true" failonerror="false">
 			<fileset dir="${build}" defaultexcludes="false" />
@@ -461,4 +463,9 @@
 		</jarbundler>
 	</target>
 
+	<target name="windows.exe" depends="create_run_jar " description="Creates windows exe">
+	   <taskdef name="launch4j" classname="net.sf.launch4j.ant.Launch4jTask"
+	       classpath="${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar" />
+	   <launch4j configFile="${basedir}/launch4jconfig.xml" />
+	</target>
 </project>

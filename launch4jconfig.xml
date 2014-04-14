@@ -1,0 +1,22 @@
+<launch4jConfig>
+  <dontWrapJar>true</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar>sturesy.jar</jar>
+  <outfile>target/Sturesy.exe</outfile>
+  <errTitle>Sturesy</errTitle>
+  <cmdLine></cmdLine>
+  <chdir>.</chdir>
+  <priority>normal</priority>
+  <downloadUrl>http://java.com/download</downloadUrl>
+  <supportUrl>http://sturesy.sourceforge.net</supportUrl>
+  <customProcName>true</customProcName>
+  <stayAlive>false</stayAlive>
+  <manifest>include/launch4j/manifest/uac.exe.manifest</manifest>
+  <icon>src/resource/image/sturesy.ico</icon>
+  <jre>
+    <path>jre</path>
+    <minVersion>1.6.0</minVersion>
+    <maxVersion></maxVersion>
+    <jdkPreference>preferJre</jdkPreference>
+  </jre>
+</launch4jConfig>

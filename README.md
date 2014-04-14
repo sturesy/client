@@ -11,7 +11,11 @@ Sturesy java client
 
 How to start sturesy.jar:
 
-1. Double click, if the filetype ".jar" is associated with Java-Runtime
+1. a) Double click, if the filetype ".jar" is associated with Java-Runtime
+
+1. b) Double click the sturesy.exe file on Windows
+
+1. c) Double click the StuReSy.app file on Mac OSX
 
 2. a) Start from a Terminal
       type the following:

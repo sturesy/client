@@ -278,7 +278,8 @@ public class WebCommands2
 
     public static String prepareForSend(String s)
     {
-        return StringEscapeUtils.unescapeHtml4(HTMLStripper.stripHTML2(s));
+        String stripped = HTMLStripper.stripHTML2(s);
+        return StringEscapeUtils.escapeHtml4(stripped);
     }
 
     /**

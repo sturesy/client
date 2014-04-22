@@ -20,6 +20,7 @@ package net.sourceforge.sturesy.update;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.util.Calendar;
 
 /**
  * Entry Class for Updater
@@ -41,27 +42,67 @@ public class Startup
      */
     private static File newSturesyFile;
 
-    public static void main(String[] args) throws IOException, InterruptedException
+    /**
+     * Logging the update process
+     */
+    private EasyFileWriter _writer;
+
+    public static void main(String[] args)
     {
         // Waiting for sturesy to shutdown
-        Thread.sleep(1000);
-
-        findAllFiles();
-
-        if (oldSturesyFile != null && newSturesyFile != null)
+        try
         {
-            replaceJars();
-
-            restart();
+            Thread.sleep(1000);
         }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+
+        new Startup();
     }
 
-    private static void findAllFiles() throws IOException
+    public Startup()
+    {
+        _writer = new EasyFileWriter();
+        _writer.initFileWriter(new File("../update.log"), true);
+
+        _writer.writeln("Starting Update on " + Calendar.getInstance().getTime());
+        _writer.writeln("Current Folder" + new File(".").getAbsolutePath() + "\n");
+
+        try
+        {
+            _writer.writeln("Finding Files");
+            findAllFiles();
+
+            if (oldSturesyFile != null && newSturesyFile != null)
+            {
+                _writer.writeln("Replacing Jars");
+                replaceJars();
+
+                restart();
+            }
+            else
+            {
+                _writer.writeln("Can't find files");
+            }
+        }
+        catch (IOException e)
+        {
+            _writer.write(e.getMessage());
+            e.printStackTrace();
+        }
+        exit();
+    }
+
+    private void findAllFiles() throws IOException
     {
         File currentdirCanonical = new File(".").getCanonicalFile();
 
         for (File f : currentdirCanonical.listFiles())
         {
+
+            _writer.writeln(" > " + f);
 
             if (f.getCanonicalPath().contains("update" + File.separator + STURESY_JAR))
             {
@@ -106,17 +147,21 @@ public class Startup
 
     }
 
-    private static boolean replaceJars() throws IOException
+    private boolean replaceJars() throws IOException
     {
         if (oldSturesyFile.exists() && newSturesyFile.exists())
         {
             oldSturesyFile.delete();
         }
 
+        _writer.writeln("Replacing files:");
+        _writer.writeln(" this:" + oldSturesyFile.getAbsolutePath());
+        _writer.writeln(" with:" + newSturesyFile.getAbsolutePath());
+
         return newSturesyFile.renameTo(oldSturesyFile);
     }
 
-    private static void restart() throws IOException
+    private void restart() throws IOException
     {
         File toRestart = oldSturesyFile;
 
@@ -125,9 +170,37 @@ public class Startup
             toRestart = restartMac();
         }
 
+        if (isWindows() && comesWithExe())
+        {
+            toRestart = restartWindowsExe();
+        }
+
+        _writer.writeln("Restarting Sturesy using:");
+        _writer.writeln(" -> " + toRestart.getAbsolutePath());
+
         Desktop.getDesktop().open(toRestart);
 
-        System.exit(0);
+        exit();
+    }
+
+    private static File restartWindowsExe()
+    {
+        File[] currentDir = oldSturesyFile.getParentFile().listFiles();
+
+        for (File f : currentDir)
+        {
+            if (f.getName().toLowerCase().equals("sturesy.exe"))
+            {
+                return f;
+            }
+        }
+
+        return oldSturesyFile;
+    }
+
+    private static boolean comesWithExe()
+    {
+        return restartWindowsExe() != oldSturesyFile;
     }
 
     private static boolean comesWithLauncher()
@@ -139,6 +212,11 @@ public class Startup
     private static boolean isMac()
     {
         return System.getProperty("os.name").toLowerCase().contains("mac os x");
+    }
+
+    private static boolean isWindows()
+    {
+        return System.getProperty("os.name").toLowerCase().contains("windows");
     }
 
     private static boolean isInAppBundle()
@@ -168,5 +246,13 @@ public class Startup
         {
             return oldSturesyFile;
         }
+    }
+
+    public void exit()
+    {
+        _writer.writeln("\n\n\n");
+        _writer.closeFileWriter();
+
+        System.exit(0);
     }
 }

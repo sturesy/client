@@ -52,7 +52,7 @@ public abstract class AChoiceBarController
 
     public AChoiceBarController(ActionListener showpercentageListener)
     {
-        _gui = new VotingEvaluationPanelUI(createDefaultDataset(), Color.GRAY, false, new ArrayList<Integer>(),
+        _gui = new VotingEvaluationPanelUI(createDefaultDataset(), _backgroundcolor, false, new ArrayList<Integer>(),
                 showpercentageListener);
     }
 

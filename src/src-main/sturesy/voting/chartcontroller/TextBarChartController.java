@@ -57,7 +57,7 @@ public class TextBarChartController extends AChoiceBarController implements IBar
     public TextBarChartController(ActionListener showpercentageListener)
     {
         super(showpercentageListener);
-        _gui = new TextBarPanel(createDefaultDataset(), Color.GRAY, false, new ArrayList<Integer>(),
+        _gui = new TextBarPanel(createDefaultDataset(), _backgroundcolor, false, new ArrayList<Integer>(),
                 showpercentageListener);
     }
 
@@ -147,6 +147,8 @@ public class TextBarChartController extends AChoiceBarController implements IBar
                 JLabel answerLabel = new HTMLLabel(cAns + ":<br><b>" + _question.getAnswer() + "</b>");
                 answerLabel.setHorizontalAlignment(JLabel.CENTER);
                 answerLabel.setFont(answerLabel.getFont().deriveFont(22f));
+                answerLabel.setOpaque(true);
+                answerLabel.setBackground(_backgroundcolor);
                 _gui.add(answerLabel, BorderLayout.NORTH);
             }
 

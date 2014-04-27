@@ -18,6 +18,7 @@
 package hitt;
 
 import gnu.io.CommPortIdentifier;
+import hitt.HittPolling.Delegate;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -39,13 +40,15 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
+import sturesy.core.error.ErrorController;
 import sturesy.core.plugin.Injectable;
 import sturesy.core.plugin.proxy.PLoader;
 import sturesy.core.plugin.proxy.PSettings;
 import sturesy.core.ui.JGap;
+import sturesy.items.SingleChoiceQuestion;
 import sturesy.items.Vote;
 
-public class HittSettingsComponent extends JPanel implements Injectable
+public class HittSettingsComponent extends JPanel implements Injectable, Delegate
 {
 
     private static final Insets ZEROINSETS = new Insets(0, 0, 0, 0);
@@ -249,13 +252,19 @@ public class HittSettingsComponent extends JPanel implements Injectable
      */
     private void testPolling()
     {
-        _success.setText(Localizer.getString("waiting"));
-        _success.setIcon(_loadIcon);
 
         stopPolling();
 
         _polling = new HittPolling(getDeviceName(), Integer.parseInt(_baudRate.getText()));
         _polling.setInjectable(this);
+
+        _polling._errorDelegate = this;
+
+        _polling.prepareVoting(null, new SingleChoiceQuestion());
+
+        _success.setText(Localizer.getString("waiting"));
+        _success.setIcon(_loadIcon);
+
         _polling.startPolling();
     }
 
@@ -284,6 +293,16 @@ public class HittSettingsComponent extends JPanel implements Injectable
                 testPolling();
             }
         });
+    }
+
+    @Override
+    public void reportException(Exception ex)
+    {
+        _success.setIcon(PLoader.getImageIconResized(PLoader.IMAGE_RED, 32, 32, 0));
+        _success.setText("Error");
+        ErrorController con = new ErrorController();
+        con.insertError("H-iTT Plugin Error", ex);
+        con.show();
     }
 
 }

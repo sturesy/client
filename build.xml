@@ -458,7 +458,7 @@
 			extraclasspath="/System/Library/Java">
 
 			<jarfileset dir="${basedir}/target/">
-				<include name="*.jar" />
+				<include name="sturesy.jar" />
 			</jarfileset>
 		</jarbundler>
 	</target>

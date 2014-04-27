@@ -65,6 +65,8 @@ public class HittPolling implements IPollPlugin
 
     private boolean _isQuestionSupported = false;
 
+    public Delegate _errorDelegate = null;
+
     public HittPolling()
     {
         this(PSettings.getString(HittSettings.SETTINGS_DEVICE), PSettings.getInteger(HittSettings.SETTINGS_BAUD));
@@ -96,7 +98,6 @@ public class HittPolling implements IPollPlugin
     @Override
     public void prepareVoting(LectureID lecturenid, final QuestionModel model)
     {
-
         _isQuestionSupported = (model instanceof SingleChoiceQuestion);
     }
 
@@ -112,6 +113,7 @@ public class HittPolling implements IPollPlugin
         try
         {
             _comPort = _comPortIdent.open(this.getClass().getName(), 2000);
+
             if (_comPort instanceof SerialPort)
             {
                 _serialPort = (SerialPort) _comPort;
@@ -128,21 +130,33 @@ public class HittPolling implements IPollPlugin
         }
         catch (PortInUseException e)
         {
-            PLog.error("Port is alreay in use", e);
+            reportToDelegate(e);
+            PLog.error("Port is alreay in use by " + e.currentOwner, e);
         }
         catch (UnsupportedCommOperationException e)
         {
+            reportToDelegate(e);
             PLog.error("Error on setting SerialPort params", e);
         }
         catch (IOException e)
         {
+            reportToDelegate(e);
             PLog.error("Error while getting Inputstream", e);
         }
         catch (TooManyListenersException e)
         {
+            reportToDelegate(e);
             PLog.error("Error trying to add new EventListener", e);
         }
 
+    }
+
+    private void reportToDelegate(Exception e)
+    {
+        if (_errorDelegate != null)
+        {
+            _errorDelegate.reportException(e);
+        }
     }
 
     @Override
@@ -153,6 +167,11 @@ public class HittPolling implements IPollPlugin
             ((SerialPort) _comPort).removeEventListener();
             _comPort.close();
         }
+    }
+
+    public interface Delegate
+    {
+        void reportException(Exception ex);
     }
 
 }

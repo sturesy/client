@@ -21,13 +21,23 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.border.BevelBorder;
@@ -49,13 +59,22 @@ import sturesy.util.Settings;
 public class VotingUI extends JFrame
 {
 
+    public enum XButton
+    {
+        QRCODEBUTTON, STARTSTOPBUTTON, CLEARVOTESBUTTON, SHOWCORRECTANSWER, SHOWBARCHART, NEXTQUESTIONBUTTON, PREVIOUSQUESTIONBUTTON;
+    }
+
+    public static int CURRENTLAYOUT_MAXIMUM = 0;
+    public static int CURRENTLAYOUT_MEDIUM = 1;
+    public static int CURRENTLAYOUT_MINIMUM = 2;
+
     private static final long serialVersionUID = -1220783441728371137L;
+
+    private Map<XButton, ActionListener> _buttonsToActionsMap = new HashMap<XButton, ActionListener>();
 
     public static final int ICONSIZE = 32;
     public static final String CARDLAYOUT_EVAL = "EVAL";
     public static final String CARDLAYOUT_VOTE = "VOTE";
-
-    private JPanel _toolbar;
 
     /** Displays Q: 5 / 20 */
     private JLabel _questionProgressLabel;
@@ -78,6 +97,17 @@ public class VotingUI extends JFrame
     private JLabel _bottomlabel;
     private JLabel _voteCountLabel;
 
+    private List<JButton> _buttonsForMinimalLayout;
+    private List<AbstractButton> _buttonsForMediumLayout;
+
+    /** Panel holding the voting info */
+    private JPanel _votingPanel;
+
+    /** Panel holding the barchart */
+    private JPanel _evaluationPanel;
+
+    private int _currentLayout = CURRENTLAYOUT_MAXIMUM;
+
     /**
      * Constructor for VotingWindowUI
      * 
@@ -88,11 +118,54 @@ public class VotingUI extends JFrame
      */
     public VotingUI(JPanel votingPanel, JPanel evaluationPanel)
     {
+        _votingPanel = votingPanel;
+        _evaluationPanel = evaluationPanel;
+
         Macintosh.enableFullScreen(this);
-        _playIcon = Loader.getImageIconResized(Loader.IMAGE_PLAY, ICONSIZE, ICONSIZE, Image.SCALE_SMOOTH);
-        _stopIcon = Loader.getImageIconResized(Loader.IMAGE_STOP, ICONSIZE, ICONSIZE, Image.SCALE_SMOOTH);
+
+        layoutMainPanels();
+
+        initToolbarForMaximumStyle();
+        initToolbarForMinimumStyle();
+        initToolbarForMediumStyle();
+
+        addToolTips();
+
+        setupWrapperActions();
+
+        layoutToolbarMaximumStyle();
+    }
+
+    private void layoutMainPanels()
+    {
         setIconImage(Loader.getImageIcon(Loader.IMAGE_STURESY).getImage());
         setLayout(new BorderLayout());
+
+        _cardlayout = new CardLayout();
+        _centerPanel = new JPanel(_cardlayout);
+        _centerPanel.add(_votingPanel, CARDLAYOUT_VOTE);
+        _centerPanel.add(_evaluationPanel, CARDLAYOUT_EVAL);
+        _cardlayout.show(_centerPanel, CARDLAYOUT_VOTE);
+
+        _bottomlabel = new JLabel(" ");
+        _bottomlabel.setFont(_bottomlabel.getFont().deriveFont(20f));
+
+        JPanel southpanel = new JPanel(new BorderLayout());
+        southpanel.setBackground(Settings.getInstance().getColor("color.voting.main"));
+        _voteCountLabel = new JLabel("0 " + Localize.getString("label.votes"));
+        _voteCountLabel.setFont(_bottomlabel.getFont());
+
+        southpanel.add(_bottomlabel, BorderLayout.CENTER);
+        southpanel.add(_voteCountLabel, BorderLayout.EAST);
+
+        add(_centerPanel, BorderLayout.CENTER);
+        add(southpanel, BorderLayout.SOUTH);
+    }
+
+    private void initToolbarForMaximumStyle()
+    {
+        _playIcon = Loader.getImageIconResized(Loader.IMAGE_PLAY, ICONSIZE, ICONSIZE, Image.SCALE_SMOOTH);
+        _stopIcon = Loader.getImageIconResized(Loader.IMAGE_STOP, ICONSIZE, ICONSIZE, Image.SCALE_SMOOTH);
 
         _questionProgressLabel = new JLabel(Localize.getString("label.question").substring(0, 1) + ": 0 / 0");
         _timeLeftField = new JTextField("0", 3);
@@ -115,17 +188,22 @@ public class VotingUI extends JFrame
                 Image.SCALE_SMOOTH));
         _showQRButton = new JButton(Loader.getImageIconResized(Loader.IMAGE_BARCODE, (int) (ICONSIZE * 1.5), ICONSIZE,
                 Image.SCALE_SMOOTH));
+    }
 
+    private void layoutToolbarMaximumStyle()
+    {
         Color toolbarColor = Settings.getInstance().getColor("color.voting.toolbar");
         JPanel toolbarpanelleft = new JPanel();
         toolbarpanelleft.add(new JLabel(Localize.getString("label.time")));
         toolbarpanelleft.add(_timeLeftField);
         toolbarpanelleft.add(_showQRButton);
+
         toolbarpanelleft.setBackground(toolbarColor);
 
         JPanel toolbarpanelcenter = new JPanel();
         toolbarpanelcenter.add(_startStopButton);
         toolbarpanelcenter.add(_clearVotesButton);
+
         toolbarpanelcenter.add(_toggleShowCorrectAnswer);
         toolbarpanelcenter.add(_toggleQuestionChart);
         toolbarpanelcenter.setBackground(toolbarColor);
@@ -136,35 +214,185 @@ public class VotingUI extends JFrame
         toolbarpanelright.add(_nextQButton);
         toolbarpanelright.setBackground(toolbarColor);
 
-        _toolbar = new JPanel(new BorderLayout());
-        _toolbar.add(toolbarpanelleft, BorderLayout.WEST);
-        _toolbar.add(toolbarpanelcenter, BorderLayout.CENTER);
-        _toolbar.add(toolbarpanelright, BorderLayout.EAST);
-        _toolbar.setBorder(new BevelBorder(BevelBorder.RAISED));
+        JPanel toolbar = new JPanel(new BorderLayout());
+        toolbar.add(toolbarpanelleft, BorderLayout.WEST);
+        toolbar.add(toolbarpanelcenter, BorderLayout.CENTER);
+        toolbar.add(toolbarpanelright, BorderLayout.EAST);
+        toolbar.setBorder(new BevelBorder(BevelBorder.RAISED));
 
-        _cardlayout = new CardLayout();
-        _centerPanel = new JPanel(_cardlayout);
-        _centerPanel.add(votingPanel, CARDLAYOUT_VOTE);
-        _centerPanel.add(evaluationPanel, CARDLAYOUT_EVAL);
-        _cardlayout.show(_centerPanel, CARDLAYOUT_VOTE);
+        add(toolbar, BorderLayout.NORTH);
+    }
 
-        add(_centerPanel, BorderLayout.CENTER);
-        add(_toolbar, BorderLayout.NORTH);
+    private void initToolbarForMinimumStyle()
+    {
+        _buttonsForMinimalLayout = new ArrayList<JButton>();
 
-        _bottomlabel = new JLabel(" ");
-        _bottomlabel.setFont(_bottomlabel.getFont().deriveFont(20f));
+        JButton timeAndBarCode = new JButton(Loader.getImageIconResized(Loader.IMAGE_CLOCK_AND_BARCODE, ICONSIZE,
+                ICONSIZE, Image.SCALE_SMOOTH));
+        JButton otherButtons = new JButton(Loader.getImageIconResized(Loader.IMAGE_MORE, ICONSIZE, ICONSIZE,
+                Image.SCALE_SMOOTH));
 
-        JPanel southpanel = new JPanel(new BorderLayout());
-        southpanel.setBackground(Settings.getInstance().getColor("color.voting.main"));
-        _voteCountLabel = new JLabel("0 " + Localize.getString("label.votes"));
-        _voteCountLabel.setFont(_bottomlabel.getFont());
+        _buttonsForMinimalLayout.add(timeAndBarCode);
+        _buttonsForMinimalLayout.add(_startStopButton);
+        _buttonsForMinimalLayout.add(otherButtons);
 
-        southpanel.add(_bottomlabel, BorderLayout.CENTER);
-        southpanel.add(_voteCountLabel, BorderLayout.EAST);
-        add(southpanel, BorderLayout.SOUTH);
+        otherButtons.addActionListener(e -> otherButtonPopup(e, true));
+        timeAndBarCode.addActionListener(e -> timeAndBarCodeActionPopup(e));
+    }
 
-        addToolTips();
+    private void otherButtonPopup(ActionEvent e, boolean isForMinimal)
+    {
+        JPopupMenu menu = new JPopupMenu();
+        JMenuItem clearVotesItem = new JMenuItem(Loader.getImageIconResized(Loader.IMAGE_UNDO, ICONSIZE, ICONSIZE,
+                Image.SCALE_SMOOTH));
+        clearVotesItem.addActionListener(event -> performAction(XButton.CLEARVOTESBUTTON, event));
 
+        JMenuItem previousButton = new JMenuItem(Loader.getImageIconResized(Loader.IMAGE_PREVIOUS, ICONSIZE, ICONSIZE,
+                Image.SCALE_SMOOTH));
+        previousButton.addActionListener(event -> performAction(XButton.PREVIOUSQUESTIONBUTTON, event));
+        previousButton.setEnabled(_prevQButton.isEnabled());
+
+        JMenuItem progressItem = new JMenuItem(_questionProgressLabel.getText());
+        menu.add(clearVotesItem);
+
+        if (isForMinimal)
+        {
+            JMenuItem showBarChartItem = new JMenuItem(_toggleQuestionChart.getIcon());
+            showBarChartItem.addActionListener(event -> {
+                performAction(XButton.SHOWBARCHART, event);
+                _toggleQuestionChart.setSelected(!_toggleQuestionChart.isSelected());
+            });
+
+            JMenuItem showCorrectAnswer = new JMenuItem(_toggleShowCorrectAnswer.getIcon());
+            showCorrectAnswer.addActionListener(event -> {
+                performAction(XButton.SHOWCORRECTANSWER, event);
+                _toggleShowCorrectAnswer.setSelected(!_toggleShowCorrectAnswer.isSelected());
+            });
+            menu.add(showCorrectAnswer);
+            menu.add(showBarChartItem);
+
+        }
+
+        menu.add(previousButton);
+        menu.add(progressItem);
+
+        if (isForMinimal)
+        {
+            JMenuItem nextButton = new JMenuItem(Loader.getImageIconResized(Loader.IMAGE_NEXT, ICONSIZE, ICONSIZE,
+                    Image.SCALE_SMOOTH));
+            nextButton.addActionListener(event -> performAction(XButton.NEXTQUESTIONBUTTON, event));
+            nextButton.setEnabled(_nextQButton.isEnabled());
+            menu.add(nextButton);
+        }
+
+        menu.show((JComponent) e.getSource(), 20, 20);
+    }
+
+    private void timeAndBarCodeActionPopup(ActionEvent event)
+    {
+        JMenuItem barcode = new JMenuItem(Loader.getImageIconResized(Loader.IMAGE_BARCODE, ICONSIZE, ICONSIZE,
+                Image.SCALE_SMOOTH));
+        barcode.addActionListener(ex -> performAction(XButton.QRCODEBUTTON, ex));
+
+        JPopupMenu menu = new JPopupMenu();
+
+        menu.add(barcode);
+        menu.add(_timeLeftField);
+        menu.show((JComponent) event.getSource(), 20, 20);
+
+    }
+
+    private void layoutToolbarMinimumStyle()
+    {
+        Color toolbarColor = Settings.getInstance().getColor("color.voting.toolbar");
+        JPanel toolbarPanel = new JPanel();
+        toolbarPanel.setBackground(toolbarColor);
+        for (JButton button : _buttonsForMinimalLayout)
+        {
+            toolbarPanel.add(button);
+        }
+        toolbarPanel.setBorder(new BevelBorder(BevelBorder.RAISED));
+        add(toolbarPanel, BorderLayout.NORTH);
+    }
+
+    private void initToolbarForMediumStyle()
+    {
+        _buttonsForMediumLayout = new ArrayList<AbstractButton>();
+
+        JButton timeAndBarCode = new JButton(Loader.getImageIconResized(Loader.IMAGE_CLOCK_AND_BARCODE, ICONSIZE,
+                ICONSIZE, Image.SCALE_SMOOTH));
+        JButton otherButtons = new JButton(Loader.getImageIconResized(Loader.IMAGE_MORE, ICONSIZE, ICONSIZE,
+                Image.SCALE_SMOOTH));
+
+        _buttonsForMediumLayout.add(timeAndBarCode);
+        _buttonsForMediumLayout.add(_startStopButton);
+        _buttonsForMediumLayout.add(_toggleShowCorrectAnswer);
+        _buttonsForMediumLayout.add(_toggleQuestionChart);
+        _buttonsForMediumLayout.add(otherButtons);
+        _buttonsForMediumLayout.add(_nextQButton);
+
+        timeAndBarCode.addActionListener(e -> timeAndBarCodeActionPopup(e));
+        otherButtons.addActionListener(e -> otherButtonPopup(e, false));
+    }
+
+    private void layoutToolbarMediumStyle()
+    {
+        Color toolbarColor = Settings.getInstance().getColor("color.voting.toolbar");
+        JPanel toolbarPanel = new JPanel();
+        toolbarPanel.setBackground(toolbarColor);
+
+        for (AbstractButton button : _buttonsForMediumLayout)
+        {
+            toolbarPanel.add(button);
+        }
+
+        toolbarPanel.setBorder(new BevelBorder(BevelBorder.RAISED));
+        add(toolbarPanel, BorderLayout.NORTH);
+
+    }
+
+    private void setupWrapperActions()
+    {
+        _startStopButton.addActionListener(e -> performAction(XButton.STARTSTOPBUTTON, e));
+        _clearVotesButton.addActionListener(e -> performAction(XButton.CLEARVOTESBUTTON, e));
+        _toggleShowCorrectAnswer.addActionListener(e -> performAction(XButton.SHOWCORRECTANSWER, e));
+        _toggleQuestionChart.addActionListener(e -> performAction(XButton.SHOWBARCHART, e));
+        _nextQButton.addActionListener(e -> performAction(XButton.NEXTQUESTIONBUTTON, e));
+        _prevQButton.addActionListener(e -> performAction(XButton.PREVIOUSQUESTIONBUTTON, e));
+        _showQRButton.addActionListener(e -> performAction(XButton.QRCODEBUTTON, e));
+    }
+
+    /**
+     * Converts the current layout to a minimalistic style, only containing 3
+     * buttons
+     */
+    public void relayoutToolbarForMinimum()
+    {
+        remove(((BorderLayout) getContentPane().getLayout()).getLayoutComponent(BorderLayout.NORTH));
+        _currentLayout = CURRENTLAYOUT_MINIMUM;
+        layoutToolbarMinimumStyle();
+    }
+
+    /**
+     * Converts the current layout to a medium style, containing only important
+     * buttons
+     */
+    public void relayoutToolbarForMedium()
+    {
+        remove(((BorderLayout) getContentPane().getLayout()).getLayoutComponent(BorderLayout.NORTH));
+        _currentLayout = CURRENTLAYOUT_MEDIUM;
+        layoutToolbarMediumStyle();
+    }
+
+    /**
+     * Converts the current layout to the maximum style, containing all the
+     * elemts
+     */
+    public void relayoutToolbarForMaximum()
+    {
+        remove(((BorderLayout) getContentPane().getLayout()).getLayoutComponent(BorderLayout.NORTH));
+        _currentLayout = CURRENTLAYOUT_MAXIMUM;
+        layoutToolbarMaximumStyle();
     }
 
     /**
@@ -393,6 +621,7 @@ public class VotingUI extends JFrame
     public void showCardLayout(String cardlayoutEval)
     {
         getCardLayout().show(getCenterPanel(), cardlayoutEval);
+        refreshContents();
     }
 
     /**
@@ -443,5 +672,31 @@ public class VotingUI extends JFrame
     public void setPrevButtonEnabled(boolean b)
     {
         getPrevQButton().setEnabled(b);
+    }
+
+    private void performAction(XButton button, ActionEvent event)
+    {
+        ActionListener action = _buttonsToActionsMap.get(button);
+        if (action != null)
+        {
+            System.out.println("Performing " + button);
+            action.actionPerformed(event);
+        }
+    }
+
+    public void setActionForButton(ActionListener action, XButton button)
+    {
+        _buttonsToActionsMap.put(button, action);
+    }
+
+    public int getCurrentLayout()
+    {
+        return _currentLayout;
+    }
+
+    public void refreshContents()
+    {
+        this.revalidate();
+        this.repaint();
     }
 }

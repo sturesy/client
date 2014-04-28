@@ -20,6 +20,8 @@ package sturesy.voting;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -50,6 +52,7 @@ import sturesy.util.web.WebCommands2;
 import sturesy.util.web.WebVotingHandler;
 import sturesy.voting.gui.QRWindowUI;
 import sturesy.voting.gui.VotingUI;
+import sturesy.voting.gui.VotingUI.XButton;
 
 /**
  * Displays the Voting Window containing a Toolbar at the top, and a CardLayout
@@ -202,6 +205,7 @@ public class VotingController implements Injectable, TimeSource, VotingTimeListe
         _gui.setQuestionProgressLabelText((index + 1) + " / " + _currentQuestionSet.size());
         int duration = _currentQuestionSet.getIndex(index).getDuration();
         _gui.setTimeLeftFieldText("" + (duration == QuestionModel.UNLIMITED ? "" : duration));
+        _gui.refreshContents();
 
         if (_votingSaver != null)
         {
@@ -441,25 +445,64 @@ public class VotingController implements Injectable, TimeSource, VotingTimeListe
     }
 
     /**
+     * Action performed when the Frame of the UI is being rezised, this is
+     * primarly used to rearrange content in the toolbar
+     * 
+     * @param e
+     */
+    private void jframeResized(ComponentEvent e)
+    {
+        int width = e.getComponent().getSize().width;
+        if (width < 350)
+        {
+            if (_gui.getCurrentLayout() != VotingUI.CURRENTLAYOUT_MINIMUM)
+            {
+                _gui.relayoutToolbarForMinimum();
+            }
+        }
+        else if (width > 550)
+        {
+            if (_gui.getCurrentLayout() != VotingUI.CURRENTLAYOUT_MAXIMUM)
+            {
+                _gui.relayoutToolbarForMaximum();
+            }
+        }
+        else
+        {
+            if (_gui.getCurrentLayout() != VotingUI.CURRENTLAYOUT_MEDIUM)
+            {
+                _gui.relayoutToolbarForMedium();
+            }
+        }
+    }
+
+    /**
      * Adds listeneres to all the graphical components
      */
     private void addListener()
     {
         _gui.addWindowListener(new WindowAdapter()
         {
-            @Override
             public void windowClosing(WindowEvent e)
             {
                 votingWindowClosing();
             }
         });
-        _gui.getToggleShowCorrectAnswer().addActionListener(e -> toggleShowCorrectAnswer());
-        _gui.getToggleQuestionChart().addActionListener(e -> showQuestionChartAction());
-        _gui.getNextQButton().addActionListener(e -> getNextAction());
-        _gui.getPrevQButton().addActionListener(e -> getPreviousAction());
-        _gui.getStartStopButton().addActionListener(e -> votingStartStopAction());
-        _gui.getShowQRButton().addActionListener(e -> showQRAction());
-        _gui.getClearVotesButton().addActionListener(e -> clearVotingsAction());
+        _gui.addComponentListener(new ComponentAdapter()
+        {
+            public void componentResized(ComponentEvent e)
+            {
+                jframeResized(e);
+            }
+        });
+
+        _gui.setActionForButton(e -> toggleShowCorrectAnswer(), XButton.SHOWCORRECTANSWER);
+        _gui.setActionForButton(e -> showQuestionChartAction(), XButton.SHOWBARCHART);
+        _gui.setActionForButton(e -> getNextAction(), XButton.NEXTQUESTIONBUTTON);
+        _gui.setActionForButton(e -> getPreviousAction(), XButton.PREVIOUSQUESTIONBUTTON);
+        _gui.setActionForButton(e -> votingStartStopAction(), XButton.STARTSTOPBUTTON);
+        _gui.setActionForButton(e -> showQRAction(), XButton.QRCODEBUTTON);
+        _gui.setActionForButton(e -> clearVotingsAction(), XButton.CLEARVOTESBUTTON);
         _votingService.registerTimeListener(this);
     }
 }

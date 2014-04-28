@@ -59,6 +59,8 @@ public class Loader
     public static final String IMAGE_GREEN_LOAD = "image/load.gif";
     public static final String IMAGE_YELLOW_BAR = "image/bar-yellow.png";
     public static final String IMAGE_GREEN_RED_BAR = "image/bar-greenred.png";
+    public static final String IMAGE_CLOCK_AND_BARCODE = "image/clock-barcode.png";
+    public static final String IMAGE_MORE = "image/more.png";
 
     public static final String IMAGE_ARROW_UP = "image/up.png";
     public static final String IMAGE_ARROW_DOWN = "image/down.png";

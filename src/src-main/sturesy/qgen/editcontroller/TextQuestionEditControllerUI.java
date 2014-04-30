@@ -24,6 +24,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import net.miginfocom.swing.MigLayout;
+import sturesy.core.Localize;
 import sturesy.core.ui.answerPanel.GrayLabel;
 import sturesy.qgen.gui.RealIntegerDocument;
 
@@ -50,16 +51,16 @@ class TextQuestionEditControllerUI
         _mainpanel = new JPanel(new MigLayout("flowx, align left, wrap 2", "[][grow]"));
 
         _answerField = new JTextField(15);
-        _ignoreCaseBox = new JCheckBox("Ignore Case");
-        _ignoreWhiteSpaceBox = new JCheckBox("Ignore Whitespace");
+        _ignoreCaseBox = new JCheckBox(Localize.getString("label.ignore.case"));
+        _ignoreWhiteSpaceBox = new JCheckBox(Localize.getString("label.ignore.whitespace"));
 
         _toleranceField = new JTextField(5);
         _toleranceField.setDocument(new RealIntegerDocument());
 
-        _mainpanel.add(new GrayLabel("Answer:"));
+        _mainpanel.add(new GrayLabel(Localize.getString("label.answer") + ":"));
         _mainpanel.add(_answerField);
 
-        _mainpanel.add(new GrayLabel("Tolerance:"));
+        _mainpanel.add(new GrayLabel(Localize.getString("label.tolerance") + ":"));
         _mainpanel.add(_toleranceField, "wrap");
 
         _mainpanel.add(_ignoreCaseBox, "span 2");

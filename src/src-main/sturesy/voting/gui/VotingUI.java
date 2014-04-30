@@ -186,7 +186,7 @@ public class VotingUI extends JFrame
                 Loader.getImageIconResized(Loader.IMAGE_NEXT, ICONSIZE, ICONSIZE, Image.SCALE_SMOOTH));
         _prevQButton = new JButton(Loader.getImageIconResized(Loader.IMAGE_PREVIOUS, ICONSIZE, ICONSIZE,
                 Image.SCALE_SMOOTH));
-        _showQRButton = new JButton(Loader.getImageIconResized(Loader.IMAGE_BARCODE, (int) (ICONSIZE * 1.5), ICONSIZE,
+        _showQRButton = new JButton(Loader.getImageIconResized(Loader.IMAGE_BARCODE, ICONSIZE, ICONSIZE,
                 Image.SCALE_SMOOTH));
     }
 
@@ -258,15 +258,20 @@ public class VotingUI extends JFrame
         if (isForMinimal)
         {
             JMenuItem showBarChartItem = new JMenuItem(_toggleQuestionChart.getIcon());
-            showBarChartItem.addActionListener(event -> {
-                performAction(XButton.SHOWBARCHART, event);
-                _toggleQuestionChart.setSelected(!_toggleQuestionChart.isSelected());
+            showBarChartItem.addActionListener(new ActionListener()
+            {
+                @Override
+                public void actionPerformed(ActionEvent event)
+                {
+                    _toggleQuestionChart.setSelected(!_toggleQuestionChart.isSelected());
+                    performAction(XButton.SHOWBARCHART, event);
+                }
             });
 
             JMenuItem showCorrectAnswer = new JMenuItem(_toggleShowCorrectAnswer.getIcon());
             showCorrectAnswer.addActionListener(event -> {
-                performAction(XButton.SHOWCORRECTANSWER, event);
                 _toggleShowCorrectAnswer.setSelected(!_toggleShowCorrectAnswer.isSelected());
+                performAction(XButton.SHOWCORRECTANSWER, event);
             });
             menu.add(showCorrectAnswer);
             menu.add(showBarChartItem);
@@ -679,7 +684,6 @@ public class VotingUI extends JFrame
         ActionListener action = _buttonsToActionsMap.get(button);
         if (action != null)
         {
-            System.out.println("Performing " + button);
             action.actionPerformed(event);
         }
     }

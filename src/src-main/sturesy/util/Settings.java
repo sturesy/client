@@ -46,6 +46,8 @@ public class Settings
     public static final String QUESTIONEDITORSIZE = "questiongenerator.window.size";
     public static final String QUESTIONEDITORDIVIDER = "questiongenerator.divider.location";
     public static final String EVALUATEWINDOWSIZE = "evaluate.window.size";
+    
+    public static final String FEEDBACKEDITORSIZE = "feedbackeditor.window.size";
 
     public static final String UPDATE_FREQUENCY = "update.frequency";
     public static final String UPDATE_LASTUPDATE = "update.last.update";

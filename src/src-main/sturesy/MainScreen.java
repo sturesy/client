@@ -43,6 +43,7 @@ import sturesy.core.Operatingsystem;
 import sturesy.core.backend.Loader;
 import sturesy.core.plugin.ISettingsScreen;
 import sturesy.export.LectureIDExport;
+import sturesy.feedback.FeedbackSheetEditor;
 import sturesy.items.LectureID;
 import sturesy.items.VotingSet;
 import sturesy.qgen.QuestionEditor;
@@ -72,10 +73,11 @@ public class MainScreen extends WindowAdapter
     private QuestionEditor _qgen;
     private SettingsController _settingswindow;
     private VotingController _votingwindow;
+    private FeedbackSheetEditor _feedbacksheet;
 
     public MainScreen()
     {
-        init();
+    	init();
 
         checkForUpdates();
     }
@@ -320,6 +322,21 @@ public class MainScreen extends WindowAdapter
             _qgen.getFrame().toFront();
         }
     }
+    
+    private void getFeedbackSheetEditorAction()
+    {
+    	if(_feedbacksheet == null)
+    	{
+    		_feedbacksheet = new FeedbackSheetEditor();
+    		_feedbacksheet.displayController(_gui, this);
+    		_gui.setVisible(false);
+    	}
+    	else
+    	{
+    		_feedbacksheet.getFrame().toFront();
+    	}
+    	
+    }
 
     /**
      * save the settings before window closes
@@ -356,6 +373,7 @@ public class MainScreen extends WindowAdapter
         _gui.getVoting().addActionListener(e -> getVotingAction());
         _gui.getEvaluate().addActionListener(e -> getEvaluateAction());
         _gui.getQuestion().addActionListener(e -> getQuestionEditorAction());
+        _gui.getFeeedbackSheet().addActionListener(e -> getFeedbackSheetEditorAction());
     }
 
     @Override
@@ -372,6 +390,10 @@ public class MainScreen extends WindowAdapter
         else if (_settingswindow != null && e.getSource() == _settingswindow.getFrame())
         {
             _settingswindow = null;
+        }
+        else if (_feedbacksheet != null && e.getSource() == _feedbacksheet.getFrame())
+        {
+        	_feedbacksheet = null;
         }
         _gui.setVisible(true);
     }

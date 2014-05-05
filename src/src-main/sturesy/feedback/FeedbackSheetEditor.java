@@ -37,6 +37,7 @@ public class FeedbackSheetEditor implements Controller
 	public void displayController(Component relativeTo, WindowListener listener)
 	{
         _gui.setSize(_settings.getDimension(Settings.FEEDBACKEDITORSIZE));
+        _gui.setDividerLocation(_settings.getInteger(Settings.FEEDBACKEDITORDIVIDER));
         _gui.setLocationRelativeTo(relativeTo);
         _gui.setVisible(true);
         _gui.addWindowListener(listener);
@@ -49,6 +50,7 @@ public class FeedbackSheetEditor implements Controller
     {
         Settings settings = _settings;
         settings.setProperty(Settings.FEEDBACKEDITORSIZE, _gui.getSize());
+        settings.setProperty(Settings.FEEDBACKEDITORDIVIDER, _gui.getDividerLocation());
         settings.save();
     }
     

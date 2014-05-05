@@ -1,19 +1,14 @@
 package sturesy.feedback;
 
 import java.awt.Component;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import sturesy.core.Controller;
 import sturesy.feedback.gui.FeedbackSheetEditorUI;
-import sturesy.qgen.gui.QuestionEditorUI.MenuItems;
 import sturesy.util.Settings;
 
 /**

@@ -38,6 +38,7 @@ public class Startup
     {
         Macintosh.executeMacOnlyCode();
         Windows.setLookAndFeelWindows();
+        Linux.setLookAndFeelLinux();
 
         cleanupUpdateLeftovers();
 

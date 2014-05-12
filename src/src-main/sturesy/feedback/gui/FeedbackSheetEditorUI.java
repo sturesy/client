@@ -7,6 +7,7 @@ import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -20,6 +21,7 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 
 import sturesy.core.ui.SFrame;
+import sturesy.items.feedback.FeedbackTypeModel;
 
 public class FeedbackSheetEditorUI extends SFrame
 {
@@ -28,7 +30,7 @@ public class FeedbackSheetEditorUI extends SFrame
 	private JSplitPane _splitpane;
 	
 	// Left Panel
-	private JList<String> _questionlist;
+	private JList<FeedbackTypeModel> _questionlist;
 	private JButton _addbutton;
 	private JButton _delbutton;
 	private JButton _mvupbutton;
@@ -43,11 +45,11 @@ public class FeedbackSheetEditorUI extends SFrame
 	private JButton _fetchbutton;
 	private JButton _clearbutton;
 	
-	public FeedbackSheetEditorUI()
+	public FeedbackSheetEditorUI(DefaultListModel<FeedbackTypeModel> questions)
 	{
 		super();
 		_splitpane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-		JPanel leftpanel = createLeftPanel();
+		JPanel leftpanel = createLeftPanel(questions);
 		JPanel rightpanel = createRightPanel();
 		
 		_splitpane.setLeftComponent(leftpanel);
@@ -56,7 +58,7 @@ public class FeedbackSheetEditorUI extends SFrame
 		add(_splitpane);
 	}
 	
-	private JPanel createLeftPanel()
+	private JPanel createLeftPanel(DefaultListModel<FeedbackTypeModel> questions)
 	{
 		JPanel panel = new JPanel();
 		
@@ -64,7 +66,7 @@ public class FeedbackSheetEditorUI extends SFrame
 		panel.setBorder(BorderFactory.createTitledBorder("Feedback Questions"));
 		panel.setLayout(new BorderLayout());
 		
-		_questionlist = new JList<String>();
+		_questionlist = new JList<FeedbackTypeModel>(questions);
 		_addbutton = new JButton("+");
 		_delbutton = new JButton("-");
 		_mvupbutton = new JButton("↑");
@@ -72,8 +74,7 @@ public class FeedbackSheetEditorUI extends SFrame
 		
 		// list of questions
 		JScrollPane listScrollPane = new JScrollPane(_questionlist);
-		_questionlist.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-		_questionlist.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+		_questionlist.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		_questionlist.setVisibleRowCount(-1);
 		panel.add(listScrollPane, BorderLayout.CENTER);
 		
@@ -144,5 +145,20 @@ public class FeedbackSheetEditorUI extends SFrame
 	public int getDividerLocation()
 	{
 		return _splitpane.getDividerLocation();
+	}
+
+	public JButton getAddButton()
+	{
+		return _addbutton;
+	}
+
+	public JButton getDelButton()
+	{
+		return _delbutton;
+	}
+
+	public JList<FeedbackTypeModel> getQuestionList()
+	{
+		return _questionlist;
 	}
 }

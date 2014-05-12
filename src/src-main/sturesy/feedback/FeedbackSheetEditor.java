@@ -12,6 +12,9 @@ import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JPopupMenu;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 import sturesy.core.Controller;
 import sturesy.core.ui.JMenuItem2;
 import sturesy.feedback.gui.FeedbackSheetEditorUI;
@@ -114,6 +117,14 @@ public class FeedbackSheetEditor implements Controller
     }
     
     /**
+     * {@link ActionListener} for Item Selection
+     */
+    private void questionSelected()
+    {
+    	System.out.println("Clickediclack");
+    }
+    
+    /**
      * Adds listeners to all the GUI-Elements
      */
     private void addListeners()
@@ -125,8 +136,20 @@ public class FeedbackSheetEditor implements Controller
                 windowIsClosing();
             }
         });
+        
+        _gui.getQuestionList().addListSelectionListener(new ListSelectionListener()
+		{
+			@Override
+			public void valueChanged(ListSelectionEvent e)
+			{
+				if (!e.getValueIsAdjusting() && !_gui.getQuestionList().isSelectionEmpty())
+					questionSelected();
+			}
+		});
+        
         _gui.getAddButton().addActionListener(e -> addButtonAction());
         _gui.getDelButton().addActionListener(e -> delButtonAction());
+        
     }
 	
 	public JFrame getFrame()

@@ -38,8 +38,9 @@ public class FeedbackSheetEditorUI extends SFrame
 	
 	// Right Panel
 	private JComboBox _questiontype;
-	private JCheckBox _optionalCheckbox;
+	private JCheckBox _mandatoryCheckbox;
 	private JTextField _questiontitle;
+
 	private JTextArea _questiondesc;
 	private JButton _submitbutton;
 	private JButton _fetchbutton;
@@ -97,7 +98,7 @@ public class FeedbackSheetEditorUI extends SFrame
 		panel.setLayout(new BorderLayout());
 		
 		_questiontype = new JComboBox();
-		_optionalCheckbox = new JCheckBox("Answer is mandatory");
+		_mandatoryCheckbox = new JCheckBox("Answer is mandatory");
 		
 		_questiontitle = new JTextField();
 		_questiondesc = new JTextArea();
@@ -117,7 +118,7 @@ public class FeedbackSheetEditorUI extends SFrame
 		JPanel qtypePanel = new JPanel();
 		qtypePanel.setLayout(new BoxLayout(qtypePanel, BoxLayout.LINE_AXIS));
 		qtypePanel.add(_questiontype);
-		qtypePanel.add(_optionalCheckbox);
+		qtypePanel.add(_mandatoryCheckbox);
 		questionEditPanel.add(qtypePanel);
 		
 		_questiontitle.setMaximumSize(new Dimension(Integer.MAX_VALUE, _questiontitle.getPreferredSize().height));
@@ -160,5 +161,21 @@ public class FeedbackSheetEditorUI extends SFrame
 	public JList<FeedbackTypeModel> getQuestionList()
 	{
 		return _questionlist;
+	}
+	
+	public JComboBox getQuestionType() {
+		return _questiontype;
+	}
+
+	public JCheckBox getMandatoryCheckbox() {
+		return _mandatoryCheckbox;
+	}
+
+	public JTextField getQuestionTitle() {
+		return _questiontitle;
+	}
+
+	public JTextArea getQuestionDescription() {
+		return _questiondesc;
 	}
 }

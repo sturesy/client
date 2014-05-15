@@ -3,6 +3,8 @@ package sturesy.feedback;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -12,6 +14,8 @@ import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JPopupMenu;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -35,12 +39,15 @@ public class FeedbackSheetEditor implements Controller
 	private List<Class<? extends FeedbackTypeModel>> _questionTypes;
 	private DefaultListModel<FeedbackTypeModel> _questions;
 	
+	private int _currentQuestion;
+	
 	public FeedbackSheetEditor()
 	{
 		_settings = Settings.getInstance();
 		_questions = new DefaultListModel<FeedbackTypeModel>();
 		_gui = new FeedbackSheetEditorUI(_questions);
 		_questionTypes = new LinkedList<Class<? extends FeedbackTypeModel>>();
+		_currentQuestion = -1;
 		
 		initQuestionTypes();
 		addListeners();
@@ -110,9 +117,11 @@ public class FeedbackSheetEditor implements Controller
      */
     private void delButtonAction()
     {
+    	_currentQuestion = -1;
+    	
     	int[] selected = _gui.getQuestionList().getSelectedIndices();
     	for(int i = selected.length-1; i >=0; i--) {
-    		_questions.remove(i);
+    		_questions.remove(selected[i]);
     	}
     }
     
@@ -121,7 +130,28 @@ public class FeedbackSheetEditor implements Controller
      */
     private void questionSelected()
     {
-    	System.out.println("Clickediclack");
+    	//updateQuestionFromUI();
+    	
+    	FeedbackTypeModel sel = _gui.getQuestionList().getSelectedValue();
+    	
+    	_gui.getMandatoryCheckbox().setSelected(sel.isMandatory());
+    	_gui.getQuestionTitle().setText(sel.getTitle());
+    	_gui.getQuestionDescription().setText(sel.getDescription());
+    	
+    	_currentQuestion = _gui.getQuestionList().getSelectedIndex();
+    }
+    
+    private void updateQuestionFromUI()
+    {
+    	if(_currentQuestion != -1) {
+    		FeedbackTypeModel currentQuestion = _questions.getElementAt(_currentQuestion);
+    		
+    		currentQuestion.setTitle(_gui.getQuestionTitle().getText());
+    		currentQuestion.setDescription(_gui.getQuestionDescription().getText());
+    		currentQuestion.setMandatory(_gui.getMandatoryCheckbox().isSelected());
+    		
+    		_questions.setElementAt(currentQuestion, _currentQuestion);
+    	}
     }
     
     /**
@@ -144,11 +174,34 @@ public class FeedbackSheetEditor implements Controller
 			{
 				if (!e.getValueIsAdjusting() && !_gui.getQuestionList().isSelectionEmpty())
 					questionSelected();
+				else
+					_currentQuestion = -1;
 			}
 		});
         
+        DocumentListener uiDocListener = new DocumentListener() {
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				updateQuestionFromUI();
+			}
+			
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				updateQuestionFromUI();
+			}
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				updateQuestionFromUI();
+			}
+		};
+        
         _gui.getAddButton().addActionListener(e -> addButtonAction());
         _gui.getDelButton().addActionListener(e -> delButtonAction());
+        
+        _gui.getQuestionTitle().getDocument().addDocumentListener(uiDocListener);
+        _gui.getQuestionDescription().getDocument().addDocumentListener(uiDocListener);
+        _gui.getMandatoryCheckbox().addActionListener(e -> updateQuestionFromUI());
         
     }
 	

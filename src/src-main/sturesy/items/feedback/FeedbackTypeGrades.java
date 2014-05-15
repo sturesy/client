@@ -1,5 +1,6 @@
 package sturesy.items.feedback;
 
+
 public class FeedbackTypeGrades extends FeedbackTypeModel
 {
 	@Override

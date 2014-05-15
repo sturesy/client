@@ -1,26 +1,20 @@
 package sturesy.feedback.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 
 import sturesy.core.ui.SFrame;
+import sturesy.feedback.editcontroller.IFeedbackEditController;
 import sturesy.items.feedback.FeedbackTypeModel;
 
 public class FeedbackSheetEditorUI extends SFrame
@@ -36,12 +30,9 @@ public class FeedbackSheetEditorUI extends SFrame
 	private JButton _mvupbutton;
 	private JButton _mvdownbutton;
 	
-	// Right Panel
-	private JComboBox _questiontype;
-	private JCheckBox _mandatoryCheckbox;
-	private JTextField _questiontitle;
-
-	private JTextArea _questiondesc;
+	private JPanel _rightpanel;
+	
+	// Action Buttons
 	private JButton _submitbutton;
 	private JButton _fetchbutton;
 	private JButton _clearbutton;
@@ -50,11 +41,12 @@ public class FeedbackSheetEditorUI extends SFrame
 	{
 		super();
 		_splitpane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		
 		JPanel leftpanel = createLeftPanel(questions);
-		JPanel rightpanel = createRightPanel();
+		_rightpanel = createRightPanel(getEmptyEditorPanel());
 		
 		_splitpane.setLeftComponent(leftpanel);
-		_splitpane.setRightComponent(rightpanel);
+		_splitpane.setRightComponent(_rightpanel);
 		
 		add(_splitpane);
 	}
@@ -72,6 +64,10 @@ public class FeedbackSheetEditorUI extends SFrame
 		_delbutton = new JButton("-");
 		_mvupbutton = new JButton("↑");
 		_mvdownbutton = new JButton("↓");
+		
+		_submitbutton = new JButton("Submit Sheet");
+		_fetchbutton = new JButton("Fetch Current Sheet");
+		_clearbutton = new JButton("Clear");
 		
 		// list of questions
 		JScrollPane listScrollPane = new JScrollPane(_questionlist);
@@ -91,40 +87,29 @@ public class FeedbackSheetEditorUI extends SFrame
 		return panel;
 	}
 	
-	private JPanel createRightPanel()
+	public void updateEditorPanel(IFeedbackEditController controller)
+	{
+		int oldDividerLocation = getDividerLocation();
+		JPanel epanel = controller == null ? getEmptyEditorPanel() : controller.getPanel();
+		_splitpane.setRightComponent(createRightPanel(epanel));
+		
+		 // reset divider location as setRightComponent resets the splitpane
+		setDividerLocation(oldDividerLocation);
+	}
+	
+	private JPanel getEmptyEditorPanel()
 	{
 		JPanel panel = new JPanel();
-		
+		panel.add(new JLabel("No Item selected"));
+		return panel;
+	}
+	
+	private JPanel createRightPanel(JPanel editorPanel)
+	{
+		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout());
 		
-		_questiontype = new JComboBox();
-		_mandatoryCheckbox = new JCheckBox("Answer is mandatory");
-		
-		_questiontitle = new JTextField();
-		_questiondesc = new JTextArea();
-		
-		_submitbutton = new JButton("Submit Sheet");
-		_fetchbutton = new JButton("Fetch Current Sheet");
-		_clearbutton = new JButton("Clear");
-		
-		JPanel questionEditPanel = new JPanel();
-		questionEditPanel.setLayout(new BoxLayout(questionEditPanel, BoxLayout.PAGE_AXIS));
-		questionEditPanel.setBorder(BorderFactory.createTitledBorder("Question Editor"));
-		
-		JPanel labelPan = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		labelPan.add(new JLabel("Question Type"));
-		questionEditPanel.add(labelPan);
-		
-		JPanel qtypePanel = new JPanel();
-		qtypePanel.setLayout(new BoxLayout(qtypePanel, BoxLayout.LINE_AXIS));
-		qtypePanel.add(_questiontype);
-		qtypePanel.add(_mandatoryCheckbox);
-		questionEditPanel.add(qtypePanel);
-		
-		_questiontitle.setMaximumSize(new Dimension(Integer.MAX_VALUE, _questiontitle.getPreferredSize().height));
-		questionEditPanel.add(_questiontitle);
-		questionEditPanel.add(_questiondesc);
-		panel.add(questionEditPanel, BorderLayout.CENTER);
+		panel.add(editorPanel, BorderLayout.CENTER);
 		
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.add(_submitbutton);
@@ -161,21 +146,5 @@ public class FeedbackSheetEditorUI extends SFrame
 	public JList<FeedbackTypeModel> getQuestionList()
 	{
 		return _questionlist;
-	}
-	
-	public JComboBox getQuestionType() {
-		return _questiontype;
-	}
-
-	public JCheckBox getMandatoryCheckbox() {
-		return _mandatoryCheckbox;
-	}
-
-	public JTextField getQuestionTitle() {
-		return _questiontitle;
-	}
-
-	public JTextArea getQuestionDescription() {
-		return _questiondesc;
 	}
 }

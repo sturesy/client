@@ -3,64 +3,61 @@ package sturesy.feedback;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JPopupMenu;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import sturesy.core.Controller;
 import sturesy.core.ui.JMenuItem2;
+import sturesy.core.ui.UIObserver;
+import sturesy.feedback.editcontroller.FeedbackEditControllerBasic;
+import sturesy.feedback.editcontroller.IFeedbackEditController;
 import sturesy.feedback.gui.FeedbackSheetEditorUI;
-import sturesy.items.feedback.FeedbackTypeModel;
 import sturesy.items.feedback.FeedbackTypeComment;
 import sturesy.items.feedback.FeedbackTypeGrades;
+import sturesy.items.feedback.FeedbackTypeModel;
 import sturesy.util.Settings;
 
 /**
  * @author henrik
  *
  */
-public class FeedbackSheetEditor implements Controller
+public class FeedbackSheetEditor implements Controller, UIObserver
 {
 	private FeedbackSheetEditorUI _gui;
 	private Settings _settings;
 	
-	private List<Class<? extends FeedbackTypeModel>> _questionTypes;
-	private DefaultListModel<FeedbackTypeModel> _questions;
+	private Map<Class<? extends FeedbackTypeModel>, IFeedbackEditController> _questionTypes;
 	
-	private int _currentQuestion;
+	private DefaultListModel<FeedbackTypeModel> _questions;
 	
 	public FeedbackSheetEditor()
 	{
 		_settings = Settings.getInstance();
 		_questions = new DefaultListModel<FeedbackTypeModel>();
 		_gui = new FeedbackSheetEditorUI(_questions);
-		_questionTypes = new LinkedList<Class<? extends FeedbackTypeModel>>();
-		_currentQuestion = -1;
+		_questionTypes = new HashMap<Class<? extends FeedbackTypeModel>, IFeedbackEditController>();
 		
 		initQuestionTypes();
 		addListeners();
 	}
 	
 	/*
-	 * Add all the available feedback question types
-	 * TODO: It'd be nice to do this dynamically.
+	 * Add all the available feedback question types and associate them
+	 * with their controllers.
 	 */
 	private void initQuestionTypes()
 	{
-		_questionTypes.add(FeedbackTypeComment.class);
-		_questionTypes.add(FeedbackTypeGrades.class);
+		_questionTypes.put(FeedbackTypeComment.class, new FeedbackEditControllerBasic());
+		_questionTypes.put(FeedbackTypeGrades.class, new FeedbackEditControllerBasic());
 	}
 
 	@Override
@@ -91,7 +88,7 @@ public class FeedbackSheetEditor implements Controller
     {
         JPopupMenu menu = new JPopupMenu();
         
-		for(Class<? extends FeedbackTypeModel> c : _questionTypes)
+		for(Class<? extends FeedbackTypeModel> c : _questionTypes.keySet())
 		{
 			try
 			{
@@ -117,8 +114,6 @@ public class FeedbackSheetEditor implements Controller
      */
     private void delButtonAction()
     {
-    	_currentQuestion = -1;
-    	
     	int[] selected = _gui.getQuestionList().getSelectedIndices();
     	for(int i = selected.length-1; i >=0; i--) {
     		_questions.remove(selected[i]);
@@ -130,29 +125,25 @@ public class FeedbackSheetEditor implements Controller
      */
     private void questionSelected()
     {
-    	//updateQuestionFromUI();
-    	
     	FeedbackTypeModel sel = _gui.getQuestionList().getSelectedValue();
+    	IFeedbackEditController controller = _questionTypes.get(sel.getClass());
     	
-    	_gui.getMandatoryCheckbox().setSelected(sel.isMandatory());
-    	_gui.getQuestionTitle().setText(sel.getTitle());
-    	_gui.getQuestionDescription().setText(sel.getDescription());
+    	// avoid unwanted listener calls during panel switch
+    	controller.setObserver(null);
     	
-    	_currentQuestion = _gui.getQuestionList().getSelectedIndex();
+    	controller.setFeedbackItem(sel);
+    	_gui.updateEditorPanel(controller);
+    	controller.setObserver(this);
     }
     
-    private void updateQuestionFromUI()
-    {
-    	if(_currentQuestion != -1) {
-    		FeedbackTypeModel currentQuestion = _questions.getElementAt(_currentQuestion);
-    		
-    		currentQuestion.setTitle(_gui.getQuestionTitle().getText());
-    		currentQuestion.setDescription(_gui.getQuestionDescription().getText());
-    		currentQuestion.setMandatory(_gui.getMandatoryCheckbox().isSelected());
-    		
-    		_questions.setElementAt(currentQuestion, _currentQuestion);
-    	}
-    }
+
+	@Override
+	public void update()
+	{
+		int sel = _gui.getQuestionList().getSelectedIndex();
+    	IFeedbackEditController controller = _questionTypes.get(_questions.get(sel).getClass());
+    	_questions.setElementAt(controller.getFeedbackItem(), sel);
+	}
     
     /**
      * Adds listeners to all the GUI-Elements
@@ -174,40 +165,15 @@ public class FeedbackSheetEditor implements Controller
 			{
 				if (!e.getValueIsAdjusting() && !_gui.getQuestionList().isSelectionEmpty())
 					questionSelected();
-				else
-					_currentQuestion = -1;
 			}
 		});
         
-        DocumentListener uiDocListener = new DocumentListener() {
-			@Override
-			public void removeUpdate(DocumentEvent e) {
-				updateQuestionFromUI();
-			}
-			
-			@Override
-			public void insertUpdate(DocumentEvent e) {
-				updateQuestionFromUI();
-			}
-
-			@Override
-			public void changedUpdate(DocumentEvent e) {
-				updateQuestionFromUI();
-			}
-		};
-        
         _gui.getAddButton().addActionListener(e -> addButtonAction());
         _gui.getDelButton().addActionListener(e -> delButtonAction());
-        
-        _gui.getQuestionTitle().getDocument().addDocumentListener(uiDocListener);
-        _gui.getQuestionDescription().getDocument().addDocumentListener(uiDocListener);
-        _gui.getMandatoryCheckbox().addActionListener(e -> updateQuestionFromUI());
-        
     }
 	
 	public JFrame getFrame()
 	{
 		return _gui;
 	}
-
 }

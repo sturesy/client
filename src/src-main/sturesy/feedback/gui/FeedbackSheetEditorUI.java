@@ -147,4 +147,9 @@ public class FeedbackSheetEditorUI extends SFrame
 	{
 		return _questionlist;
 	}
+
+	public JButton getSubmitButton()
+	{
+		return _submitbutton;
+	}
 }

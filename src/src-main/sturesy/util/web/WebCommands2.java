@@ -31,6 +31,7 @@ import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.net.ssl.HostnameVerifier;
@@ -42,6 +43,7 @@ import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import sturesy.core.Log;
@@ -50,6 +52,7 @@ import sturesy.items.MultipleChoiceQuestion;
 import sturesy.items.QuestionModel;
 import sturesy.items.SingleChoiceQuestion;
 import sturesy.items.TextQuestion;
+import sturesy.items.feedback.FeedbackTypeModel;
 import sturesy.util.Crypt;
 
 public class WebCommands2
@@ -138,6 +141,43 @@ public class WebCommands2
         }
 
         return sendJSONObject(url, js, password);
+    }
+    
+    /**
+     * Updates a Feedback Sheet for a given lecture
+     * 
+     * @param url
+     * 		URL of StuReSy relay
+     * @param lecturename
+     * 		Name of lecture
+     * @param password
+     * 		Password for Lecture
+     * @param sheet
+     * 		List of Feedback Questions
+     */
+    public static String updateFeedbackSheet(String url, String lecturename, String password, List<FeedbackTypeModel> sheet)
+    {
+    	JSONObject js = new JSONObject();
+    	js.put("command", "update");
+    	js.put("time", System.currentTimeMillis() / 1000);
+    	js.put("target", "feedback");
+    	js.put("name", encode(lecturename));
+    	
+    	JSONArray fbarray = new JSONArray();
+    	for (FeedbackTypeModel fb : sheet)
+		{
+    		JSONObject fbObject = new JSONObject();
+    		fbObject.put("title", fb.getTitle());
+    		fbObject.put("desc", fb.getDescription());
+    		fbObject.put("type", fb.getType());
+    		fbObject.put("extra", fb.getExtra());
+    		
+    		fbarray.put(fbObject);
+			
+		}
+    	js.put("sheet", fbarray);
+    	
+    	return sendJSONObject(url, js, password);
     }
 
     public static String getInfo(String url)

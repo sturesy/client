@@ -123,7 +123,7 @@ public class FeedbackSheetEditorUI extends SFrame
 	public void setDividerLocation(int location)
 	{
 		if(location == -1) // no location set thus far
-			_splitpane.setDividerLocation(30);
+			_splitpane.setDividerLocation(200);
 		else
 			_splitpane.setDividerLocation(location);
 	}

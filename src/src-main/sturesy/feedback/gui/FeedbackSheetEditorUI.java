@@ -64,7 +64,7 @@ public class FeedbackSheetEditorUI extends SFrame
 		_mvdownbutton = new JButton("↓");
 		
 		_uploadbutton = new JButton("Upload Sheet");
-		_downloadbutton = new JButton("Download Current Sheet");
+		_downloadbutton = new JButton("Download Sheet");
 		_clearbutton = new JButton("Clear");
 		
 		// list of questions

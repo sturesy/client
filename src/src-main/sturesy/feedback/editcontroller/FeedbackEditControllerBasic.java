@@ -6,12 +6,7 @@ package sturesy.feedback.editcontroller;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -24,7 +19,8 @@ import sturesy.items.feedback.FeedbackTypeModel;
  */
 public class FeedbackEditControllerBasic implements IFeedbackEditController
 {
-	private JPanel _panel;
+    private JPanel _panel;
+    private JLabel _typeLabel;
 	private JCheckBox _mandatoryCheckbox;
 	private JTextField _questiontitle;
 	private JTextArea _questiondesc;
@@ -39,7 +35,7 @@ public class FeedbackEditControllerBasic implements IFeedbackEditController
 		
 		_panel.setLayout(new BorderLayout());
 		
-		//_questiontype = new JComboBox();
+		_typeLabel = new JLabel("Type: ");
 		_mandatoryCheckbox = new JCheckBox("Answer is mandatory");
 		
 		_questiontitle = new JTextField();
@@ -48,14 +44,11 @@ public class FeedbackEditControllerBasic implements IFeedbackEditController
 		JPanel questionEditPanel = new JPanel();
 		questionEditPanel.setLayout(new BoxLayout(questionEditPanel, BoxLayout.PAGE_AXIS));
 		questionEditPanel.setBorder(BorderFactory.createTitledBorder("Question Editor"));
-		
-		//JPanel labelPan = new JPanel(new FlowLayout(FlowLayout.LEFT));
-		//labelPan.add(new JLabel("Question Type"));
-		//questionEditPanel.add(labelPan);
-		
+
 		JPanel qtypePanel = new JPanel();
-		qtypePanel.setLayout(new BoxLayout(qtypePanel, BoxLayout.LINE_AXIS));
-		//qtypePanel.add(_questiontype);
+        qtypePanel.setLayout(new BoxLayout(qtypePanel, BoxLayout.LINE_AXIS));
+		qtypePanel.add(_typeLabel);
+        qtypePanel.add(Box.createHorizontalGlue());
 		qtypePanel.add(_mandatoryCheckbox);
 		questionEditPanel.add(qtypePanel);
 		
@@ -71,7 +64,8 @@ public class FeedbackEditControllerBasic implements IFeedbackEditController
 	public void setFeedbackItem(FeedbackTypeModel item)
 	{
 		_item = item;
-		
+
+        _typeLabel.setText("Type: " + item.getTypeLong());
 		_questiontitle.setText(item.getTitle());
 		_questiondesc.setText(item.getDescription());
 		_mandatoryCheckbox.setSelected(item.isMandatory());

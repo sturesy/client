@@ -12,6 +12,7 @@ public abstract class FeedbackTypeModel
 {
 	protected String title = "New Item";
 	protected String description = "Description";
+    protected String extra = "";
 
 	protected boolean mandatory = false;
 	protected String response;
@@ -38,9 +39,9 @@ public abstract class FeedbackTypeModel
 	}
 
 	/**
-	 * Sets title of question
+	 * Sets title of Feedback Item
 	 * 
-	 * @param title
+	 * @param title Title of Feedback Item
 	 */
 	public void setTitle(String title)
 	{
@@ -59,7 +60,7 @@ public abstract class FeedbackTypeModel
 	/**
 	 * Sets description
 	 * 
-	 * @param description
+	 * @param description Description of feedback item
 	 */
 	public void setDescription(String description)
 	{
@@ -78,7 +79,7 @@ public abstract class FeedbackTypeModel
 	/**
 	 * Sets whether this question is mandatory
 	 * 
-	 * @param mandatory
+	 * @param mandatory Is question mandatory?
 	 */
 	public void setMandatory(boolean mandatory)
 	{
@@ -97,7 +98,7 @@ public abstract class FeedbackTypeModel
 	/**
 	 * Sets response to this question
 	 * 
-	 * @param response
+	 * @param response User response
 	 */
 	public void setResponse(String response)
 	{
@@ -111,8 +112,15 @@ public abstract class FeedbackTypeModel
 	 */
 	public String getExtra()
 	{
-		return "";
+		return extra;
 	}
+
+    /**
+     * Sets extra flags custom/advanced feedback types
+     *
+     * @param extra Extra flags to set
+     */
+    public void setExtra(String extra) { this.extra = extra; }
 
 	@Override
 	public String toString()

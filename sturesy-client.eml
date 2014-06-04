@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component LANGUAGE_LEVEL="JDK_1_8" inheritJdk="true">
+	<exclude-output/>
+	<contentEntry url="file://$MODULE_DIR$">
+		<testFolder url="file://$MODULE_DIR$/test"/>
+	</contentEntry>
+	<lib name="RXTXcomm-custom.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/src/hittplugin/libs/RXTXcomm-custom.jar!/"/>
+	</lib>
+	<lib name="jcommon-1.0.17.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/include/jcommon-1.0.17.jar!/"/>
+	</lib>
+	<lib name="jdepend-2.9.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/include/jdepend-2.9.1.jar!/"/>
+	</lib>
+	<lib name="jfreechart-1.0.14.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/include/jfreechart-1.0.14.jar!/"/>
+	</lib>
+	<lib name="json.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/include/json.jar!/"/>
+	</lib>
+	<lib name="miglayout-4.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/include/miglayout-4.0.jar!/"/>
+	</lib>
+	<lib name="SHEF.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/include/SHEF.jar!/"/>
+	</lib>
+	<lib name="xpp3-1.1.4c.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/include/xpp3-1.1.4c.jar!/"/>
+	</lib>
+	<lib name="zxing-core.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/include/zxing-core.jar!/"/>
+	</lib>
+	<lib name="zxing-javase.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/include/zxing-javase.jar!/"/>
+	</lib>
+	<lib name="commons-codec-1.7.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/include/commons-codec-1.7.jar!/"/>
+	</lib>
+	<lib name="commons-collections-3.2.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/include/commons-collections-3.2.1.jar!/"/>
+	</lib>
+	<lib name="commons-lang3-3.1.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/include/commons-lang3-3.1.jar!/"/>
+	</lib>
+	<lib name="mockito-all-1.9.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/include/mockito-all-1.9.0.jar!/"/>
+	</lib>
+	<lib name="novaworx-syntax-0.0.7.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/include/novaworx-syntax-0.0.7.jar!/"/>
+	</lib>
+	<lib name="sam.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/include/sam.jar!/"/>
+	</lib>
+	<lib name="jtidy-8.0.jar" scope="COMPILE">
+		<relative-module-cls project-related="jar://$PROJECT_DIR$/include/jtidy-8.0.jar!/"/>
+	</lib>
+</component>

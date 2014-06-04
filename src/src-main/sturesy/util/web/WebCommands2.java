@@ -43,6 +43,7 @@ import javax.net.ssl.X509TrustManager;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import sturesy.core.Log;
@@ -159,7 +160,7 @@ public class WebCommands2
     	JSONObject js = new JSONObject();
     	js.put("command", "update");
     	js.put("time", System.currentTimeMillis() / 1000);
-    	js.put("target", "feedback");
+    	js.put("target", "fbsheet");
     	js.put("name", encode(lecturename));
     	
     	JSONArray fbarray = new JSONArray();
@@ -170,6 +171,7 @@ public class WebCommands2
     		fbObject.put("desc", fb.getDescription());
     		fbObject.put("type", fb.getType());
     		fbObject.put("extra", fb.getExtra());
+            fbObject.put("mandatory", fb.isMandatory());
     		
     		fbarray.put(fbObject);
 			
@@ -177,6 +179,34 @@ public class WebCommands2
     	js.put("sheet", fbarray);
     	
     	return sendJSONObject(url, js, password);
+    }
+
+    /**
+     * Retrieves the feedback sheet of a specific lecture
+     * @param url URL of StuReSy relay
+     * @param lecturename Name of lecture
+     * @param password Password for Lecture
+     * @return List of Feedback Questions
+     */
+    public static JSONArray downloadFeedbackSheet(String url, String lecturename, String password)
+    {
+        JSONObject js = new JSONObject()
+                .put("command", "get")
+                .put("time", System.currentTimeMillis() / 1000)
+                .put("target", "fbsheet")
+                .put("name", encode(lecturename));
+        String response = sendJSONObject(url, js, password);
+
+        JSONArray sheet;
+        try {
+            sheet = new JSONArray(response);
+        }
+        catch(JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return sheet;
     }
 
     public static String getInfo(String url)

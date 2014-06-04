@@ -29,12 +29,10 @@ public class FeedbackSheetEditorUI extends SFrame
 	private JButton _delbutton;
 	private JButton _mvupbutton;
 	private JButton _mvdownbutton;
-	
-	private JPanel _rightpanel;
-	
-	// Action Buttons
-	private JButton _submitbutton;
-	private JButton _fetchbutton;
+
+    // Action Buttons
+	private JButton _uploadbutton;
+	private JButton _downloadbutton;
 	private JButton _clearbutton;
 	
 	public FeedbackSheetEditorUI(DefaultListModel<FeedbackTypeModel> questions)
@@ -43,7 +41,7 @@ public class FeedbackSheetEditorUI extends SFrame
 		_splitpane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		
 		JPanel leftpanel = createLeftPanel(questions);
-		_rightpanel = createRightPanel(getEmptyEditorPanel());
+        JPanel _rightpanel = createRightPanel(getEmptyEditorPanel());
 		
 		_splitpane.setLeftComponent(leftpanel);
 		_splitpane.setRightComponent(_rightpanel);
@@ -59,14 +57,14 @@ public class FeedbackSheetEditorUI extends SFrame
 		panel.setBorder(BorderFactory.createTitledBorder("Feedback Questions"));
 		panel.setLayout(new BorderLayout());
 		
-		_questionlist = new JList<FeedbackTypeModel>(questions);
+		_questionlist = new JList<>(questions);
 		_addbutton = new JButton("+");
 		_delbutton = new JButton("-");
 		_mvupbutton = new JButton("↑");
 		_mvdownbutton = new JButton("↓");
 		
-		_submitbutton = new JButton("Submit Sheet");
-		_fetchbutton = new JButton("Fetch Current Sheet");
+		_uploadbutton = new JButton("Upload Sheet");
+		_downloadbutton = new JButton("Download Current Sheet");
 		_clearbutton = new JButton("Clear");
 		
 		// list of questions
@@ -112,8 +110,8 @@ public class FeedbackSheetEditorUI extends SFrame
 		panel.add(editorPanel, BorderLayout.CENTER);
 		
 		JPanel buttonPanel = new JPanel();
-		buttonPanel.add(_submitbutton);
-		buttonPanel.add(_fetchbutton);
+		buttonPanel.add(_uploadbutton);
+		buttonPanel.add(_downloadbutton);
 		buttonPanel.add(_clearbutton);
 		panel.add(buttonPanel, BorderLayout.SOUTH);
 		
@@ -148,8 +146,7 @@ public class FeedbackSheetEditorUI extends SFrame
 		return _questionlist;
 	}
 
-	public JButton getSubmitButton()
-	{
-		return _submitbutton;
-	}
+	public JButton getUploadButton() { return _uploadbutton; }
+
+    public JButton getDownloadButton() { return _downloadbutton; }
 }

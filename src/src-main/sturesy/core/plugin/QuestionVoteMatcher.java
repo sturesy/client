@@ -34,6 +34,16 @@ public final class QuestionVoteMatcher
     public static final Object[][] _matches = new Object[][] { { SingleChoiceQuestion.class, SingleVote.class },
             { MultipleChoiceQuestion.class, MultipleVote.class }, { TextQuestion.class, TextVote.class } };
 
+    /**
+     * Check if the given question matches the given vote<br>
+     * e.g: SinleChoiceQuestion and SingleVote
+     * 
+     * @param question
+     *            Question to check
+     * @param vote
+     *            Vote to check
+     * @return true if question matches vote
+     */
     public static boolean matches(QuestionModel question, Vote vote)
     {
         if (question == null || vote == null)

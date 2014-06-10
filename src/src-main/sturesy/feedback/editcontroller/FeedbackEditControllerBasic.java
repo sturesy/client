@@ -40,6 +40,7 @@ public class FeedbackEditControllerBasic implements IFeedbackEditController
 		
 		_questiontitle = new JTextField();
 		_questiondesc = new JTextArea();
+        _questiondesc.setLineWrap(true);
 		
 		JPanel questionEditPanel = new JPanel();
 		questionEditPanel.setLayout(new BoxLayout(questionEditPanel, BoxLayout.PAGE_AXIS));

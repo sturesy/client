@@ -159,12 +159,16 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
                     // deserialize json
                     if(jobj.has("type")) {
                         FeedbackTypeModel mo = FeedbackTypeMapping.instantiateObjectForType(jobj.getString("type"));
-                        mo.setTitle(jobj.getString("title"));
-                        mo.setDescription(jobj.getString("desc"));
-                        mo.setMandatory(jobj.getBoolean("mandatory"));
-                        mo.setExtra(jobj.getString("extra"));
+                        if(mo != null) {
+                            mo.setTitle(jobj.getString("title"));
+                            mo.setDescription(jobj.getString("description"));
+                            mo.setMandatory(jobj.getString("mandatory").equals("1"));
+                            mo.setExtra(jobj.getString("extra"));
 
-                        _questions.addElement(mo);
+                            _questions.addElement(mo);
+                        }
+                        else
+                            System.err.println("Invalid Feedback type: " + jobj.getString("type"));
                     }
                 }
             }

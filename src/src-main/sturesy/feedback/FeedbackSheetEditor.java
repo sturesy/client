@@ -21,6 +21,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -147,15 +148,15 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
     private void downloadButtonAction() {
         LectureID selectedLecture = showLectureSelection();
         if (selectedLecture != null) {
-            JSONArray response = WebCommands2.downloadFeedbackSheet(selectedLecture.getHost().toString(),
+            JSONObject response = WebCommands2.downloadFeedbackSheet(selectedLecture.getHost().toString(),
                     selectedLecture.getLectureID(), selectedLecture.getPassword());
             if (response != null) {
                 // clear current list
                 _questions.clear();
 
-                for (int i = 0; i < response.length(); i++) {
-                    JSONObject jobj = response.getJSONObject(i);
-
+                for(Iterator<String> iter = response.keys(); iter.hasNext();) {
+                    String key = iter.next();
+                    JSONObject jobj = response.getJSONObject(key);
                     // deserialize json
                     if(jobj.has("type")) {
                         FeedbackTypeModel mo = FeedbackTypeMapping.instantiateObjectForType(jobj.getString("type"));
@@ -172,6 +173,8 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
                     }
                 }
             }
+            else
+                JOptionPane.showMessageDialog(this.getFrame(), "Could not download the feedback sheet.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 

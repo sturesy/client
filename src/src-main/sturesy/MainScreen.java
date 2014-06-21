@@ -44,6 +44,7 @@ import sturesy.core.backend.Loader;
 import sturesy.core.plugin.ISettingsScreen;
 import sturesy.export.LectureIDExport;
 import sturesy.feedback.FeedbackSheetEditor;
+import sturesy.feedback.FeedbackViewer;
 import sturesy.items.LectureID;
 import sturesy.items.VotingSet;
 import sturesy.qgen.QuestionEditor;
@@ -74,6 +75,7 @@ public class MainScreen extends WindowAdapter
     private SettingsController _settingswindow;
     private VotingController _votingwindow;
     private FeedbackSheetEditor _feedbacksheet;
+    private FeedbackViewer _feedbackviewer;
 
     public MainScreen()
     {
@@ -159,13 +161,17 @@ public class MainScreen extends WindowAdapter
         MenuItem votingmenu = new MenuItem(Localize.getString(Localize.VOTING));
         MenuItem evaluatemenu = new MenuItem(Localize.getString(Localize.VOTINGANALYSIS));
         MenuItem settingsmenu = new MenuItem(Localize.getString(Localize.SETTINGS));
+        MenuItem fbsheeteditmenu = new MenuItem("Feedback-Sheet Editor");
+        MenuItem fbviewermenu = new MenuItem("Feedback Viewer");
 
         qgenmenu.addActionListener(e -> getQuestionEditorAction());
         votingmenu.addActionListener(e -> getVotingAction());
         evaluatemenu.addActionListener(e -> getEvaluateAction());
+        fbsheeteditmenu.addActionListener(e -> getFeedbackSheetEditorAction());
+        fbviewermenu.addActionListener(e-> getFeedbackViewerAction());
         settingsmenu.addActionListener(e -> getSettingsAction());
 
-        return new MenuItem[] { votingmenu, evaluatemenu, qgenmenu, settingsmenu };
+        return new MenuItem[] { votingmenu, evaluatemenu, qgenmenu, fbsheeteditmenu, fbviewermenu, settingsmenu };
     }
 
     /**
@@ -322,7 +328,10 @@ public class MainScreen extends WindowAdapter
             _qgen.getFrame().toFront();
         }
     }
-    
+
+    /**
+     * Shows Feedback Sheet Editor
+     */
     private void getFeedbackSheetEditorAction()
     {
     	if(_feedbacksheet == null)
@@ -336,6 +345,23 @@ public class MainScreen extends WindowAdapter
     		_feedbacksheet.getFrame().toFront();
     	}
     	
+    }
+
+    /**
+     * Shows Feedback Viewer
+     */
+    private void getFeedbackViewerAction()
+    {
+        if(_feedbackviewer == null)
+        {
+            _feedbackviewer = new FeedbackViewer();
+            _feedbackviewer.displayController(_gui, this);
+            _gui.setVisible(false);
+        }
+        else
+        {
+            _feedbackviewer.getFrame().toFront();
+        }
     }
 
     /**
@@ -373,7 +399,8 @@ public class MainScreen extends WindowAdapter
         _gui.getVoting().addActionListener(e -> getVotingAction());
         _gui.getEvaluate().addActionListener(e -> getEvaluateAction());
         _gui.getQuestion().addActionListener(e -> getQuestionEditorAction());
-        _gui.getFeeedbackSheet().addActionListener(e -> getFeedbackSheetEditorAction());
+        _gui.getFeedbackSheet().addActionListener(e -> getFeedbackSheetEditorAction());
+        _gui.getFeedbackViewer().addActionListener(e -> getFeedbackViewerAction());
     }
 
     @Override
@@ -394,6 +421,10 @@ public class MainScreen extends WindowAdapter
         else if (_feedbacksheet != null && e.getSource() == _feedbacksheet.getFrame())
         {
         	_feedbacksheet = null;
+        }
+        else if(_feedbackviewer != null && e.getSource() == _feedbackviewer.getFrame())
+        {
+            _feedbackviewer = null;
         }
         _gui.setVisible(true);
     }

@@ -13,6 +13,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.ListSelectionModel;
 
+import sturesy.core.backend.Loader;
 import sturesy.core.ui.SFrame;
 import sturesy.feedback.editcontroller.IFeedbackEditController;
 import sturesy.items.feedback.FeedbackTypeModel;
@@ -38,6 +39,10 @@ public class FeedbackSheetEditorUI extends SFrame
 	public FeedbackSheetEditorUI(DefaultListModel<FeedbackTypeModel> questions)
 	{
 		super();
+
+        setTitle("Feedback-Sheet Editor");
+        setIconImage(Loader.getImageIcon(Loader.IMAGE_STURESY).getImage());
+
 		_splitpane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		
 		JPanel leftpanel = createLeftPanel(questions);

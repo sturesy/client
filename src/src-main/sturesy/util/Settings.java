@@ -106,12 +106,8 @@ public class Settings
      */
     public boolean getBoolean(String property)
     {
-        if (_properties.get(property) != null)
-        {
-            return Boolean.parseBoolean(_properties.getProperty(property));
-        }
+        return _properties.get(property) != null && Boolean.parseBoolean(_properties.getProperty(property));
 
-        return false;
     }
 
     /**
@@ -140,7 +136,7 @@ public class Settings
     /**
      * Returns a {@link Dimension} from the properties, also tries to check the
      * Defaults<br>
-     * if non-existant returns {@link Settings#UNDEFINEDDIMENSION}
+     * if non-existant returns {@link SturesyConstants#UNDEFINEDDIMENSION}
      */
     public Dimension getDimension(String property)
     {
@@ -161,7 +157,7 @@ public class Settings
 
     /**
      * Returns a Color from the Properties, also checks the Defaults<br>
-     * Returns {@link Settings#UNDEFINEDCOLOR} if property was nonexistant
+     * Returns {@link SturesyConstants#UNDEFINEDCOLOR} if property was nonexistant
      * 
      * @param property
      *            property key
@@ -307,12 +303,7 @@ public class Settings
         {
             File f = new File(Folder.getBaseFolder(), FILENAME);
             _properties.store(new FileOutputStream(f), "Stored Properties");
-        }
-        catch (FileNotFoundException e)
-        {
-            Log.error("property save", e);
-        }
-        catch (IOException e)
+        } catch (IOException e)
         {
             Log.error("property save", e);
         }
@@ -330,6 +321,7 @@ public class Settings
     /**
      * Loads the Properties-File, creating it if necessary
      */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private Properties loadProperties()
     {
 

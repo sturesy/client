@@ -34,7 +34,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
-import javax.swing.JFrame;
+import javax.swing.*;
 
 import org.jfree.util.Log;
 
@@ -92,7 +92,7 @@ public class MainScreen extends WindowAdapter
 
         registerListeners();
 
-        _gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        _gui.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         _gui.setMenuBar(createMenuBar());
 
@@ -246,14 +246,7 @@ public class MainScreen extends WindowAdapter
         if (_settingswindow == null)
         {
             String maindirectoryAbsolutePath = SturesyManager.getMainDirectory().getAbsolutePath();
-            MainSettingsListener maindirectoryListener = new MainSettingsListener()
-            {
-                @Override
-                public void maindirectoryChanged(String maindir)
-                {
-                    SturesyManager.setMainDirectory(maindir);
-                }
-            };
+            MainSettingsListener maindirectoryListener = SturesyManager::setMainDirectory;
             Set<ISettingsScreen> settingscreens = SturesyManager.getSettingsScreens();
             Collection<LectureID> lectureIDs = SturesyManager.getLectureIDs();
             _settingswindow = new SettingsController(settingscreens, maindirectoryListener, maindirectoryAbsolutePath,

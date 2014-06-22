@@ -1,8 +1,6 @@
 package sturesy.feedback;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
-import sturesy.SturesyManager;
 import sturesy.core.Controller;
 import sturesy.core.ui.JMenuItem2;
 import sturesy.core.ui.UIObserver;
@@ -11,6 +9,7 @@ import sturesy.feedback.gui.FeedbackSheetEditorUI;
 import sturesy.items.LectureID;
 import sturesy.items.feedback.FeedbackTypeMapping;
 import sturesy.items.feedback.FeedbackTypeModel;
+import sturesy.util.CommonDialogs;
 import sturesy.util.Settings;
 import sturesy.util.web.WebCommands2;
 
@@ -20,7 +19,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -110,27 +108,8 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
         _questions.setElementAt(controller.getFeedbackItem(), sel);
     }
 
-    private LectureID showLectureSelection() {
-        Collection<LectureID> lectures = SturesyManager.getLectureIDs();
-        LectureID selectedLecture;
-
-        if (lectures.size() == 0) {
-            JOptionPane.showMessageDialog(null,
-                    "No lectures added. Please add one in the settings menu.",
-                    "No lectures", JOptionPane.ERROR_MESSAGE);
-            selectedLecture = null;
-        } else {
-            selectedLecture = (LectureID) JOptionPane.showInputDialog(
-                    null, "Select a lecture:",
-                    "Select Lecture", JOptionPane.QUESTION_MESSAGE, null,
-                    lectures.toArray(), null);
-        }
-
-        return selectedLecture;
-    }
-
     private void uploadButtonAction() {
-        LectureID selectedLecture = showLectureSelection();
+        LectureID selectedLecture = CommonDialogs.showLectureSelection();
         if (selectedLecture != null) {
             // convert ListModel to List
             List<FeedbackTypeModel> fbList = new LinkedList<>();
@@ -146,7 +125,7 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
     }
 
     private void downloadButtonAction() {
-        LectureID selectedLecture = showLectureSelection();
+        LectureID selectedLecture = CommonDialogs.showLectureSelection();
         if (selectedLecture != null) {
             JSONObject response = WebCommands2.downloadFeedbackSheet(selectedLecture.getHost().toString(),
                     selectedLecture.getLectureID(), selectedLecture.getPassword());
@@ -154,10 +133,11 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
                 // clear current list
                 _questions.clear();
 
-                for(Iterator<String> iter = response.keys(); iter.hasNext();) {
-                    String key = iter.next();
+                for(Iterator iter = response.keys(); iter.hasNext();) {
+                    String key = (String)iter.next();
                     JSONObject jobj = response.getJSONObject(key);
-                    // deserialize json
+
+                    // extract json data
                     if(jobj.has("type")) {
                         FeedbackTypeModel mo = FeedbackTypeMapping.instantiateObjectForType(jobj.getString("type"));
                         if(mo != null) {

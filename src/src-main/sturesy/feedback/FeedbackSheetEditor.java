@@ -1,5 +1,6 @@
 package sturesy.feedback;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import sturesy.core.Controller;
 import sturesy.core.ui.JMenuItem2;
@@ -127,15 +128,14 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
     private void downloadButtonAction() {
         LectureID selectedLecture = CommonDialogs.showLectureSelection();
         if (selectedLecture != null) {
-            JSONObject response = WebCommands2.downloadFeedbackSheet(selectedLecture.getHost().toString(),
+            JSONArray response = WebCommands2.downloadFeedbackSheet(selectedLecture.getHost().toString(),
                     selectedLecture.getLectureID(), selectedLecture.getPassword());
             if (response != null) {
                 // clear current list
                 _questions.clear();
 
-                for(Iterator iter = response.keys(); iter.hasNext();) {
-                    String key = (String)iter.next();
-                    JSONObject jobj = response.getJSONObject(key);
+                for(int i = 0; i < response.length(); i++) {
+                    JSONObject jobj = response.getJSONObject(i);
 
                     // extract json data
                     if(jobj.has("type")) {
@@ -143,7 +143,7 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
                         if(mo != null) {
                             mo.setTitle(jobj.getString("title"));
                             mo.setDescription(jobj.getString("description"));
-                            mo.setMandatory(jobj.getString("mandatory").equals("1"));
+                            mo.setMandatory(jobj.getInt("mandatory") == 1);
                             mo.setExtra(jobj.getString("extra"));
 
                             _questions.addElement(mo);

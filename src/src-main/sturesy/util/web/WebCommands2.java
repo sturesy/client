@@ -188,7 +188,7 @@ public class WebCommands2
      * @param password Password for Lecture
      * @return List of Feedback Questions
      */
-    public static JSONObject downloadFeedbackSheet(String url, String lecturename, String password)
+    public static JSONArray downloadFeedbackSheet(String url, String lecturename, String password)
     {
         JSONObject js = new JSONObject()
                 .put("command", "get")
@@ -197,9 +197,9 @@ public class WebCommands2
                 .put("name", encode(lecturename));
         String response = sendJSONObject(url, js, password);
 
-        JSONObject sheet;
+        JSONArray sheet;
         try {
-            sheet = new JSONObject(response);
+            sheet = new JSONArray(response);
         }
         catch(JSONException e) {
             System.err.println(response);

@@ -134,28 +134,18 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
                 // clear current list
                 _questions.clear();
 
-                for(int i = 0; i < response.length(); i++) {
+                for (int i = 0; i < response.length(); i++) {
                     JSONObject jobj = response.getJSONObject(i);
+                    FeedbackTypeModel mo = FeedbackTypeMapping.instantiateAndInitializeWithJson(jobj);
 
-                    // extract json data
-                    if(jobj.has("type")) {
-                        FeedbackTypeModel mo = FeedbackTypeMapping.instantiateObjectForType(jobj.getString("type"));
-                        if(mo != null) {
-                            mo.setTitle(jobj.getString("title"));
-                            mo.setDescription(jobj.getString("description"));
-                            mo.setMandatory(jobj.getInt("mandatory") == 1);
-                            mo.setExtra(jobj.getString("extra"));
-
-                            _questions.addElement(mo);
-                        }
-                        else
-                            System.err.println("Invalid Feedback type: " + jobj.getString("type"));
-                    }
+                    if (mo != null) {
+                        _questions.addElement(mo);
+                    } else
+                        System.err.println("Invalid Feedback type: " + jobj.getString("type"));
                 }
             }
-            else
-                JOptionPane.showMessageDialog(this.getFrame(), "Could not download the feedback sheet.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
+        } else
+            JOptionPane.showMessageDialog(this.getFrame(), "Could not download the feedback sheet.", "Error", JOptionPane.ERROR_MESSAGE);
     }
 
     /**

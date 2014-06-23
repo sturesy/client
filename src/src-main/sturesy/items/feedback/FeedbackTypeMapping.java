@@ -1,5 +1,6 @@
 package sturesy.items.feedback;
 
+import org.json.JSONObject;
 import sturesy.feedback.editcontroller.FeedbackEditControllerBasic;
 import sturesy.feedback.editcontroller.IFeedbackEditController;
 
@@ -48,6 +49,28 @@ public class FeedbackTypeMapping {
         {
             if(type.equals(o.getType()))
                 return o;
+        }
+        return null;
+    }
+
+    /**
+     * Creates a machine-readable object from JSON sheet data
+     * @param obj JSON data
+     * @return Newly created object
+     */
+    public static FeedbackTypeModel instantiateAndInitializeWithJson(JSONObject obj)
+    {
+        // extract json data
+        if(obj.has("type")) {
+            FeedbackTypeModel mo = FeedbackTypeMapping.instantiateObjectForType(obj.getString("type"));
+            if (mo != null) {
+                mo.setTitle(obj.getString("title"));
+                mo.setDescription(obj.getString("description"));
+                mo.setMandatory(obj.getInt("mandatory") == 1);
+                mo.setExtra(obj.getString("extra"));
+
+                return mo;
+            }
         }
         return null;
     }

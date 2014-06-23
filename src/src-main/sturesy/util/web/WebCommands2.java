@@ -210,6 +210,35 @@ public class WebCommands2
         return sheet;
     }
 
+    /**
+     * Retrieves feedback to a lecture
+     * @param url URL of StuReSy relay
+     * @param lecturename Name of lecture
+     * @param password Password for Lecture
+     * @return JSON Object with feedback
+     */
+    public static JSONObject downloadFeedback(String url, String lecturename, String password)
+    {
+        JSONObject js = new JSONObject()
+                .put("command", "get")
+                .put("time", System.currentTimeMillis() / 1000)
+                .put("target", "fb")
+                .put("name", encode(lecturename));
+        String response = sendJSONObject(url, js, password);
+
+        JSONObject fb;
+        try {
+            fb = new JSONObject(response);
+        }
+        catch(JSONException e) {
+            System.err.println(response);
+            e.printStackTrace();
+            return null;
+        }
+
+        return fb;
+    }
+
     public static String getInfo(String url)
     {
         JSONObject js = new JSONObject();

@@ -45,7 +45,7 @@ import sturesy.core.plugin.ISettingsScreen;
 import sturesy.export.LectureIDExport;
 import sturesy.items.LectureID;
 import sturesy.items.VotingSet;
-import sturesy.qgen.QuestionEditor;
+import sturesy.qgen.QuestionEditorController;
 import sturesy.settings.SettingsController;
 import sturesy.settings.mainsettings.MainSettingsListener;
 import sturesy.update.UpdateChecker;
@@ -69,7 +69,7 @@ public class MainScreen extends WindowAdapter
 {
     private MainScreenUI _gui;
 
-    private QuestionEditor _qgen;
+    private QuestionEditorController _questionedit;
     private SettingsController _settingswindow;
     private VotingController _votingwindow;
 
@@ -309,15 +309,15 @@ public class MainScreen extends WindowAdapter
      */
     private void getQuestionEditorAction()
     {
-        if (_qgen == null)
+        if (_questionedit == null)
         {
-            _qgen = new QuestionEditor(SturesyManager.getLecturesDirectory());
-            _qgen.displayController(_gui, this);
+            _questionedit = new QuestionEditorController(SturesyManager.getLecturesDirectory());
+            _questionedit.displayController(_gui, this);
             _gui.setVisible(false);
         }
         else
         {
-            _qgen.getFrame().toFront();
+            _questionedit.getFrame().toFront();
         }
     }
 
@@ -361,9 +361,9 @@ public class MainScreen extends WindowAdapter
     @Override
     public void windowClosing(WindowEvent e)
     {
-        if (_qgen != null && e.getSource() == _qgen.getFrame())
+        if (_questionedit != null && e.getSource() == _questionedit.getFrame())
         {
-            _qgen = null;
+            _questionedit = null;
         }
         else if (_votingwindow != null && e.getSource() == _votingwindow.getFrame())
         {

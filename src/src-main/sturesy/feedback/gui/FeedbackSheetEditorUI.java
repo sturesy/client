@@ -46,10 +46,10 @@ public class FeedbackSheetEditorUI extends SFrame
 		_splitpane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		
 		JPanel leftpanel = createLeftPanel(questions);
-        JPanel _rightpanel = createRightPanel(getEmptyEditorPanel());
+        JPanel rightpanel = createRightPanel(getEmptyEditorPanel());
 		
 		_splitpane.setLeftComponent(leftpanel);
-		_splitpane.setRightComponent(_rightpanel);
+		_splitpane.setRightComponent(rightpanel);
 		
 		add(_splitpane);
 	}

@@ -142,6 +142,30 @@ public class WebCommands2
 
         return sendJSONObject(url, js, password);
     }
+
+    /**
+     * Deletes all Feedback Items with the given IDs from a lecture
+     *
+     * @param url
+     * 		URL of StuReSy relay
+     * @param lecturename
+     * 		Name of lecture
+     * @param password
+     * 		Password for Lecture
+     * @param itemsToDelete
+     *      List of Feedback Item IDs to delete
+     * @return
+     */
+    public static String deleteFeedbackQuestions(String url, String lecturename, String password, List<Integer> itemsToDelete)
+    {
+        JSONObject js = new JSONObject();
+        js.put("command", "delete");
+        js.put("time", System.currentTimeMillis() / 1000);
+        js.put("name", encode(lecturename));
+        js.put("items", itemsToDelete);
+
+        return sendJSONObject(url, js, password);
+    }
     
     /**
      * Updates a Feedback Sheet for a given lecture
@@ -164,14 +188,17 @@ public class WebCommands2
     	js.put("name", encode(lecturename));
     	
     	JSONArray fbarray = new JSONArray();
+        int count = 0;
     	for (FeedbackTypeModel fb : sheet)
 		{
     		JSONObject fbObject = new JSONObject();
+            fbObject.put("fbid", fb.getId());
     		fbObject.put("title", fb.getTitle());
     		fbObject.put("desc", fb.getDescription());
     		fbObject.put("type", fb.getType());
     		fbObject.put("extra", fb.getExtra());
             fbObject.put("mandatory", fb.isMandatory());
+            fbObject.put("position", count++);
     		
     		fbarray.put(fbObject);
 			
@@ -232,7 +259,6 @@ public class WebCommands2
         }
         catch(JSONException e) {
             System.err.println(response);
-            e.printStackTrace();
             return null;
         }
 

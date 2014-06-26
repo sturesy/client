@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import sturesy.core.Controller;
 import sturesy.core.ui.JMenuItem2;
+import sturesy.core.ui.SwappableListModel;
 import sturesy.core.ui.UIObserver;
 import sturesy.feedback.editcontroller.IFeedbackEditController;
 import sturesy.feedback.gui.FeedbackSheetEditorUI;
@@ -20,7 +21,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,12 +31,14 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
     private FeedbackSheetEditorUI _gui;
     private Settings _settings;
 
-    private DefaultListModel<FeedbackTypeModel> _questions;
+    private SwappableListModel<FeedbackTypeModel> _questions;
+    private List<Integer> _deletedFeedbackIds;
 
     public FeedbackSheetEditor() {
         _settings = Settings.getInstance();
-        _questions = new DefaultListModel<>();
+        _questions = new SwappableListModel<>();
         _gui = new FeedbackSheetEditorUI(_questions);
+        _deletedFeedbackIds = new LinkedList<Integer>();
 
         addListeners();
     }
@@ -81,6 +83,11 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
     private void delButtonAction() {
         int[] selected = _gui.getQuestionList().getSelectedIndices();
         for (int i = selected.length - 1; i >= 0; i--) {
+            // mark for deletion when the new sheet is being uploaded
+            FeedbackTypeModel mo = _questions.get(selected[i]);
+            if(mo.getId() != 0)
+                _deletedFeedbackIds.add(mo.getId());
+
             _questions.remove(selected[i]);
         }
     }
@@ -113,39 +120,70 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
         LectureID selectedLecture = CommonDialogs.showLectureSelection();
         if (selectedLecture != null) {
             // convert ListModel to List
-            List<FeedbackTypeModel> fbList = new LinkedList<>();
+            List<FeedbackTypeModel> fbList = new LinkedList<FeedbackTypeModel>();
             for (Object obj : _questions.toArray()) {
                 fbList.add((FeedbackTypeModel) obj);
             }
 
-            String response = WebCommands2.updateFeedbackSheet(selectedLecture.getHost()
-                            .toString(), selectedLecture.getLectureID(),
-                    selectedLecture.getPassword(), fbList);
-            System.out.println(response);
+            // delete remotely that were marked for removal locally
+            if(_deletedFeedbackIds.size() > 0)
+                WebCommands2.deleteFeedbackQuestions(selectedLecture.getHost().toString(),
+                    selectedLecture.getLectureID().toString(), selectedLecture.getPassword(), _deletedFeedbackIds);
+
+            // upload new sheet
+            WebCommands2.updateFeedbackSheet(selectedLecture.getHost().toString(),
+                    selectedLecture.getLectureID(), selectedLecture.getPassword(), fbList);
+            downloadLecture(selectedLecture);
         }
     }
 
     private void downloadButtonAction() {
         LectureID selectedLecture = CommonDialogs.showLectureSelection();
         if (selectedLecture != null) {
-            JSONArray response = WebCommands2.downloadFeedbackSheet(selectedLecture.getHost().toString(),
-                    selectedLecture.getLectureID(), selectedLecture.getPassword());
-            if (response != null) {
-                // clear current list
-                _questions.clear();
+            downloadLecture(selectedLecture);
+        }
+    }
 
-                for (int i = 0; i < response.length(); i++) {
-                    JSONObject jobj = response.getJSONObject(i);
-                    FeedbackTypeModel mo = FeedbackTypeMapping.instantiateAndInitializeWithJson(jobj);
+    private void downloadLecture(LectureID lecture) {
+        JSONArray response = WebCommands2.downloadFeedbackSheet(lecture.getHost().toString(),
+                lecture.getLectureID(), lecture.getPassword());
+        if (response != null) {
+            // clear current list
+            _questions.clear();
 
-                    if (mo != null) {
-                        _questions.addElement(mo);
-                    } else
-                        System.err.println("Invalid Feedback type: " + jobj.getString("type"));
-                }
+            for (int i = 0; i < response.length(); i++) {
+                JSONObject jobj = response.getJSONObject(i);
+                FeedbackTypeModel mo = FeedbackTypeMapping.instantiateAndInitializeWithJson(jobj);
+
+                if (mo != null) {
+                    _questions.addElement(mo);
+                } else
+                    System.err.println("Invalid Feedback type: " + jobj.getString("type"));
             }
-        } else
+            _deletedFeedbackIds.clear();
+            _gui.getQuestionList().updateUI();
+            _gui.updateEditorPanel(null);
+        }
+        else
             JOptionPane.showMessageDialog(this.getFrame(), "Could not download the feedback sheet.", "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    private void moveDownButtonAction() {
+        int selected = _gui.getQuestionList().getSelectedIndex();
+        if(selected != -1 && _questions.size() > selected+1) {
+            _questions.swap(selected, selected+1);
+            _gui.getQuestionList().setSelectedIndex(selected+1);
+            _gui.getQuestionList().updateUI();
+        }
+    }
+
+    private void moveUpButtonAction() {
+        int selected = _gui.getQuestionList().getSelectedIndex();
+        if(selected > 0) {
+            _questions.swap(selected, selected-1);
+            _gui.getQuestionList().setSelectedIndex(selected-1);
+            _gui.getQuestionList().updateUI();
+        }
     }
 
     /**
@@ -169,6 +207,8 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
         _gui.getDelButton().addActionListener(e -> delButtonAction());
         _gui.getUploadButton().addActionListener(e -> uploadButtonAction());
         _gui.getDownloadButton().addActionListener(e -> downloadButtonAction());
+        _gui.getMoveDownButton().addActionListener(e -> moveDownButtonAction());
+        _gui.getMoveUpButton().addActionListener(e -> moveUpButtonAction());
     }
 
     public JFrame getFrame() {

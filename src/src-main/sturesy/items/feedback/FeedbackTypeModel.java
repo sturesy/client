@@ -10,12 +10,12 @@ package sturesy.items.feedback;
  */
 public abstract class FeedbackTypeModel
 {
+    protected int id;
 	protected String title = "New Item";
 	protected String description = "Description";
     protected String extra = "";
 
 	protected boolean mandatory = false;
-	protected String response;
 
 	/**
 	 * 
@@ -87,25 +87,6 @@ public abstract class FeedbackTypeModel
 	}
 
 	/**
-	 * 
-	 * @return Response to this question
-	 */
-	public String getResponse()
-	{
-		return response;
-	}
-
-	/**
-	 * Sets response to this question
-	 * 
-	 * @param response User response
-	 */
-	public void setResponse(String response)
-	{
-		this.response = response;
-	}
-
-	/**
 	 * Returns extra flags for custom/advanced feedback types
 	 * 
 	 * @return extra flags
@@ -122,7 +103,23 @@ public abstract class FeedbackTypeModel
      */
     public void setExtra(String extra) { this.extra = extra; }
 
-	@Override
+    /**
+     * Return Feedback ID
+     * @return Feedback ID
+     */
+    public int getId() {
+        return id;
+    }
+
+    /**
+     * Set Feedback ID
+     * @param id Feedback ID
+     */
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    @Override
 	public String toString()
 	{
 		return getTitle();

@@ -69,6 +69,9 @@ public class FeedbackTypeMapping {
                 mo.setMandatory(obj.getInt("mandatory") == 1);
                 mo.setExtra(obj.getString("extra"));
 
+                if(obj.has("fbid"))
+                    mo.setId(obj.getInt("fbid"));
+
                 return mo;
             }
         }

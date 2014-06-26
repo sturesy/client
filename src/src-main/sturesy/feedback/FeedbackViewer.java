@@ -57,6 +57,7 @@ public class FeedbackViewer implements Controller {
                     lid.getLectureID().toString(), lid.getPassword());
             JSONObject fb = WebCommands2.downloadFeedback(lid.getHost().toString(),
                     lid.getLectureID().toString(), lid.getPassword());
+
             if(sheet != null && fb != null) {
                 _gui.getFeedbackResults().removeAll();
                 for (int i = 0; i < sheet.length(); i++) {
@@ -76,9 +77,10 @@ public class FeedbackViewer implements Controller {
                         _gui.getFeedbackResults().add(panel);
                     }
                 }
-
                 _gui.getFeedbackResults().revalidate();
             }
+            else
+                JOptionPane.showMessageDialog(_gui, "No feedback or feedback sheet available for given lecture.");
         }
     }
 

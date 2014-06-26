@@ -24,7 +24,7 @@ import javax.swing.DefaultListModel;
  * 
  * @author w.posdorfer
  */
-public class SwapableListModel extends DefaultListModel
+public class SwappableListModel<E> extends DefaultListModel<E>
 {
 
     private static final long serialVersionUID = -3309301645496963657L;

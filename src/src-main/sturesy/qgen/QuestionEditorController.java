@@ -33,7 +33,7 @@ import sturesy.core.backend.Loader;
 import sturesy.core.backend.services.crud.QuestionCRUDService;
 import sturesy.core.ui.JMenuItem2;
 import sturesy.core.ui.MessageWindow;
-import sturesy.core.ui.SwapableListModel;
+import sturesy.core.ui.SwappableListModel;
 import sturesy.items.MultipleChoiceQuestion;
 import sturesy.items.QuestionModel;
 import sturesy.items.QuestionSet;
@@ -84,7 +84,7 @@ public class QuestionEditorController extends CommonEditWindowController
     {
         _lecturesDirectory = lecturesDirectory;
         _editPanel = new EditQuestionController();
-        _listmodel = new SwapableListModel();
+        _listmodel = new SwappableListModel();
         _questionSet = new QuestionSet();
 
         String southPanelBorderTitle = Localize.getString("label.questionset");

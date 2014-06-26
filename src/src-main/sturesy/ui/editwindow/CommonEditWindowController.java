@@ -27,7 +27,7 @@ import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 
 import sturesy.core.Controller;
-import sturesy.core.ui.SwapableListModel;
+import sturesy.core.ui.SwappableListModel;
 import sturesy.util.Settings;
 
 /**
@@ -42,14 +42,14 @@ public abstract class CommonEditWindowController implements Controller
     /** This views UI */
     protected CommonEditWindowUI _ui;
     /** The Listmodel used for the list on the left */
-    protected SwapableListModel _listmodel;
+    protected SwappableListModel _listmodel;
     /** The DetailView on the right */
     protected JPanel _detailPanel;
     protected Settings _settings = Settings.getInstance();
 
     /**
      * No real constructor, call
-     * {@link #setupUI(SwapableListModel, ListCellRenderer, int, JPanel)} when
+     * {@link #setupUI(sturesy.core.ui.SwappableListModel, ListCellRenderer, int, JPanel)} when
      * done with configuration to setup UI
      */
     public CommonEditWindowController()
@@ -73,7 +73,7 @@ public abstract class CommonEditWindowController implements Controller
      * @param leftPanelBorderTitle
      *            border title for the left panel
      */
-    protected void setupUI(SwapableListModel listmodel, ListCellRenderer itemlistcellrenderer, int dividerlocation,
+    protected void setupUI(SwappableListModel listmodel, ListCellRenderer itemlistcellrenderer, int dividerlocation,
             JPanel detailPanel, String southpanelBorderTitle, String leftPanelBorderTitle)
     {
         _ui = new CommonEditWindowUI(listmodel, itemlistcellrenderer, dividerlocation, detailPanel,

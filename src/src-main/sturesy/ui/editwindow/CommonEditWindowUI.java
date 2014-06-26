@@ -43,7 +43,7 @@ import sturesy.core.Localize;
 import sturesy.core.backend.Loader;
 import sturesy.core.ui.JGap;
 import sturesy.core.ui.SFrame;
-import sturesy.core.ui.SwapableListModel;
+import sturesy.core.ui.SwappableListModel;
 import sturesy.core.ui.VerticalLayout;
 
 public final class CommonEditWindowUI
@@ -65,7 +65,7 @@ public final class CommonEditWindowUI
     private String _southpanelBorderTitle;
     private String _leftPanelBorderTitle;
 
-    public CommonEditWindowUI(SwapableListModel listmodel, ListCellRenderer itemlistcellrenderer, int dividerlocation,
+    public CommonEditWindowUI(SwappableListModel listmodel, ListCellRenderer itemlistcellrenderer, int dividerlocation,
             JPanel detailPanel, String southpanelBorderTitle, String leftPanelBorderTitle)
     {
         _southpanelBorderTitle = southpanelBorderTitle;
@@ -73,7 +73,7 @@ public final class CommonEditWindowUI
         setupUI(listmodel, itemlistcellrenderer, dividerlocation, detailPanel);
     }
 
-    private void setupUI(SwapableListModel listmodel, ListCellRenderer itemlistcellrenderer, int dividerlocation,
+    private void setupUI(SwappableListModel listmodel, ListCellRenderer itemlistcellrenderer, int dividerlocation,
             JPanel detailPanel)
     {
         _frame = new SFrame();
@@ -102,7 +102,7 @@ public final class CommonEditWindowUI
      *            listmodel to use for the JList
      * @return JPanel
      */
-    private JPanel setupLeftPanel(SwapableListModel listmodel, ListCellRenderer itemlistcellrenderer)
+    private JPanel setupLeftPanel(SwappableListModel listmodel, ListCellRenderer itemlistcellrenderer)
     {
         JPanel leftpanel = new JPanel(new BorderLayout());
         leftpanel.setBorder(new TitledBorder(_leftPanelBorderTitle));

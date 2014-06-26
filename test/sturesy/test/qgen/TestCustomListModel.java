@@ -23,11 +23,11 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import sturesy.core.ui.SwapableListModel;
+import sturesy.core.ui.SwappableListModel;
 
 public class TestCustomListModel
 {
-    private SwapableListModel listModel;
+    private SwappableListModel listModel;
     private Object obj1;
     private Object obj2;
     private Object obj3;
@@ -36,7 +36,7 @@ public class TestCustomListModel
     @Before
     public void beforeEachTest()
     {
-        listModel = new SwapableListModel();
+        listModel = new SwappableListModel();
         obj1 = new Object();
         obj2 = new Object();
         obj3 = new Object();

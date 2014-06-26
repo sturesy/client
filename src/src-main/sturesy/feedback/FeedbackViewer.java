@@ -12,11 +12,13 @@ import sturesy.util.Settings;
 import sturesy.util.web.WebCommands2;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.util.Iterator;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Displays Feedback submitted to the StuReSy Server
@@ -26,8 +28,14 @@ public class FeedbackViewer implements Controller {
     private final Settings _settings;
     private FeedbackViewerUI _gui;
 
+    private DefaultListModel<FeedbackTypeModel> _questionList;
+    private DefaultListModel<FeedbackViewerUserEntry> _userList;
+
     public FeedbackViewer() {
-        _gui = new FeedbackViewerUI();
+        _questionList = new DefaultListModel<>();
+        _userList = new DefaultListModel<>();
+
+        _gui = new FeedbackViewerUI(_questionList, _userList);
         _settings = Settings.getInstance();
 
         addListeners();
@@ -54,33 +62,76 @@ public class FeedbackViewer implements Controller {
         LectureID lid = CommonDialogs.showLectureSelection();
         if (lid != null) {
             JSONArray sheet = WebCommands2.downloadFeedbackSheet(lid.getHost().toString(),
-                    lid.getLectureID().toString(), lid.getPassword());
+                    lid.getLectureID(), lid.getPassword());
             JSONObject fb = WebCommands2.downloadFeedback(lid.getHost().toString(),
-                    lid.getLectureID().toString(), lid.getPassword());
+                    lid.getLectureID(), lid.getPassword());
 
             if(sheet != null && fb != null) {
-                _gui.getFeedbackResults().removeAll();
-                for (int i = 0; i < sheet.length(); i++) {
-                    JSONObject jobj = sheet.getJSONObject(i);
-                    FeedbackTypeModel mo = FeedbackTypeMapping.instantiateAndInitializeWithJson(jobj);
-                    if(mo != null) {
-
-                        JPanel panel = new JPanel();
-                        panel.setLayout(new GridLayout(0, 1));
-                        panel.setBorder(BorderFactory.createTitledBorder(jobj.getString("title")));
-
-                        panel.add(new JLabel("Description: " + mo.getDescription()));
-                        panel.add(new JLabel("Responses: " + fb.getJSONArray(String.valueOf(jobj.getInt("fbid")))));
-
-                        panel.setMaximumSize(panel.getPreferredSize());
-
-                        _gui.getFeedbackResults().add(panel);
-                    }
-                }
-                _gui.getFeedbackResults().revalidate();
+                populateFeedbackQuestionList(sheet);
+                populateFeedbackUserList(fb);
             }
             else
                 JOptionPane.showMessageDialog(_gui, "No feedback or feedback sheet available for given lecture.");
+        }
+    }
+
+    private void populateFeedbackQuestionList(JSONArray sheet) {
+        // fill view with feedback sheet
+        for (int i = 0; i < sheet.length(); i++) {
+            JSONObject jobj = sheet.getJSONObject(i);
+            FeedbackTypeModel mo = FeedbackTypeMapping.instantiateAndInitializeWithJson(jobj);
+            if(mo != null)
+                _questionList.addElement(mo);
+        }
+    }
+
+    private void populateFeedbackUserList(JSONObject fb) {
+        Map<String, FeedbackViewerUserEntry> userToResponses = new HashMap<>();
+        // map feedback data to userIDs
+        for (Object keyObj : fb.keySet()) {
+            if(keyObj instanceof String) {
+                String key = (String)keyObj;
+                JSONArray responses = fb.getJSONArray(key);
+
+                // iterate through responses for current feedback item
+                for(int i = 0; i < responses.length(); i++) {
+                    JSONObject response = responses.getJSONObject(i);
+                    String guid = response.getString("guid");
+                    String input = response.getString("response");
+                    int fbid = Integer.valueOf(key);
+
+                    if(!userToResponses.containsKey(guid)) {
+                        userToResponses.put(guid, new FeedbackViewerUserEntry(guid));
+                    }
+                    userToResponses.get(guid).setReponse(fbid, input);
+                }
+            }
+        }
+        // populate list in GUI with extracted data
+        userToResponses.values().forEach(_userList::addElement);
+    }
+
+    /**
+     * Called, when a question has been selected
+     * @param e triggered ListSelectionEvent
+     */
+    private void questionSelected(ListSelectionEvent e)
+    {
+        JList lsm = (JList)e.getSource();
+        if(!lsm.isSelectionEmpty()) {
+            _gui.getUserList().clearSelection();
+        }
+    }
+
+    /**
+     * Called, when a user has been selected
+     * @param e triggered ListSelectionEvent
+     */
+    private void userSelected(ListSelectionEvent e)
+    {
+        JList lsm = (JList)e.getSource();
+        if(!lsm.isSelectionEmpty()) {
+            _gui.getQuestionList().clearSelection();
         }
     }
 
@@ -95,6 +146,8 @@ public class FeedbackViewer implements Controller {
         });
 
         _gui.getDownloadButton().addActionListener(a -> downloadButtonAction());
+        _gui.getQuestionList().addListSelectionListener(this::questionSelected);
+        _gui.getUserList().addListSelectionListener(this::userSelected);
     }
 
     public JFrame getFrame() {

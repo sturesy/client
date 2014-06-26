@@ -15,25 +15,42 @@ public class FeedbackViewerUI extends SFrame {
     private JButton downloadButton;
     private JButton saveButton;
     private JButton loadButton;
-    private final JPanel feedbackResults;
 
-    public FeedbackViewerUI()
+    private JSplitPane splitPane;
+
+    private JList questionList;
+    private JList userList;
+
+    public FeedbackViewerUI(DefaultListModel questionListModel, DefaultListModel userListModel)
     {
         super();
         setTitle("Feedback Viewer");
         setIconImage(Loader.getImageIcon(Loader.IMAGE_STURESY).getImage());
 
+        // Button Panel containing download/upload/etc. buttons
         JPanel buttonPanel = createButtonPanel();
-        feedbackResults = new JPanel();
-        feedbackResults.setLayout(new BoxLayout(feedbackResults, BoxLayout.PAGE_AXIS));
 
-        JLabel emptyLabel = new JLabel("No Feedback loaded.");
-        emptyLabel.setAlignmentX(CENTER_ALIGNMENT);
-        feedbackResults.add(emptyLabel);
+        JPanel leftPanel = new JPanel();
+        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
 
-        JScrollPane scrollPane = new JScrollPane(feedbackResults, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        questionList = new JList(questionListModel);
+        questionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        userList = new JList(userListModel);
+        userList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        JScrollPane questionListScrollPane = new JScrollPane(questionList);
+        JScrollPane userListScrollPane = new JScrollPane(userList);
 
-        add(scrollPane, BorderLayout.CENTER);
+        // Populate left panel of SplitPane
+        leftPanel.add(new JLabel("Select by Question:"));
+        leftPanel.add(questionListScrollPane);
+        leftPanel.add(new JLabel("Select by Submission:"));
+        leftPanel.add(userListScrollPane);
+
+        splitPane = new JSplitPane();
+        splitPane.setLeftComponent(leftPanel);
+
+
+        add(splitPane, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.PAGE_END);
     }
 
@@ -66,7 +83,11 @@ public class FeedbackViewerUI extends SFrame {
         return loadButton;
     }
 
-    public JPanel getFeedbackResults() {
-        return feedbackResults;
+    public JList getQuestionList() {
+        return questionList;
+    }
+
+    public JList getUserList() {
+        return userList;
     }
 }

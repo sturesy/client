@@ -40,7 +40,6 @@ public class SubsettedListPairObservable extends AbstractObservable<SubsettedLis
 
     public void informSourceListChanged(boolean valueIsAdjusting)
     {
-        System.out.println("Calling " + _listeners);
         for (SubsettedListPairListener listener : _listeners)
         {
             listener.subsetSourceListChanged(valueIsAdjusting);

@@ -18,7 +18,6 @@
 package sturesy.core.ui.filetree;
 
 import java.awt.BorderLayout;
-import java.awt.Image;
 import java.io.File;
 
 import javax.swing.JPanel;
@@ -27,6 +26,7 @@ import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeSelectionModel;
+import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import sturesy.core.AbstractObservable;
@@ -44,9 +44,6 @@ public class FileTreeController extends AbstractObservable<FolderSelectedObserve
     private JPanel _panel;
     private JTree _fileTree;
     private FileSystemModel _fileSystemModel;
-
-    private static final int ICONSIZE = 16;
-    private static final int SCALING = Image.SCALE_FAST;
 
     private File _lastSelectedFile;
 
@@ -82,10 +79,6 @@ public class FileTreeController extends AbstractObservable<FolderSelectedObserve
                         fso.folderHasBeenSelected(file);
                     }
                 }
-                else if (file == null)
-                {
-                    _lastSelectedFile = null;
-                }
             }
         });
 
@@ -109,6 +102,16 @@ public class FileTreeController extends AbstractObservable<FolderSelectedObserve
             }
         });
 
+    }
+
+    public void setSelectedIndex(int index)
+    {
+        _fileTree.setSelectionRow(index);
+
+        TreePath selectionPath = new TreePath(new Object[] { _fileSystemModel.getRoot(),
+                _fileSystemModel.getChild(_fileSystemModel.getRoot(), index) });
+
+        _fileTree.setSelectionPath(selectionPath);
     }
 
     public boolean isNodeSelected()

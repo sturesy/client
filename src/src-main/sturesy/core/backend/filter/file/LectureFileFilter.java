@@ -49,6 +49,7 @@ public class LectureFileFilter implements FileFilter
 
         boolean votingFileNearbyExists = new File(pathname.getAbsolutePath().replace(".xml", VOTING)).exists();
 
-        return endsWithXML && notContainsVoting && votingFileNearbyExists || pathname.isDirectory();
+        return endsWithXML && notContainsVoting && votingFileNearbyExists
+                || (pathname.isDirectory() && pathname.listFiles(p -> p.isFile()).length < 1);
     }
 }

@@ -55,7 +55,10 @@ public class TreeListPair extends SubsettedListPairObservable
 
     public void setNewSourceTreeRoot(String path)
     {
+        System.out.println("setting");
         _fileTree.setNewDirectory(path);
+
+        _fileTree.setSelectedIndex(0);
     }
 
     public void setNewContentListContent(List<String> newContent)

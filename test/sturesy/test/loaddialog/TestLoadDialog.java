@@ -322,7 +322,7 @@ public class TestLoadDialog
         doReturn(true).when(_listPair).hasSelectedEntries();
         createLoadDialogSpy(DEFAULT_PATH);
 
-        _loadDialog.setNewSourceListContent(newContent);
+        _loadDialog.setNewSourceListContent("");
         verify(_listPair).setNewSourceListContent(newContent);
         verify(_loadButtonBar).setInternalLoadButtonEnabled(true);
     }
@@ -383,7 +383,7 @@ public class TestLoadDialog
         _internalDirectoryPath = internalDirectoryPath;
         LoadButtonBar loadButtonBar = new LoadButtonBar(_selectedDirectorySource);
         _loadButtonBar = spy(loadButtonBar);
-        LoadDialog loadDialog = new LoadDialog(_internalDirectoryPath, _ui, _loadButtonBar, _listPair);
+        LoadDialog loadDialog = new LoadDialog(_internalDirectoryPath, _ui, _loadButtonBar, null);
         _loadDialog = spy(loadDialog);
         configureLoadDialogSpy();
         configureSubsettedListSpy();

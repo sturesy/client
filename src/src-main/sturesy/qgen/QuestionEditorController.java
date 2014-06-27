@@ -34,6 +34,8 @@ import sturesy.core.backend.services.crud.QuestionCRUDService;
 import sturesy.core.ui.JMenuItem2;
 import sturesy.core.ui.MessageWindow;
 import sturesy.core.ui.SwappableListModel;
+import sturesy.core.ui.editwindow.CommonEditWindowController;
+import sturesy.core.ui.editwindow.CommonEditWindowUI;
 import sturesy.items.MultipleChoiceQuestion;
 import sturesy.items.QuestionModel;
 import sturesy.items.QuestionSet;
@@ -43,8 +45,6 @@ import sturesy.qgen.gui.QuestionListCellRenderer;
 import sturesy.qgen.gui.QuestionSaveWindowUI;
 import sturesy.qgen.qimport.QTIImportController;
 import sturesy.qgen.qimport.QuestionImportController;
-import sturesy.ui.editwindow.CommonEditWindowController;
-import sturesy.ui.editwindow.CommonEditWindowUI;
 import sturesy.util.Settings;
 import sturesy.voting.VotingController;
 

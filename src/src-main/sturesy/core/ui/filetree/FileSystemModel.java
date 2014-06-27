@@ -19,6 +19,7 @@ package sturesy.core.ui.filetree;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FilenameFilter;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -41,6 +42,16 @@ final class FileSystemModel implements TreeModel
 
     private FileFilter _filter = pathname -> pathname.isDirectory();
 
+    private FilenameFilter _filter2 = new FilenameFilter()
+    {
+        @Override
+        public boolean accept(File dir, String name)
+        {
+            File f = new File(dir, name);
+            return !f.isHidden() && f.isDirectory();
+        }
+    };
+
     public FileSystemModel(File rootDirectory)
     {
         _rootNode = rootDirectory;
@@ -54,7 +65,7 @@ final class FileSystemModel implements TreeModel
     public Object getChild(Object parent, int index)
     {
         File directory = (File) parent;
-        String[] children = directory.list();
+        String[] children = directory.list(_filter2);
         return new File(directory, children[index]);
     }
 
@@ -63,7 +74,7 @@ final class FileSystemModel implements TreeModel
         File file = (File) parent;
         if (file != null && file.isDirectory())
         {
-            String[] fileList = file.list();
+            String[] fileList = file.list(_filter2);
             if (fileList != null)
                 return fileList.length;
         }

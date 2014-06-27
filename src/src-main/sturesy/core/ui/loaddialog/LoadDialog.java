@@ -52,7 +52,7 @@ public class LoadDialog extends LoadDialogObservable implements SelectedDirector
     /**
      * the subsetted j list pair
      */
-    private final SubsettedJListPair _subsettedListPair;
+    private final TreeListPair _treeListPair;
 
     /**
      * Internal directory path which points to the directories shown in the left
@@ -91,9 +91,8 @@ public class LoadDialog extends LoadDialogObservable implements SelectedDirector
     {
         _internalDirectoryPath = internalDirectoryPath;
         _loadButtonBar = new LoadButtonBar(this, filter);
-        _subsettedListPair = new SubsettedJListPair();
-        _loadDialogUI = new LoadDialogUI(title, null, _subsettedListPair.getSubsettedListPairUI(),
-                _loadButtonBar.getButtonBar());
+        _treeListPair = new TreeListPair();
+        _loadDialogUI = new LoadDialogUI(title, null, _treeListPair.getPanel(), _loadButtonBar.getButtonBar());
         registerLoadListener();
     }
 
@@ -108,11 +107,11 @@ public class LoadDialog extends LoadDialogObservable implements SelectedDirector
      * @param listpair
      */
     public LoadDialog(String internalDirectoryPath, LoadDialogUI ui, LoadButtonBar loadButtonBar,
-            SubsettedJListPair listPair)
+            TreeListPair treelistPair)
     {
         _internalDirectoryPath = internalDirectoryPath;
         _loadButtonBar = loadButtonBar;
-        _subsettedListPair = listPair;
+        _treeListPair = treelistPair;
         _loadDialogUI = ui;
         registerLoadListener();
     }
@@ -139,7 +138,7 @@ public class LoadDialog extends LoadDialogObservable implements SelectedDirector
 
     private void registerLoadListener()
     {
-        _subsettedListPair.registerListener(new SubsettedListPairListener()
+        _treeListPair.registerListener(new SubsettedListPairListener()
         {
             @Override
             public void subsettedListKeyEvent(int keyCode)
@@ -208,7 +207,7 @@ public class LoadDialog extends LoadDialogObservable implements SelectedDirector
      */
     private boolean isInternalLoadButtonEnabled()
     {
-        return _subsettedListPair.hasSelectedEntries();
+        return _treeListPair.hasSelectedEntries();
     }
 
     /**
@@ -236,18 +235,13 @@ public class LoadDialog extends LoadDialogObservable implements SelectedDirector
     @Override
     public String getFileName()
     {
-        return _subsettedListPair.getContentListItem();
+        return _treeListPair.getContentListItem();
     }
 
     @Override
     public String getDirectoryAbsolutePath()
     {
-        String subsetSourceListElement = _subsettedListPair.getSourceListElement();
-        if (_internalDirectoryPath != null)
-        {
-            return _internalDirectoryPath + File.separator + subsetSourceListElement;
-        }
-        return subsetSourceListElement;
+        return _treeListPair.getSourceListElement();
     }
 
     /**
@@ -261,11 +255,11 @@ public class LoadDialog extends LoadDialogObservable implements SelectedDirector
     /**
      * sets new content for the subset source list.
      * 
-     * @param newContent
+     * @param rootNode
      */
-    public void setNewSourceListContent(List<String> newContent)
+    public void setNewSourceListContent(String rootNode)
     {
-        _subsettedListPair.setNewSourceListContent(newContent);
+        _treeListPair.setNewSourceListContent(rootNode);
         setNewInternalLoadButtonState();
     }
 
@@ -276,7 +270,7 @@ public class LoadDialog extends LoadDialogObservable implements SelectedDirector
      */
     public void setNewContentListContent(List<String> newContent)
     {
-        _subsettedListPair.setNewContentListContent(newContent);
+        _treeListPair.setNewContentListContent(newContent);
         setNewInternalLoadButtonState();
     }
 

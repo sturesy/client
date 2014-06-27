@@ -26,6 +26,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultTreeSelectionModel;
+import javax.swing.tree.TreeSelectionModel;
 
 import sturesy.core.AbstractObservable;
 
@@ -45,6 +47,8 @@ public class FileTreeController extends AbstractObservable<FolderSelectedObserve
 
     private static final int ICONSIZE = 16;
     private static final int SCALING = Image.SCALE_FAST;
+
+    private File _lastSelectedFile;
 
     /**
      * Starts the root-node at the user home directory
@@ -70,12 +74,17 @@ public class FileTreeController extends AbstractObservable<FolderSelectedObserve
             public void valueChanged(TreeSelectionEvent event)
             {
                 File file = (File) _fileTree.getLastSelectedPathComponent();
-                if (file.isDirectory())
+                if (file != null && file.isDirectory())
                 {
+                    _lastSelectedFile = file;
                     for (FolderSelectedObserver fso : _listeners)
                     {
                         fso.folderHasBeenSelected(file);
                     }
+                }
+                else if (file == null)
+                {
+                    _lastSelectedFile = null;
                 }
             }
         });
@@ -93,7 +102,34 @@ public class FileTreeController extends AbstractObservable<FolderSelectedObserve
         _fileTree.setRootVisible(false);
         _fileTree.setEditable(false);
         _fileTree.setShowsRootHandles(true);
+        _fileTree.setSelectionModel(new DefaultTreeSelectionModel()
+        {
+            {
+                this.setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+            }
+        });
 
+    }
+
+    public boolean isNodeSelected()
+    {
+        return _fileTree.getSelectionCount() != 0;
+    }
+
+    /**
+     * Changes the root-node
+     * 
+     * @param directory
+     */
+    public void setNewDirectory(String directory)
+    {
+        _fileSystemModel = new FileSystemModel(new File(directory));
+        _fileTree.setModel(_fileSystemModel);
+    }
+
+    public File getLastSelectedFile()
+    {
+        return _lastSelectedFile;
     }
 
     public JPanel getPanel()

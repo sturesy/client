@@ -44,13 +44,14 @@ public class AbstractQuestionLoadDialogController
 
     public AbstractQuestionLoadDialogController(File lecturesDirectory)
     {
-        this(new LoadDialog(lecturesDirectory.getAbsolutePath(), Localize.getString("label.load.question.set")), lecturesDirectory);
+        this(new LoadDialog(lecturesDirectory.getAbsolutePath(), Localize.getString("label.load.question.set")),
+                lecturesDirectory);
     }
 
     public AbstractQuestionLoadDialogController(FileFilter fileFilter, File lecturesDirectory)
     {
-        this(new LoadDialog(lecturesDirectory.getAbsolutePath(), Localize.getString("label.load.question.set")), fileFilter,
-                lecturesDirectory);
+        this(new LoadDialog(lecturesDirectory.getAbsolutePath(), Localize.getString("label.load.question.set")),
+                fileFilter, lecturesDirectory);
     }
 
     public AbstractQuestionLoadDialogController(LoadDialog loadDialog, File lecturesDirectory)
@@ -249,22 +250,12 @@ public class AbstractQuestionLoadDialogController
      */
     public void createLectureList()
     {
-        File[] files = _lecturesDirectory.listFiles();
-
-        List<String> newContent = new ArrayList<String>();
-        for (File oneFile : files)
-        {
-            if (oneFile.isDirectory())
-            {
-                newContent.add(oneFile.getName());
-            }
-        }
-        setLectureListInLoadDialog(newContent);
+        setLectureListInLoadDialog(_lecturesDirectory.getAbsolutePath());
     }
 
-    public void setLectureListInLoadDialog(List<String> newContent)
+    public void setLectureListInLoadDialog(String rootNode)
     {
-        _loadDialog.setNewSourceListContent(newContent);
+        _loadDialog.setNewSourceListContent(rootNode);
     }
 
     public void setNewQuestionSetNamesToLoadDialog(List<String> newQuestionListContent)

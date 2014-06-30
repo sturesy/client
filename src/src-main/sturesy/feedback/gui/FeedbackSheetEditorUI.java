@@ -154,4 +154,12 @@ public class FeedbackSheetEditorUI extends SFrame
 	public JButton getUploadButton() { return _uploadbutton; }
 
     public JButton getDownloadButton() { return _downloadbutton; }
+
+    public JButton getMoveUpButton() {
+        return _mvupbutton;
+    }
+
+    public JButton getMoveDownButton() {
+        return _mvdownbutton;
+    }
 }

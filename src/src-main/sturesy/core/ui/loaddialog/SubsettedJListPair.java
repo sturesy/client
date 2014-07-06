@@ -68,7 +68,7 @@ public class SubsettedJListPair extends SubsettedListPairObservable
     }
 
     /**
-     * Initialize the SubsettedJListPair with the tow given ListModel and the ui
+     * Initialize the SubsettedJListPair with the two given ListModel and the ui
      * 
      * @param sourceListModel
      * @param subettedListModel

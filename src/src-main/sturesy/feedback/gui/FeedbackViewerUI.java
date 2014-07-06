@@ -90,4 +90,9 @@ public class FeedbackViewerUI extends SFrame {
     public JList getUserList() {
         return userList;
     }
+
+    public void setRightPanel(JPanel panel)
+    {
+        splitPane.setRightComponent(panel);
+    }
 }

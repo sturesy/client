@@ -51,6 +51,7 @@ import sturesy.core.ui.loaddialog.LoadDialog;
 import sturesy.core.ui.loaddialog.LoadDialogListener;
 import sturesy.core.ui.loaddialog.SelectedDirectorySource;
 import sturesy.core.ui.loaddialog.SubsettedJListPair;
+import sturesy.core.ui.loaddialog.TreeListPair;
 import sturesy.core.ui.loaddialog.ui.LoadDialogUI;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -322,7 +323,7 @@ public class TestLoadDialog
         doReturn(true).when(_listPair).hasSelectedEntries();
         createLoadDialogSpy(DEFAULT_PATH);
 
-        _loadDialog.setNewSourceListContent(newContent);
+        _loadDialog.setNewSourceListContent("");
         verify(_listPair).setNewSourceListContent(newContent);
         verify(_loadButtonBar).setInternalLoadButtonEnabled(true);
     }
@@ -383,7 +384,7 @@ public class TestLoadDialog
         _internalDirectoryPath = internalDirectoryPath;
         LoadButtonBar loadButtonBar = new LoadButtonBar(_selectedDirectorySource);
         _loadButtonBar = spy(loadButtonBar);
-        LoadDialog loadDialog = new LoadDialog(_internalDirectoryPath, _ui, _loadButtonBar, _listPair);
+        LoadDialog loadDialog = new LoadDialog(_internalDirectoryPath, _ui, _loadButtonBar, new TreeListPair());
         _loadDialog = spy(loadDialog);
         configureLoadDialogSpy();
         configureSubsettedListSpy();

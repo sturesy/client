@@ -12,6 +12,7 @@ import sturesy.util.Settings;
 import sturesy.util.web.WebCommands2;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
@@ -120,6 +121,9 @@ public class FeedbackViewer implements Controller {
         JList lsm = (JList)e.getSource();
         if(!lsm.isSelectionEmpty()) {
             _gui.getUserList().clearSelection();
+            FeedbackTypeModel mo = (FeedbackTypeModel)lsm.getSelectedValue();
+
+            showFeedbackForQuestion(mo);
         }
     }
 
@@ -132,7 +136,34 @@ public class FeedbackViewer implements Controller {
         JList lsm = (JList)e.getSource();
         if(!lsm.isSelectionEmpty()) {
             _gui.getQuestionList().clearSelection();
+            FeedbackViewerUserEntry ue = (FeedbackViewerUserEntry)lsm.getSelectedValue();
+
+            showFeedbackFromUser(ue);
         }
+    }
+
+    private void showFeedbackFromUser(FeedbackViewerUserEntry user)
+    {
+        JPanel userPanel = new JPanel();
+        userPanel.setBorder(BorderFactory.createTitledBorder("Feedback from " + user.toString()));
+
+        _gui.setRightPanel(userPanel);
+    }
+
+    private void showFeedbackForQuestion(FeedbackTypeModel fb)
+    {
+        JPanel questionPanel = new JPanel();
+        questionPanel.setBorder(BorderFactory.createTitledBorder(fb.getTitle()));
+        questionPanel.setLayout(new BoxLayout(questionPanel, BoxLayout.Y_AXIS));
+
+        JLabel descLabel = new JLabel("Description: " + fb.getDescription());
+        JLabel mandatoryLabel = new JLabel("Response is mandatory: " +  (fb.isMandatory() ? "yes" : "no"));
+
+        questionPanel.add(descLabel);
+        questionPanel.add(mandatoryLabel);
+        questionPanel.add(new JSeparator());
+
+        _gui.setRightPanel(questionPanel);
     }
 
     /**

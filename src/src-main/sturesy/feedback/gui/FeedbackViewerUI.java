@@ -13,8 +13,8 @@ import java.awt.*;
 public class FeedbackViewerUI extends SFrame {
 
     private JButton downloadButton;
-    private JButton saveButton;
-    private JButton loadButton;
+    //private JButton saveButton;
+    //private JButton loadButton;
 
     private JSplitPane splitPane;
 
@@ -52,6 +52,8 @@ public class FeedbackViewerUI extends SFrame {
 
         add(splitPane, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.PAGE_END);
+
+        setRightPanel(new JPanel());
     }
 
     private JPanel createButtonPanel()
@@ -59,12 +61,12 @@ public class FeedbackViewerUI extends SFrame {
         JPanel b = new JPanel();
 
         downloadButton = new JButton("Download Feedback");
-        saveButton = new JButton("Save to File");
-        loadButton = new JButton("Load from File");
+//        saveButton = new JButton("Save to File");
+//        loadButton = new JButton("Load from File");
 
         b.add(downloadButton);
-        b.add(saveButton);
-        b.add(loadButton);
+//        b.add(saveButton);
+//        b.add(loadButton);
 
         b.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.LIGHT_GRAY));
 
@@ -75,13 +77,13 @@ public class FeedbackViewerUI extends SFrame {
         return downloadButton;
     }
 
-    public JButton getSaveButton() {
-        return saveButton;
-    }
-
-    public JButton getLoadButton() {
-        return loadButton;
-    }
+//    public JButton getSaveButton() {
+//        return saveButton;
+//    }
+//
+//    public JButton getLoadButton() {
+//        return loadButton;
+//    }
 
     public JList getQuestionList() {
         return questionList;

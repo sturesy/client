@@ -12,7 +12,6 @@ import sturesy.util.Settings;
 import sturesy.util.web.WebCommands2;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
@@ -146,22 +145,66 @@ public class FeedbackViewer implements Controller {
     {
         JPanel userPanel = new JPanel();
         userPanel.setBorder(BorderFactory.createTitledBorder("Feedback from " + user.toString()));
+        userPanel.setLayout(new BoxLayout(userPanel, BoxLayout.Y_AXIS));
+
+        for (int id : user.getFeedbackIDs()) {
+            FeedbackTypeModel mo = getFeedbackModelForId(id);
+
+            JPanel responsePanel = new JPanel();
+            responsePanel.setBorder(BorderFactory.createTitledBorder(mo.getTitle()));
+            responsePanel.setLayout(new BoxLayout(responsePanel, BoxLayout.Y_AXIS));
+
+            responsePanel.add(new JLabel("Description: " + mo.getDescription()));
+            responsePanel.add(new JLabel("Response: " + user.getResponseForFeedbackId(id)));
+            userPanel.add(responsePanel);
+        }
 
         _gui.setRightPanel(userPanel);
+    }
+
+    private FeedbackTypeModel getFeedbackModelForId(int id)
+    {
+        for(Object obj : _questionList.toArray()) {
+            FeedbackTypeModel mo = (FeedbackTypeModel)obj;
+            if(mo.getId() == id)
+                return mo;
+        }
+        return null;
     }
 
     private void showFeedbackForQuestion(FeedbackTypeModel fb)
     {
         JPanel questionPanel = new JPanel();
         questionPanel.setBorder(BorderFactory.createTitledBorder(fb.getTitle()));
-        questionPanel.setLayout(new BoxLayout(questionPanel, BoxLayout.Y_AXIS));
+        questionPanel.setLayout(new BorderLayout());
 
         JLabel descLabel = new JLabel("Description: " + fb.getDescription());
-        JLabel mandatoryLabel = new JLabel("Response is mandatory: " +  (fb.isMandatory() ? "yes" : "no"));
+        JCheckBox mandatoryCheck = new JCheckBox("Response is mandatory", fb.isMandatory());
+        mandatoryCheck.setEnabled(false);
 
-        questionPanel.add(descLabel);
-        questionPanel.add(mandatoryLabel);
-        questionPanel.add(new JSeparator());
+        // panel containing question data
+        JPanel topPanel = new JPanel();
+        topPanel.setBorder(BorderFactory.createTitledBorder("Question Data"));
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
+        topPanel.add(descLabel);
+        topPanel.add(mandatoryCheck);
+
+        // panel containing responses
+        JPanel responsePanel = new JPanel();
+        responsePanel.setBorder(BorderFactory.createTitledBorder("Responses"));
+
+        // get feedback for this question
+        for(Object obj : _userList.toArray()) {
+            FeedbackViewerUserEntry ue = (FeedbackViewerUserEntry)obj;
+
+            String response = ue.getResponseForFeedbackId(fb.getId());
+            if(response != null) {
+                responsePanel.add(new JLabel(ue.getUserId() + ": " + response));
+            }
+        }
+
+        questionPanel.add(topPanel, BorderLayout.PAGE_START);
+        questionPanel.add(responsePanel, BorderLayout.CENTER);
 
         _gui.setRightPanel(questionPanel);
     }

@@ -31,6 +31,26 @@ public class FeedbackViewerUserEntry {
         responses.put(fbid, response);
     }
 
+    /**
+     * Returns the response to a feedback ID
+     * @param fbid Feedback ID
+     * @return Response
+     */
+    public String getResponseForFeedbackId(int fbid) {
+        return responses.get(fbid);
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    /**
+     * @return Set of Feedback IDs
+     */
+    public java.util.Set<Integer> getFeedbackIDs() {
+        return responses.keySet();
+    }
+
     @Override
     public String toString() {
         return userId;

@@ -42,6 +42,7 @@ import sturesy.core.Localize;
 import sturesy.core.Operatingsystem;
 import sturesy.core.backend.Loader;
 import sturesy.core.plugin.ISettingsScreen;
+import sturesy.core.ui.JMenuItem2;
 import sturesy.export.LectureIDExport;
 import sturesy.feedback.FeedbackSheetEditor;
 import sturesy.feedback.FeedbackViewer;
@@ -167,8 +168,8 @@ public class MainScreen extends WindowAdapter
         qgenmenu.addActionListener(e -> getQuestionEditorAction());
         votingmenu.addActionListener(e -> getVotingAction());
         evaluatemenu.addActionListener(e -> getEvaluateAction());
-        fbsheeteditmenu.addActionListener(e -> getFeedbackSheetEditorAction());
-        fbviewermenu.addActionListener(e-> getFeedbackViewerAction());
+        fbsheeteditmenu.addActionListener(e -> showFeedbackSheetEditor());
+        fbviewermenu.addActionListener(e-> showFeedbackSheetViewer());
         settingsmenu.addActionListener(e -> getSettingsAction());
 
         return new MenuItem[] { votingmenu, evaluatemenu, qgenmenu, fbsheeteditmenu, fbviewermenu, settingsmenu };
@@ -325,7 +326,7 @@ public class MainScreen extends WindowAdapter
     /**
      * Shows Feedback Sheet Editor
      */
-    private void getFeedbackSheetEditorAction()
+    private void showFeedbackSheetEditor()
     {
     	if(_feedbacksheet == null)
     	{
@@ -337,13 +338,12 @@ public class MainScreen extends WindowAdapter
     	{
     		_feedbacksheet.getFrame().toFront();
     	}
-    	
     }
 
     /**
      * Shows Feedback Viewer
      */
-    private void getFeedbackViewerAction()
+    private void showFeedbackSheetViewer()
     {
         if(_feedbackviewer == null)
         {
@@ -355,6 +355,20 @@ public class MainScreen extends WindowAdapter
         {
             _feedbackviewer.getFrame().toFront();
         }
+    }
+
+
+    /**
+     * Pops up a selection menu to let the user choose between the feedback sheet editor or viewer
+     */
+    private void getFeedbackSheetAction()
+    {
+        JPopupMenu menu = new JPopupMenu();
+        menu.add(new JMenuItem2("Viewer", e -> showFeedbackSheetViewer()));
+        menu.add(new JMenuItem2("Editor", e -> showFeedbackSheetEditor()));
+
+        menu.show(_gui.getFeedbackSheet(), _gui.getFeedbackSheet().getX(), _gui
+                .getFeedbackSheet().getY());
     }
 
     /**
@@ -392,8 +406,7 @@ public class MainScreen extends WindowAdapter
         _gui.getVoting().addActionListener(e -> getVotingAction());
         _gui.getEvaluate().addActionListener(e -> getEvaluateAction());
         _gui.getQuestion().addActionListener(e -> getQuestionEditorAction());
-        _gui.getFeedbackSheet().addActionListener(e -> getFeedbackSheetEditorAction());
-        _gui.getFeedbackViewer().addActionListener(e -> getFeedbackViewerAction());
+        _gui.getFeedbackSheet().addActionListener(e -> getFeedbackSheetAction());
     }
 
     @Override

@@ -43,6 +43,7 @@ public class MainScreenUI extends JFrame
     private JButton _question;
     private JButton _voting;
     private JButton _feedbacksheet;
+    private JButton _livefeedback;
 
     public MainScreenUI()
     {
@@ -55,6 +56,7 @@ public class MainScreenUI extends JFrame
                 Loader.getImageIcon(Loader.IMAGE_QUESTIONEDITOR));
         _voting = new JButton(Localize.getString(Localize.VOTING), Loader.getImageIcon(Loader.IMAGE_VOTING));
         _feedbacksheet = new JButton("Feedback-Sheets");
+        _livefeedback = new JButton("Live-Feedback");
         
         _voting.setHorizontalAlignment(SwingConstants.LEFT);
         _question.setHorizontalAlignment(SwingConstants.LEFT);
@@ -73,6 +75,7 @@ public class MainScreenUI extends JFrame
         add(_question);
         add(_settings);
         add(_feedbacksheet);
+        add(_livefeedback);
     }
 
     public JButton getSettings()
@@ -98,5 +101,9 @@ public class MainScreenUI extends JFrame
     public JButton getFeedbackSheet()
     {
     	return _feedbacksheet;
+    }
+
+    public JButton getLiveFeedback() {
+        return _livefeedback;
     }
 }

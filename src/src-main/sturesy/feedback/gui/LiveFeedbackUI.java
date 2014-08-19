@@ -14,13 +14,15 @@ public class LiveFeedbackUI extends SFrame {
 
     private final JPanel messagePanel;
     private final JCheckBox autoScrollCheckBox;
+    private final JButton startStopButton;
 
     public LiveFeedbackUI() {
         super();
         setTitle("Live-Feedback");
 
         JPanel topPanel = new JPanel();
-        topPanel.add(new JButton("Start"));
+        startStopButton = new JButton("Start");
+        topPanel.add(startStopButton);
         topPanel.add(new JCheckBox("Show notification alerts"));
 
         autoScrollCheckBox = new JCheckBox("Autoscroll messages", true);
@@ -31,14 +33,11 @@ public class LiveFeedbackUI extends SFrame {
         JScrollPane msgScrollPane = new JScrollPane(messagePanel);
         msgScrollPane.setBorder(BorderFactory.createTitledBorder("Messages"));
 
-        for (int i = 0; i < 5; i++) {
-            addMessage("Name " + i, "Subject", "Lorem Ipsum", new Date());
-        }
-
         add(topPanel, BorderLayout.PAGE_START);
         add(msgScrollPane, BorderLayout.CENTER);
 
         // auto-scroll to the bottom (if enabled)
+        // TODO: find a better way to do this (the current code blocks interaction with the scrollbar)
         msgScrollPane.getVerticalScrollBar().addAdjustmentListener(e -> {
             if(autoScrollCheckBox.isSelected())
                 e.getAdjustable().setValue(e.getAdjustable().getMaximum());
@@ -55,5 +54,13 @@ public class LiveFeedbackUI extends SFrame {
     public void addMessage(String name, String subject, String msg, Date date) {
         LiveMessagePanel panel = new LiveMessagePanel(name, subject, msg, date);
         messagePanel.add(panel);
+        messagePanel.revalidate();
+    }
+
+    /**
+     * @return Start/Stop button object
+     */
+    public JButton getStartStopButton() {
+        return startStopButton;
     }
 }

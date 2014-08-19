@@ -1,26 +1,49 @@
 package sturesy.feedback;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import sturesy.core.Controller;
 import sturesy.feedback.gui.LiveFeedbackUI;
+import sturesy.items.LectureID;
+import sturesy.util.CommonDialogs;
 import sturesy.util.Settings;
+import sturesy.util.web.WebCommands2;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Frontend to activate and process live-feedback
  * Created by henrik on 8/16/14.
  */
 public class LiveFeedback implements Controller {
+    // TODO: make these changeable in settings menu
+    private static final long POLLING_TIME = 2;
+    private static final TimeUnit POLLING_TIMEUNIT = TimeUnit.SECONDS;
+
     private LiveFeedbackUI _gui;
     private final Settings _settings;
+
+    private boolean liveActive = false;
+    private LectureID selectedLecture;
+    private final ScheduledExecutorService scheduler;
+    private ScheduledFuture<?> pollingTaskHandle;
 
     public LiveFeedback() {
         _gui = new LiveFeedbackUI();
         _settings = Settings.getInstance();
+        scheduler = Executors.newScheduledThreadPool(1);
 
         addListeners();
     }
@@ -46,7 +69,80 @@ public class LiveFeedback implements Controller {
         Settings settings = _settings;
         settings.setProperty(Settings.LIVEFEEDBACKSIZE, _gui.getSize());
         settings.save();
+
+        if(liveActive) {
+            WebCommands2.setLiveFeedbackState(selectedLecture.getHost().toString(),
+                    selectedLecture.getLectureID(), selectedLecture.getPassword(), false);
+        }
     }
+
+    /**
+     * Called when the Start/Stop Button is pressed.
+     * Needs to enable live-feedback and initiate polling
+     */
+    private void startStopButton() {
+        selectedLecture = CommonDialogs.showLectureSelection();
+        if (selectedLecture != null) {
+            if(WebCommands2.setLiveFeedbackState(selectedLecture.getHost().toString(),
+                    selectedLecture.getLectureID(), selectedLecture.getPassword(), !liveActive)) {
+                liveActive = !liveActive;
+
+                // start/stop polling thread
+                if(liveActive)
+                    startPolling();
+                else
+                    stopPolling();
+            }
+        }
+    }
+
+    /**
+     * Called when polling is to be started
+     */
+    private void startPolling() {
+        _gui.getStartStopButton().setText("Stop");
+        pollingTaskHandle = scheduler.scheduleAtFixedRate(pollingTask, 0, POLLING_TIME, POLLING_TIMEUNIT);
+
+    }
+
+    /**
+     * Called when polling is to be stopped
+     */
+    private void stopPolling() {
+        _gui.getStartStopButton().setText("Start");
+        pollingTaskHandle.cancel(true);
+    }
+
+    /**
+     * The task that is responsible for polling the server as well as fetching new messages
+     */
+    private Runnable pollingTask = new Runnable() {
+        @Override
+        public void run() {
+            JSONArray messages = WebCommands2.getLiveFeedback(selectedLecture.getHost().toString(),
+                    selectedLecture.getLectureID(), selectedLecture.getPassword());
+
+            for (int i = 0; i < messages.length(); i++) {
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                JSONObject msg = messages.getJSONObject(i);
+
+                // extract data from json response
+                String name = msg.getString("name");
+                String subject = msg.getString("subject");
+                String message = msg.getString("message");
+
+                // parse to java.util.Date
+                Date date;
+                try {
+                    date = dateFormat.parse(msg.getString("date"));
+                } catch (ParseException e) {
+                    date = new Date();
+                }
+
+                _gui.addMessage(name, subject, message, date);
+            }
+        }
+    };
 
     /**
      * Adds listeners to all the GUI-Elements
@@ -57,6 +153,8 @@ public class LiveFeedback implements Controller {
                 windowIsClosing();
             }
         });
+
+        _gui.getStartStopButton().addActionListener(l -> startStopButton());
     }
 
     public JFrame getFrame() {

@@ -17,35 +17,11 @@
  */
 package sturesy.util.web;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
-import java.security.SecureRandom;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import sturesy.core.Log;
 import sturesy.core.ui.HTMLStripper;
 import sturesy.items.MultipleChoiceQuestion;
@@ -55,30 +31,29 @@ import sturesy.items.TextQuestion;
 import sturesy.items.feedback.FeedbackTypeModel;
 import sturesy.util.Crypt;
 
+import javax.net.ssl.*;
+import java.io.*;
+import java.net.*;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.List;
+
 public class WebCommands2
 {
 
     /**
      * Cleans a database from the participated votes
      * 
-     * @param lecturename
-     * @param password
-     * @return
+     * @param lecturename Name of lecture
+     * @param password Password for Lecture
+     * @return Server response
      */
     public static String cleanVotes(String url, String lecturename, String password)
     {
         JSONObject js = new JSONObject();
         js.put("command", "clean");
-        js.put("name", encode(lecturename));
-        js.put("time", System.currentTimeMillis() / 1000);
-
-        return sendJSONObject(url, js, password);
-    }
-
-    public static String getVotes(String url, String lecturename, String password)
-    {
-        JSONObject js = new JSONObject();
-        js.put("command", "get");
         js.put("name", encode(lecturename));
         js.put("time", System.currentTimeMillis() / 1000);
 
@@ -116,7 +91,8 @@ public class WebCommands2
 
         js.put("question", prepareForSend(model.getQuestion()));
 
-        List<String> newAnswers = new ArrayList<String>();
+        List<String> newAnswers = new ArrayList<>();
+        //noinspection Convert2streamapi
         for (String s : model.getAnswers())
         {
             newAnswers.add(prepareForSend(s));
@@ -154,7 +130,7 @@ public class WebCommands2
      * 		Password for Lecture
      * @param itemsToDelete
      *      List of Feedback Item IDs to delete
-     * @return
+     * @return Server response
      */
     public static String deleteFeedbackQuestions(String url, String lecturename, String password, List<Integer> itemsToDelete)
     {
@@ -265,6 +241,56 @@ public class WebCommands2
         return fb;
     }
 
+    /**
+     * Sets the state of live-feedback functionality (enabled/disabled)
+     * @param url URL of StuReSy relay
+     * @param lecturename Name of lecture
+     * @param password Password for Lecture
+     * @param enabled Whether live-feedback is to be enabled
+     * @return whether the request was successful
+     */
+    public static boolean setLiveFeedbackState(String url, String lecturename, String password, boolean enabled)
+    {
+        JSONObject js = new JSONObject()
+                .put("command", "live")
+                .put("time", System.currentTimeMillis() / 1000)
+                .put("name", lecturename)
+                .put("action", "setstate")
+                .put("enabled", enabled);
+
+        String response = sendJSONObject(url, js, password);
+        return response.equals("OK");
+    }
+
+    /**
+     * Returns the live-feedback-messages (messages, stops) for a lecture
+     * @param url URL of StuReSy relay
+     * @param lecturename Name of lecture
+     * @param password Password for Lecture
+     * @return A JSONArray of messages
+     */
+    public static JSONArray getLiveFeedback(String url, String lecturename, String password)
+    {
+        JSONObject js = new JSONObject()
+                .put("command", "live")
+                .put("time", System.currentTimeMillis() / 1000)
+                .put("name", lecturename)
+                .put("action", "poll");
+        String response = sendJSONObject(url, js, password);
+
+        JSONArray messages;
+        try {
+            messages = new JSONArray(response);
+        }
+        catch(JSONException e) {
+            System.err.println(response);
+            e.printStackTrace();
+            return null;
+        }
+
+        return messages;
+    }
+
     public static String getInfo(String url)
     {
         JSONObject js = new JSONObject();
@@ -295,10 +321,6 @@ public class WebCommands2
         {
             ((HttpURLConnection) connection).setRequestMethod("POST");
         }
-        else if (connection instanceof HttpsURLConnection)
-        {
-            ((HttpsURLConnection) connection).setRequestMethod("POST");
-        }
 
         OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
         wr.write("data=" + data + "&hash=" + hashed);
@@ -307,7 +329,7 @@ public class WebCommands2
         BufferedReader rd = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         String line;
 
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         while ((line = rd.readLine()) != null)
         {
             buffer.append(line);
@@ -449,18 +471,13 @@ public class WebCommands2
             sc.init(null, trustAllCerts, new SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 
-            HostnameVerifier allHostsValid = new HostnameVerifier()
-            {
-                public boolean verify(String hostname, SSLSession session)
-                {
-                    return true;
-                }
-            };
+            HostnameVerifier allHostsValid = (hostname, session) -> true;
 
             HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
         }
         catch (Exception e)
         {
+            e.printStackTrace();
         }
     }
 

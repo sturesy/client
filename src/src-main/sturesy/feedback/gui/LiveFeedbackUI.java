@@ -14,6 +14,7 @@ public class LiveFeedbackUI extends SFrame {
 
     private final JPanel messagePanel;
     private final JCheckBox autoScrollCheckBox;
+    private final JCheckBox notificationCheckBox;
     private final JButton startStopButton;
 
     public LiveFeedbackUI() {
@@ -23,7 +24,9 @@ public class LiveFeedbackUI extends SFrame {
         JPanel topPanel = new JPanel();
         startStopButton = new JButton("Start");
         topPanel.add(startStopButton);
-        topPanel.add(new JCheckBox("Show notification alerts"));
+
+        notificationCheckBox = new JCheckBox("Show notification alerts");
+        topPanel.add(notificationCheckBox);
 
         autoScrollCheckBox = new JCheckBox("Autoscroll messages", true);
         topPanel.add(autoScrollCheckBox);
@@ -70,5 +73,12 @@ public class LiveFeedbackUI extends SFrame {
      */
     public JButton getStartStopButton() {
         return startStopButton;
+    }
+
+    /**
+     * @return Notification CheckBox object
+     */
+    public JCheckBox getNotificationCheckBox() {
+        return notificationCheckBox;
     }
 }

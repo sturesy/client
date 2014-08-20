@@ -3,6 +3,7 @@ package sturesy.feedback;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import sturesy.core.Controller;
+import sturesy.core.ui.NotificationService;
 import sturesy.feedback.gui.LiveFeedbackUI;
 import sturesy.items.LectureID;
 import sturesy.util.CommonDialogs;
@@ -35,6 +36,8 @@ public class LiveFeedback implements Controller {
     private LiveFeedbackUI _gui;
     private final Settings _settings;
 
+    private final NotificationService notificationService;
+
     private boolean liveActive = false;
     private LectureID selectedLecture;
     private final ScheduledExecutorService scheduler;
@@ -43,6 +46,7 @@ public class LiveFeedback implements Controller {
     public LiveFeedback() {
         _gui = new LiveFeedbackUI();
         _settings = Settings.getInstance();
+        notificationService = NotificationService.getInstance();
         scheduler = Executors.newScheduledThreadPool(1);
 
         addListeners();
@@ -145,6 +149,10 @@ public class LiveFeedback implements Controller {
                     e.printStackTrace();
                 }
                 _gui.addMessage(name, subject, message, date);
+
+                if(_gui.getNotificationCheckBox().isSelected())
+                    notificationService.addNotification("New message by: " + name,
+                            "<html>Regarding: " + subject + "<br/>" + message, 10);
             }
         }
     };

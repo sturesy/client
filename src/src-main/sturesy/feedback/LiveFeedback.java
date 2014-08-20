@@ -73,6 +73,7 @@ public class LiveFeedback implements Controller {
         if(liveActive) {
             WebCommands2.setLiveFeedbackState(selectedLecture.getHost().toString(),
                     selectedLecture.getLectureID(), selectedLecture.getPassword(), false);
+            stopPolling();
         }
     }
 
@@ -81,19 +82,24 @@ public class LiveFeedback implements Controller {
      * Needs to enable live-feedback and initiate polling
      */
     private void startStopButton() {
-        selectedLecture = CommonDialogs.showLectureSelection();
-        if (selectedLecture != null) {
-            if(WebCommands2.setLiveFeedbackState(selectedLecture.getHost().toString(),
-                    selectedLecture.getLectureID(), selectedLecture.getPassword(), !liveActive)) {
-                liveActive = !liveActive;
-
-                // start/stop polling thread
-                if(liveActive)
+        if(!liveActive) {
+            selectedLecture = CommonDialogs.showLectureSelection();
+            if (selectedLecture != null) {
+                if(WebCommands2.setLiveFeedbackState(selectedLecture.getHost().toString(),
+                        selectedLecture.getLectureID(), selectedLecture.getPassword(), true)) {
+                    liveActive = true;
                     startPolling();
-                else
-                    stopPolling();
+                }
             }
         }
+        else {
+            WebCommands2.setLiveFeedbackState(selectedLecture.getHost().toString(),
+                    selectedLecture.getLectureID(), selectedLecture.getPassword(), false);
+            liveActive = false;
+            stopPolling();
+        }
+
+
     }
 
     /**
@@ -131,14 +137,13 @@ public class LiveFeedback implements Controller {
                 String subject = msg.getString("subject");
                 String message = msg.getString("message");
 
-                // parse to java.util.Date
-                Date date;
+                // parse to java.util.Date, use current date in case parsing fails
+                Date date = new Date();
                 try {
                     date = dateFormat.parse(msg.getString("date"));
                 } catch (ParseException e) {
-                    date = new Date();
+                    e.printStackTrace();
                 }
-
                 _gui.addMessage(name, subject, message, date);
             }
         }
@@ -151,6 +156,14 @@ public class LiveFeedback implements Controller {
         _gui.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 windowIsClosing();
+            }
+
+            // this fixes delayed processing of edt events on some platforms (e.g. linux)
+            // in this case: force processing received messages while the window was hidden
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+                super.windowDeiconified(e);
+                _gui.repaint();
             }
         });
 

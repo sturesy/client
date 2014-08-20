@@ -53,8 +53,16 @@ public class LiveFeedbackUI extends SFrame {
      */
     public void addMessage(String name, String subject, String msg, Date date) {
         LiveMessagePanel panel = new LiveMessagePanel(name, subject, msg, date);
-        messagePanel.add(panel);
-        messagePanel.revalidate();
+
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                messagePanel.add(panel);
+
+                messagePanel.revalidate();
+                messagePanel.repaint();
+        }
+        });
     }
 
     /**

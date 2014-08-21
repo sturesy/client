@@ -34,6 +34,7 @@ public class NotificationWindow extends JFrame {
         setFocusableWindowState(false);
         setDefaultLookAndFeelDecorated(false);
         setUndecorated(true);
+        setAlwaysOnTop(true);
 
         addComponentListener(new ComponentAdapter() {
             @Override

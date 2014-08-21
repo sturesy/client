@@ -76,6 +76,9 @@ public class FeedbackViewer implements Controller {
     }
 
     private void populateFeedbackQuestionList(JSONArray sheet) {
+        // delete previous data
+        _questionList.clear();
+
         // fill view with feedback sheet
         for (int i = 0; i < sheet.length(); i++) {
             JSONObject jobj = sheet.getJSONObject(i);
@@ -86,6 +89,9 @@ public class FeedbackViewer implements Controller {
     }
 
     private void populateFeedbackUserList(JSONObject fb) {
+        // delete previous data
+        _userList.clear();
+
         Map<String, FeedbackViewerUserEntry> userToResponses = new HashMap<>();
         // map feedback data to userIDs
         for (Object keyObj : fb.keySet()) {

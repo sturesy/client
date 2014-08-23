@@ -17,25 +17,22 @@
  */
 package sturesy.settings.mainsettings;
 
-import java.awt.Component;
-import java.awt.Image;
-import java.io.File;
-import java.io.IOException;
-
-import javax.swing.ImageIcon;
-import javax.swing.JFileChooser;
-import javax.swing.JTabbedPane;
-
 import org.jfree.util.Log;
-
 import sturesy.core.Localize;
 import sturesy.core.backend.Loader;
 import sturesy.core.backend.filter.filechooser.ZipFileFilter;
 import sturesy.core.plugin.ISettingsScreen;
 import sturesy.core.ui.MessageWindow;
+import sturesy.core.ui.NotificationService;
+import sturesy.core.ui.NotificationWindow;
 import sturesy.update.UpdateChecker;
 import sturesy.util.Settings;
 import sturesy.util.ZIPExtract;
+
+import javax.swing.*;
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Contains the Mainsettings like Maindirectory etc...
@@ -63,6 +60,9 @@ public class MainSettingsController extends ObservableMainSettings implements IS
         _componentToDisplay = new JTabbedPane();
         _gui = new MainSettingsUI(maindirectoryAbsolutePath);
         _gui.getUpdatefrequency().setSelectedIndex(Settings.getInstance().getInteger(Settings.UPDATE_FREQUENCY));
+
+        _gui.getScreens().setSelectedIndex(Settings.getInstance().getInteger(Settings.NOTIFICATION_SCREEN));
+        _gui.getPosition().setSelectedItem(Settings.getInstance().getString(Settings.NOTIFICATION_POSITION));
 
         _componentToDisplay.add(getName(), _gui);
         registerListeners();
@@ -92,6 +92,8 @@ public class MainSettingsController extends ObservableMainSettings implements IS
         Settings settings = Settings.getInstance();
         settings.setProperty(Settings.UPDATE_FREQUENCY, _gui.getUpdatefrequency().getSelectedIndex());
         settings.setProperty(Settings.MAINDIRECTORY, _gui.getMainDir());
+        settings.setProperty(Settings.NOTIFICATION_SCREEN, _gui.getScreens().getSelectedIndex());
+        settings.setProperty(Settings.NOTIFICATION_POSITION, (String)_gui.getPosition().getSelectedItem());
         informMaindirectoryChanged(_gui.getMainDir());
     }
 
@@ -144,6 +146,26 @@ public class MainSettingsController extends ObservableMainSettings implements IS
         checker.checkForUpdate(false);
     }
 
+    private void testNotifications() {
+        NotificationService service = NotificationService.getInstance();
+
+        // retain saved settings
+        NotificationWindow.Position oldPos = service.getPosition();
+        GraphicsDevice oldScreen = service.getScreen();
+
+        // apply current changes
+        service.setScreen(_gui.getScreens().getSelectedIndex());
+        service.setPosition((String) _gui.getPosition().getSelectedItem());
+
+        // if position/screen has changed, reset service
+        if (!oldPos.equals(service.getPosition()) || !oldScreen.equals(service.getScreen())) {
+            service.reset();
+        }
+
+        // display test notification
+        NotificationService.getInstance().addNotification("Test", "Test notification", 3);
+    }
+
     /**
      * Registers all Listeners
      */
@@ -153,5 +175,6 @@ public class MainSettingsController extends ObservableMainSettings implements IS
         _gui.getMainDirButton().addActionListener(e -> selectMaindir());
         _gui.getImportPlugin().addActionListener(e -> importPlugin());
         _gui.getCheckForUpdates().addActionListener(e -> checkForUpdates());
+        _gui.getNotificationTestButton().addActionListener(e -> testNotifications());
     }
 }

@@ -17,9 +17,7 @@
  */
 package sturesy.settings.mainsettings;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -50,6 +48,9 @@ public class MainSettingsUI extends JPanel
     private JButton _importPlugin;
     private JButton _checkForUpdates;
     private JComboBox _updatefrequency;
+    private final JButton _notificationtestbutton;
+    private final JComboBox _screens;
+    private final JComboBox _position;
 
     public MainSettingsUI(String maindirectoryAbsolutPath)
     {
@@ -61,12 +62,20 @@ public class MainSettingsUI extends JPanel
         // _maindirtextfield.setPreferredSize(new Dimension(350,
         // _maindirtextfield.getSize().height));
         _maindirchoosenew = new JButton(Localize.getString("button.select"));
+
+        JLabel _notificationlabel = new JLabel("Notifications:");
+        String[] positions = {"Top Left", "Top Right", "Bottom Left", "Bottom Right"};
+        _position = new JComboBox<>(positions);
+        GraphicsDevice[] screenDevices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+        _screens = new JComboBox<>(screenDevices);
+        _notificationtestbutton = new JButton("Test");
+
         _checkForUpdates = new JButton(Localize.getString("button.check.update"));
 
         _importPlugin = new JButton(Localize.getString("button.import.plugin"));
 
         JLabel updatelabel = new JLabel(Localize.getString("update.frequency"));
-        _updatefrequency = new JComboBox(UpdateFrequency.values());
+        _updatefrequency = new JComboBox<>(UpdateFrequency.values());
         _updatefrequency.setRenderer(new UpdateFrequencyCellRenderer());
 
         
@@ -80,6 +89,7 @@ public class MainSettingsUI extends JPanel
 
         add(new JGap(10), new GridBagConstraints(0, 1, 1, 1, 1.0, 0.1, GridBagConstraints.CENTER,
                 GridBagConstraints.NONE, INSETS_ZERO, 0, 0));
+
 
         /**  SELFUPDATE **/
         add(updatelabel, new GridBagConstraints(0, 2, 1, 1, 1.0, 0.0, GridBagConstraints.CENTER,
@@ -98,7 +108,20 @@ public class MainSettingsUI extends JPanel
         add(_importPlugin, new GridBagConstraints(0, 6, 4, 1, 1.0, 0.0, GridBagConstraints.CENTER,
                 GridBagConstraints.NONE, INSETS_ZERO, 0, 0));
 
-        add(new JGap(10), new GridBagConstraints(0, 7, 4, 1, 1.0, 1.0, GridBagConstraints.CENTER,
+        add(new JGap(10), new GridBagConstraints(0, 7, 4, 1, 1.0, 0.1, GridBagConstraints.CENTER,
+                GridBagConstraints.NONE, INSETS_ZERO, 0, 0));
+
+        /** NOTIFICATIONS **/
+        add(_notificationlabel,  new GridBagConstraints(0, 8, 1, 1, 1.0, 0.0, GridBagConstraints.CENTER,
+                GridBagConstraints.HORIZONTAL, INSETS_ZERO, 0, 0));
+        add(_position, new GridBagConstraints(1, 8, 1, 1, 1.0, 0.0, GridBagConstraints.WEST,
+                GridBagConstraints.HORIZONTAL, INSETS_ZERO, 0, 0));
+        add(_screens, new GridBagConstraints(2, 8, 1, 1, 1.0, 0.0, GridBagConstraints.EAST,
+                GridBagConstraints.NONE, INSETS_ZERO, 0, 0));
+        add(_notificationtestbutton, new GridBagConstraints(3, 8, 1, 1, 1.0, 0.0, GridBagConstraints.EAST,
+                GridBagConstraints.NONE, INSETS_ZERO, 0, 0));
+
+        add(new JGap(10), new GridBagConstraints(0, 9, 4, 1, 1.0, 1.0, GridBagConstraints.CENTER,
                 GridBagConstraints.NONE, INSETS_ZERO, 0, 0));
 
     }
@@ -134,6 +157,18 @@ public class MainSettingsUI extends JPanel
     public JComboBox getUpdatefrequency()
     {
         return _updatefrequency;
+    }
+
+    public JButton getNotificationTestButton() {
+        return _notificationtestbutton;
+    }
+
+    public JComboBox getScreens() {
+        return _screens;
+    }
+
+    public JComboBox getPosition() {
+        return _position;
     }
 
     public void showMessageDialogInformation(String ressourceKey)

@@ -23,7 +23,7 @@ public class NotificationWindow extends JFrame {
     private static final int DEFAULT_HEIGHT = 80;
     private static final Position DEFAULT_POS = Position.TOP_RIGHT;
 
-    private GraphicsDevice defaultScreen;
+    private GraphicsDevice screen;
     private boolean translucencySupported = true, shapesSupported = true;
     private NotificationExpirationListener expirationListener;
 
@@ -45,13 +45,13 @@ public class NotificationWindow extends JFrame {
         });
 
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        defaultScreen = ge.getDefaultScreenDevice();
+        screen = ge.getDefaultScreenDevice();
 
-        if(!defaultScreen.isWindowTranslucencySupported(GraphicsDevice.WindowTranslucency.TRANSLUCENT)) {
+        if(!screen.isWindowTranslucencySupported(GraphicsDevice.WindowTranslucency.TRANSLUCENT)) {
             translucencySupported = false;
             System.err.println("Warning: Window translucency is not supported.");
         }
-        if(!defaultScreen.isWindowTranslucencySupported(GraphicsDevice.WindowTranslucency.PERPIXEL_TRANSLUCENT)) {
+        if(!screen.isWindowTranslucencySupported(GraphicsDevice.WindowTranslucency.PERPIXEL_TRANSLUCENT)) {
             shapesSupported = false;
             System.err.println("Warning: Rounded Windows are not supported on this platform.");
         }
@@ -88,17 +88,17 @@ public class NotificationWindow extends JFrame {
     public void setPosition(Position position)
     {
         this.position = position;
-        Rectangle rect = defaultScreen.getDefaultConfiguration().getBounds();
+        Rectangle rect = screen.getDefaultConfiguration().getBounds();
 
         switch (position) {
             case TOP_LEFT:
-                setLocation(0, 0);
+                setLocation((int)rect.getX(), (int)rect.getY());
                 break;
             case TOP_RIGHT:
                 setLocation((int)rect.getMaxX() - getWidth(), 0);
                 break;
             case BOTTOM_LEFT:
-                setLocation(0, (int)rect.getMaxY() - getHeight());
+                setLocation((int)rect.getX(), (int)rect.getMaxY() - getHeight());
                 break;
             case BOTTOM_RIGHT:
                 setLocation((int)rect.getMaxX() - getWidth(), (int)rect.getMaxY() - getHeight());
@@ -129,6 +129,10 @@ public class NotificationWindow extends JFrame {
             });
             timer.start();
         }
+    }
+
+    public void setScreen(GraphicsDevice screen) {
+        this.screen = screen;
     }
 
     public Position getPosition() {

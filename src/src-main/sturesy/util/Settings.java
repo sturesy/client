@@ -55,6 +55,9 @@ public class Settings
     public static final String UPDATE_FREQUENCY = "update.frequency";
     public static final String UPDATE_LASTUPDATE = "update.last.update";
 
+    public static final String NOTIFICATION_SCREEN = "notification.screen";
+    public static final String NOTIFICATION_POSITION = "notification.position";
+
     private static final String DATEFORMAT = "yyyy-MM-d H:m:s";
 
     private static final String FILENAME = "sturesy.properties";

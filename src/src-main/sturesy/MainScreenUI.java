@@ -73,9 +73,9 @@ public class MainScreenUI extends JFrame
         add(_voting);
         add(_evaluate);
         add(_question);
-        add(_settings);
         add(_feedbacksheet);
         add(_livefeedback);
+        add(_settings);
     }
 
     public JButton getSettings()

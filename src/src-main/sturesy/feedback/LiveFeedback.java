@@ -50,6 +50,15 @@ public class LiveFeedback implements Controller {
         scheduler = Executors.newScheduledThreadPool(1);
 
         addListeners();
+        initNotificationService();
+    }
+
+    private void initNotificationService() {
+        String position = _settings.getString(Settings.NOTIFICATION_POSITION);
+        int screen = _settings.getInteger(Settings.NOTIFICATION_SCREEN);
+
+        notificationService.setPosition(position);
+        notificationService.setScreen(screen);
     }
 
     /**

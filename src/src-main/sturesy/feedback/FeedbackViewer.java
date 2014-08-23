@@ -151,21 +151,38 @@ public class FeedbackViewer implements Controller {
     {
         JPanel userPanel = new JPanel();
         userPanel.setBorder(BorderFactory.createTitledBorder("Feedback from " + user.toString()));
-        userPanel.setLayout(new BoxLayout(userPanel, BoxLayout.Y_AXIS));
+        userPanel.setLayout(new GridBagLayout());
 
+        JScrollPane scrollPane = new JScrollPane(userPanel);
+        scrollPane.setViewportBorder(null);
+
+        // fill horizontally
+        GridBagConstraints cons = new GridBagConstraints();
+        cons.gridx = 0;
+        cons.gridy = GridBagConstraints.RELATIVE;
+        cons.fill = GridBagConstraints.HORIZONTAL;
+        cons.anchor = GridBagConstraints.PAGE_START;
+        cons.weightx = 1;
+
+        // gather user feedback and add it to the UI
         for (int id : user.getFeedbackIDs()) {
             FeedbackTypeModel mo = getFeedbackModelForId(id);
 
             JPanel responsePanel = new JPanel();
-            responsePanel.setBorder(BorderFactory.createTitledBorder(mo.getTitle()));
             responsePanel.setLayout(new BoxLayout(responsePanel, BoxLayout.Y_AXIS));
+            responsePanel.setBorder(BorderFactory.createTitledBorder(mo.getTitle()));
 
             responsePanel.add(new JLabel("Description: " + mo.getDescription()));
             responsePanel.add(new JLabel("Response: " + user.getResponseForFeedbackId(id)));
-            userPanel.add(responsePanel);
+            userPanel.add(responsePanel, cons);
         }
 
-        _gui.setRightPanel(userPanel);
+        // fill up remaining space with greedy invisible panel
+        cons.weighty = 1;
+        cons.fill = GridBagConstraints.BOTH;
+        userPanel.add(new JPanel(), cons);
+
+        _gui.setRightPanel(scrollPane);
     }
 
     private FeedbackTypeModel getFeedbackModelForId(int id)
@@ -196,8 +213,16 @@ public class FeedbackViewer implements Controller {
         topPanel.add(mandatoryCheck);
 
         // panel containing responses
-        JPanel responsePanel = new JPanel();
+        JPanel responsePanel = new JPanel(new GridBagLayout());
         responsePanel.setBorder(BorderFactory.createTitledBorder("Responses"));
+
+        // fill horizontally
+        GridBagConstraints cons = new GridBagConstraints();
+        cons.gridx = 0;
+        cons.gridy = GridBagConstraints.RELATIVE;
+        cons.fill = GridBagConstraints.HORIZONTAL;
+        cons.anchor = GridBagConstraints.PAGE_START;
+        cons.weightx = 1;
 
         // get feedback for this question
         for(Object obj : _userList.toArray()) {
@@ -205,12 +230,29 @@ public class FeedbackViewer implements Controller {
 
             String response = ue.getResponseForFeedbackId(fb.getId());
             if(response != null) {
-                responsePanel.add(new JLabel(ue.getUserId() + ": " + response));
+                JPanel responseContainer = new JPanel();
+                responseContainer.setLayout(new BoxLayout(responseContainer, BoxLayout.Y_AXIS));
+
+                responseContainer.setBorder(BorderFactory.createTitledBorder("User: " + ue.getUserId()));
+                responseContainer.add(new JLabel("Response: " + response));
+
+                responsePanel.add(responseContainer, cons);
             }
         }
 
+        // fill up remaining space with greedy invisible panel
+        cons.weighty = 1;
+        cons.fill = GridBagConstraints.BOTH;
+        responsePanel.add(new JPanel(), cons);
+
+        // add question details to top
         questionPanel.add(topPanel, BorderLayout.PAGE_START);
-        questionPanel.add(responsePanel, BorderLayout.CENTER);
+
+        // wrap responses in JScrollPane
+        JScrollPane scrollPane = new JScrollPane(responsePanel);
+        scrollPane.setViewportBorder(null);
+        //scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        questionPanel.add(scrollPane, BorderLayout.CENTER);
 
         _gui.setRightPanel(questionPanel);
     }

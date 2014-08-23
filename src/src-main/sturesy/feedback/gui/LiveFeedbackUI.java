@@ -21,23 +21,34 @@ public class LiveFeedbackUI extends SFrame {
         super();
         setTitle("Live-Feedback");
 
-        JPanel topPanel = new JPanel();
-        startStopButton = new JButton("Start");
-        topPanel.add(startStopButton);
+        JPanel bottomPanel = new JPanel();
+        startStopButton = new JButton("Start Live-Feedback");
+        bottomPanel.add(startStopButton);
 
-        notificationCheckBox = new JCheckBox("Show notification alerts");
-        topPanel.add(notificationCheckBox);
+        notificationCheckBox = new JCheckBox("Show notification alerts", true);
+        bottomPanel.add(notificationCheckBox);
 
         autoScrollCheckBox = new JCheckBox("Autoscroll messages", true);
-        topPanel.add(autoScrollCheckBox);
+        bottomPanel.add(autoScrollCheckBox);
 
         messagePanel = new JPanel();
-        messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.Y_AXIS));
+        messagePanel.setLayout(new GridBagLayout());
         JScrollPane msgScrollPane = new JScrollPane(messagePanel);
-        msgScrollPane.setBorder(BorderFactory.createTitledBorder("Messages"));
+        msgScrollPane.setViewportBorder(null);
+        messagePanel.setBorder(BorderFactory.createTitledBorder("Messages"));
 
-        add(topPanel, BorderLayout.PAGE_START);
         add(msgScrollPane, BorderLayout.CENTER);
+        add(bottomPanel, BorderLayout.PAGE_END);
+
+        // fill up remaining space with greedy invisible panel
+        GridBagConstraints cons = new GridBagConstraints();
+        cons.gridx = 0;
+        cons.gridy = 0;
+        cons.anchor = GridBagConstraints.PAGE_START;
+        cons.weightx = 1;
+        cons.weighty = 1;
+        cons.fill = GridBagConstraints.BOTH;
+        messagePanel.add(new JPanel(), cons);
 
         // auto-scroll to the bottom (if enabled)
         // TODO: find a better way to do this (the current code blocks interaction with the scrollbar)
@@ -55,17 +66,21 @@ public class LiveFeedbackUI extends SFrame {
      * @param date Date of submission
      */
     public void addMessage(String name, String subject, String msg, Date date) {
+        GridBagConstraints cons = new GridBagConstraints();
+        cons.gridx = 0;
+        cons.gridy = GridBagConstraints.RELATIVE;
+        cons.fill = GridBagConstraints.HORIZONTAL;
+        cons.anchor = GridBagConstraints.PAGE_START;
+        cons.weightx = 1;
+
         LiveMessagePanel panel = new LiveMessagePanel(name, subject, msg, date);
 
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                messagePanel.add(panel);
+        SwingUtilities.invokeLater(() -> {
+            messagePanel.add(panel, cons);
 
-                messagePanel.revalidate();
-                messagePanel.repaint();
-        }
-        });
+            messagePanel.revalidate();
+            messagePanel.repaint();
+    });
     }
 
     /**

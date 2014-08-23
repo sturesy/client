@@ -21,8 +21,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author henrik
@@ -38,7 +40,7 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
         _settings = Settings.getInstance();
         _questions = new SwappableListModel<>();
         _gui = new FeedbackSheetEditorUI(_questions);
-        _deletedFeedbackIds = new LinkedList<Integer>();
+        _deletedFeedbackIds = new LinkedList<>();
 
         addListeners();
     }
@@ -120,7 +122,7 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
         LectureID selectedLecture = CommonDialogs.showLectureSelection();
         if (selectedLecture != null) {
             // convert ListModel to List
-            List<FeedbackTypeModel> fbList = new LinkedList<FeedbackTypeModel>();
+            List<FeedbackTypeModel> fbList = new LinkedList<>();
             for (Object obj : _questions.toArray()) {
                 fbList.add((FeedbackTypeModel) obj);
             }
@@ -128,7 +130,7 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
             // delete remotely that were marked for removal locally
             if(_deletedFeedbackIds.size() > 0)
                 WebCommands2.deleteFeedbackQuestions(selectedLecture.getHost().toString(),
-                    selectedLecture.getLectureID().toString(), selectedLecture.getPassword(), _deletedFeedbackIds);
+                        selectedLecture.getLectureID(), selectedLecture.getPassword(), _deletedFeedbackIds);
 
             // upload new sheet
             WebCommands2.updateFeedbackSheet(selectedLecture.getHost().toString(),
@@ -140,32 +142,53 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
     private void downloadButtonAction() {
         LectureID selectedLecture = CommonDialogs.showLectureSelection();
         if (selectedLecture != null) {
-            downloadLecture(selectedLecture);
-        }
-    }
-
-    private void downloadLecture(LectureID lecture) {
-        JSONArray response = WebCommands2.downloadFeedbackSheet(lecture.getHost().toString(),
-                lecture.getLectureID(), lecture.getPassword());
-        if (response != null) {
             // clear current list
             _questions.clear();
 
+            List<FeedbackTypeModel> models = downloadLecture(selectedLecture);
+            models.forEach(_questions::addElement);
+
+            _deletedFeedbackIds.clear();
+            _gui.getQuestionList().updateUI();
+            _gui.updateEditorPanel(null);
+        }
+    }
+
+    private List<FeedbackTypeModel> downloadLecture(LectureID lecture) {
+        List<FeedbackTypeModel> models = new ArrayList<>();
+        JSONArray response = WebCommands2.downloadFeedbackSheet(lecture.getHost().toString(),
+                lecture.getLectureID(), lecture.getPassword());
+        if (response != null) {
             for (int i = 0; i < response.length(); i++) {
                 JSONObject jobj = response.getJSONObject(i);
                 FeedbackTypeModel mo = FeedbackTypeMapping.instantiateAndInitializeWithJson(jobj);
 
                 if (mo != null) {
-                    _questions.addElement(mo);
+                    models.add(mo);
                 } else
                     System.err.println("Invalid Feedback type: " + jobj.getString("type"));
             }
-            _deletedFeedbackIds.clear();
-            _gui.getQuestionList().updateUI();
-            _gui.updateEditorPanel(null);
         }
-        else
-            JOptionPane.showMessageDialog(this.getFrame(), "Could not download the feedback sheet.", "Error", JOptionPane.ERROR_MESSAGE);
+        return models;
+    }
+
+    private void clearSheetAction() {
+        LectureID selectedLecture = CommonDialogs.showLectureSelection();
+        if (selectedLecture != null) {
+            int result = JOptionPane.showConfirmDialog(_gui, "This will delete the current feedback sheet including submitted feedback for this sheet.\n"
+                    + "Proceed?", "StuReSy", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+            // upload empty sheet
+            if(result == JOptionPane.YES_OPTION) {
+                List<Integer> deleteList = new LinkedList<>();
+
+                List<FeedbackTypeModel> models = downloadLecture(selectedLecture);
+                deleteList.addAll(models.stream().map(FeedbackTypeModel::getId).collect(Collectors.toList()));
+
+                WebCommands2.deleteFeedbackQuestions(selectedLecture.getHost().toString(),
+                        selectedLecture.getLectureID(), selectedLecture.getPassword(), deleteList);
+            }
+        }
     }
 
     private void moveDownButtonAction() {
@@ -207,6 +230,7 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
         _gui.getDelButton().addActionListener(e -> delButtonAction());
         _gui.getUploadButton().addActionListener(e -> uploadButtonAction());
         _gui.getDownloadButton().addActionListener(e -> downloadButtonAction());
+        _gui.getClearButton().addActionListener(e -> clearSheetAction());
         _gui.getMoveDownButton().addActionListener(e -> moveDownButtonAction());
         _gui.getMoveUpButton().addActionListener(e -> moveUpButtonAction());
     }

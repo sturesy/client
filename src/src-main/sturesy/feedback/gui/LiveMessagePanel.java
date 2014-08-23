@@ -18,7 +18,10 @@ public class LiveMessagePanel extends JPanel {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         String time = dateFormat.format(date);
-        add(new JLabel("At " + time + " regarding: " + subject));
-        add(new JLabel(message));
+        String sub = (subject.length() > 0 ? subject : "<no subject>");
+        String msg = message.replace("\n", "<br/>");
+
+        add(new JLabel("At " + time + " regarding: " + sub));
+        add(new JLabel("<html>" + msg));
     }
 }

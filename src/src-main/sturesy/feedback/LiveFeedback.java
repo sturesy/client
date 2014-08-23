@@ -110,7 +110,7 @@ public class LiveFeedback implements Controller {
      * Called when polling is to be started
      */
     private void startPolling() {
-        _gui.getStartStopButton().setText("Stop");
+        _gui.getStartStopButton().setText("Stop Live-Feedback");
         pollingTaskHandle = scheduler.scheduleAtFixedRate(pollingTask, 0, POLLING_TIME, POLLING_TIMEUNIT);
 
     }
@@ -119,7 +119,7 @@ public class LiveFeedback implements Controller {
      * Called when polling is to be stopped
      */
     private void stopPolling() {
-        _gui.getStartStopButton().setText("Start");
+        _gui.getStartStopButton().setText("Start Live-Feedback");
         pollingTaskHandle.cancel(true);
     }
 
@@ -151,8 +151,8 @@ public class LiveFeedback implements Controller {
                 _gui.addMessage(name, subject, message, date);
 
                 if(_gui.getNotificationCheckBox().isSelected())
-                    notificationService.addNotification("New message by: " + name,
-                            "<html>Regarding: " + subject + "<br/>" + message, 10);
+                    notificationService.addNotification(name + ": " + (subject.length() > 0 ? subject : "<no subject>"),
+                            message, 10);
             }
         }
     };

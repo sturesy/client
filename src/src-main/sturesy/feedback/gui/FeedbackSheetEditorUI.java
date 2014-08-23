@@ -70,7 +70,7 @@ public class FeedbackSheetEditorUI extends SFrame
 		
 		_uploadbutton = new JButton("Upload Sheet");
 		_downloadbutton = new JButton("Download Sheet");
-		_clearbutton = new JButton("Clear");
+		_clearbutton = new JButton("Clear Sheet on Server");
 		
 		// list of questions
 		JScrollPane listScrollPane = new JScrollPane(_questionlist);
@@ -154,6 +154,10 @@ public class FeedbackSheetEditorUI extends SFrame
 	public JButton getUploadButton() { return _uploadbutton; }
 
     public JButton getDownloadButton() { return _downloadbutton; }
+
+    public JButton getClearButton() {
+        return _clearbutton;
+    }
 
     public JButton getMoveUpButton() {
         return _mvupbutton;

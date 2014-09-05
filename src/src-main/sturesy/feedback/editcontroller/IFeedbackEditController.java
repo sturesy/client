@@ -21,7 +21,7 @@ public interface IFeedbackEditController extends UIObservable
 	 * @param item Feedback Item
 	 */
 	public void setFeedbackItem(AbstractFeedbackType item);
-	
+
 	/*
 	 * @return The feedback item associated with this controller
 	 */

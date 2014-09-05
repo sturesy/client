@@ -2,6 +2,7 @@ package sturesy.items.feedback;
 
 import org.json.JSONObject;
 import sturesy.feedback.editcontroller.FeedbackEditControllerBasic;
+import sturesy.feedback.editcontroller.FeedbackEditControllerChoice;
 import sturesy.feedback.editcontroller.IFeedbackEditController;
 
 import java.util.HashMap;
@@ -25,6 +26,7 @@ public class FeedbackTypeMapping {
 	    // this is where feedback types are mapped to their edit controllers
         typeClassMap.put(FeedbackTypeComment.class, new FeedbackEditControllerBasic());
         typeClassMap.put(FeedbackTypeGrades.class, new FeedbackEditControllerBasic());
+        typeClassMap.put(FeedbackTypeChoice.class, new FeedbackEditControllerChoice());
     }
 
     /**

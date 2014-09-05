@@ -24,12 +24,13 @@ public class FeedbackEditControllerBasic implements IFeedbackEditController
 	private JCheckBox _mandatoryCheckbox;
 	private JTextField _questiontitle;
 	private JTextArea _questiondesc;
-	
-	private AbstractFeedbackType _item;
-	
-	private UIObserver _observer;
-	
-	public FeedbackEditControllerBasic()
+
+	protected AbstractFeedbackType _item;
+	protected UIObserver _observer;
+    protected final JPanel topPanel;
+    protected final JPanel centerPanel;
+
+    public FeedbackEditControllerBasic()
 	{
 		_panel = new JPanel();
 		
@@ -41,22 +42,22 @@ public class FeedbackEditControllerBasic implements IFeedbackEditController
 		_questiontitle = new JTextField();
 		_questiondesc = new JTextArea();
         _questiondesc.setLineWrap(true);
-		
-		JPanel questionEditPanel = new JPanel();
-		questionEditPanel.setLayout(new BoxLayout(questionEditPanel, BoxLayout.PAGE_AXIS));
-		questionEditPanel.setBorder(BorderFactory.createTitledBorder("Question Editor"));
 
-		JPanel qtypePanel = new JPanel();
-        qtypePanel.setLayout(new BoxLayout(qtypePanel, BoxLayout.LINE_AXIS));
-		qtypePanel.add(_typeLabel);
-        qtypePanel.add(Box.createHorizontalGlue());
-		qtypePanel.add(_mandatoryCheckbox);
-		questionEditPanel.add(qtypePanel);
+        centerPanel = new JPanel();
+		centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.PAGE_AXIS));
+		centerPanel.setBorder(BorderFactory.createTitledBorder("Question Editor"));
+
+        topPanel = new JPanel();
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.LINE_AXIS));
+		topPanel.add(_typeLabel);
+        topPanel.add(Box.createHorizontalGlue());
+		topPanel.add(_mandatoryCheckbox);
+		centerPanel.add(topPanel);
 		
 		_questiontitle.setMaximumSize(new Dimension(Integer.MAX_VALUE, _questiontitle.getPreferredSize().height));
-		questionEditPanel.add(_questiontitle);
-		questionEditPanel.add(_questiondesc);
-		_panel.add(questionEditPanel, BorderLayout.CENTER);
+		centerPanel.add(_questiontitle);
+		centerPanel.add(_questiondesc);
+		_panel.add(centerPanel, BorderLayout.CENTER);
 		
 		initListeners();
 	}

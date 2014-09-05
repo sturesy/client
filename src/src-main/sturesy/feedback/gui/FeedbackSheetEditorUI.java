@@ -119,7 +119,7 @@ public class FeedbackSheetEditorUI extends SFrame
 		buttonPanel.add(_downloadbutton);
 		buttonPanel.add(_clearbutton);
 		panel.add(buttonPanel, BorderLayout.SOUTH);
-		
+
 		return panel;
 	}
 	

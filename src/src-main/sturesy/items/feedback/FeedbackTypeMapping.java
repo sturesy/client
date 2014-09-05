@@ -16,12 +16,13 @@ import java.util.Map;
  * Created by henrik on 6/4/14.
  */
 public class FeedbackTypeMapping {
-    private static final Map<Class<? extends FeedbackTypeModel>, IFeedbackEditController> typeClassMap;
+    private static final Map<Class<? extends AbstractFeedbackType>, IFeedbackEditController> typeClassMap;
 
     static
     {
         typeClassMap = new HashMap<>();
 
+	    // this is where feedback types are mapped to their edit controllers
         typeClassMap.put(FeedbackTypeComment.class, new FeedbackEditControllerBasic());
         typeClassMap.put(FeedbackTypeGrades.class, new FeedbackEditControllerBasic());
     }
@@ -31,7 +32,7 @@ public class FeedbackTypeMapping {
      * @param type Class Object for Feedback Type
      * @return Controller Object for Feedback Type
      */
-    public static IFeedbackEditController getControllerForTypeClass(Class<? extends FeedbackTypeModel> type)
+    public static IFeedbackEditController getControllerForTypeClass(Class<? extends AbstractFeedbackType> type)
     {
         if(typeClassMap.containsKey(type))
             return typeClassMap.get(type);
@@ -43,9 +44,9 @@ public class FeedbackTypeMapping {
      * @param type Machine readable feedback type string
      * @return Newly instantiated object
      */
-    public static FeedbackTypeModel instantiateObjectForType(String type)
+    public static AbstractFeedbackType instantiateObjectForType(String type)
     {
-        for(FeedbackTypeModel o : getAllFeedbackTypes())
+        for(AbstractFeedbackType o : getAllFeedbackTypes())
         {
             if(type.equals(o.getType()))
                 return o;
@@ -58,11 +59,11 @@ public class FeedbackTypeMapping {
      * @param obj JSON data
      * @return Newly created object
      */
-    public static FeedbackTypeModel instantiateAndInitializeWithJson(JSONObject obj)
+    public static AbstractFeedbackType instantiateAndInitializeWithJson(JSONObject obj)
     {
         // extract json data
         if(obj.has("type")) {
-            FeedbackTypeModel mo = FeedbackTypeMapping.instantiateObjectForType(obj.getString("type"));
+            AbstractFeedbackType mo = FeedbackTypeMapping.instantiateObjectForType(obj.getString("type"));
             if (mo != null) {
                 mo.setTitle(obj.getString("title"));
                 mo.setDescription(obj.getString("description"));
@@ -81,13 +82,13 @@ public class FeedbackTypeMapping {
     /**
      * @return A List with objects of all available feedback types
      */
-    public static List<FeedbackTypeModel> getAllFeedbackTypes()
+    public static List<AbstractFeedbackType> getAllFeedbackTypes()
     {
-        List<FeedbackTypeModel> list = new LinkedList<>();
-        for(Class<? extends FeedbackTypeModel> c : typeClassMap.keySet())
+        List<AbstractFeedbackType> list = new LinkedList<>();
+        for(Class<? extends AbstractFeedbackType> c : typeClassMap.keySet())
         {
             try {
-                FeedbackTypeModel instanced = c.newInstance();
+                AbstractFeedbackType instanced = c.newInstance();
                 list.add(instanced);
             } catch (InstantiationException | IllegalAccessException e) {
                 e.printStackTrace();

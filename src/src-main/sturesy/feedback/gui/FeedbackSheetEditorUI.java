@@ -16,7 +16,7 @@ import javax.swing.ListSelectionModel;
 import sturesy.core.backend.Loader;
 import sturesy.core.ui.SFrame;
 import sturesy.feedback.editcontroller.IFeedbackEditController;
-import sturesy.items.feedback.FeedbackTypeModel;
+import sturesy.items.feedback.AbstractFeedbackType;
 
 public class FeedbackSheetEditorUI extends SFrame
 {
@@ -25,7 +25,7 @@ public class FeedbackSheetEditorUI extends SFrame
 	private JSplitPane _splitpane;
 	
 	// Left Panel
-	private JList<FeedbackTypeModel> _questionlist;
+	private JList<AbstractFeedbackType> _questionlist;
 	private JButton _addbutton;
 	private JButton _delbutton;
 	private JButton _mvupbutton;
@@ -36,7 +36,7 @@ public class FeedbackSheetEditorUI extends SFrame
 	private JButton _downloadbutton;
 	private JButton _clearbutton;
 	
-	public FeedbackSheetEditorUI(DefaultListModel<FeedbackTypeModel> questions)
+	public FeedbackSheetEditorUI(DefaultListModel<AbstractFeedbackType> questions)
 	{
 		super();
 
@@ -54,7 +54,7 @@ public class FeedbackSheetEditorUI extends SFrame
 		add(_splitpane);
 	}
 	
-	private JPanel createLeftPanel(DefaultListModel<FeedbackTypeModel> questions)
+	private JPanel createLeftPanel(DefaultListModel<AbstractFeedbackType> questions)
 	{
 		JPanel panel = new JPanel();
 		
@@ -146,7 +146,7 @@ public class FeedbackSheetEditorUI extends SFrame
 		return _delbutton;
 	}
 
-	public JList<FeedbackTypeModel> getQuestionList()
+	public JList<AbstractFeedbackType> getQuestionList()
 	{
 		return _questionlist;
 	}

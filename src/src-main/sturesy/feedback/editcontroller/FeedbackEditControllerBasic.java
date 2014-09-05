@@ -11,7 +11,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import sturesy.core.ui.UIObserver;
-import sturesy.items.feedback.FeedbackTypeModel;
+import sturesy.items.feedback.AbstractFeedbackType;
 
 /**
  * @author henrik
@@ -25,7 +25,7 @@ public class FeedbackEditControllerBasic implements IFeedbackEditController
 	private JTextField _questiontitle;
 	private JTextArea _questiondesc;
 	
-	private FeedbackTypeModel _item;
+	private AbstractFeedbackType _item;
 	
 	private UIObserver _observer;
 	
@@ -62,7 +62,7 @@ public class FeedbackEditControllerBasic implements IFeedbackEditController
 	}
 
 	@Override
-	public void setFeedbackItem(FeedbackTypeModel item)
+	public void setFeedbackItem(AbstractFeedbackType item)
 	{
 		_item = item;
 
@@ -78,8 +78,7 @@ public class FeedbackEditControllerBasic implements IFeedbackEditController
 		return _panel;
 	}
 
-	@Override
-	public void synchronizeData()
+	private void synchronizeData()
 	{		
 		if(_observer != null) {
 			_item.setTitle(_questiontitle.getText());
@@ -114,7 +113,7 @@ public class FeedbackEditControllerBasic implements IFeedbackEditController
 	}
 
 	@Override
-	public FeedbackTypeModel getFeedbackItem()
+	public AbstractFeedbackType getFeedbackItem()
 	{
 		return _item;
 	}

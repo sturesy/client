@@ -1,7 +1,7 @@
 package sturesy.items.feedback;
 
 
-public class FeedbackTypeGrades extends FeedbackTypeModel
+public class FeedbackTypeGrades extends AbstractFeedbackType
 {
 	@Override
 	public String getTypeLong()

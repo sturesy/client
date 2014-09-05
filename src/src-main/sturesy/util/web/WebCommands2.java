@@ -28,7 +28,7 @@ import sturesy.items.MultipleChoiceQuestion;
 import sturesy.items.QuestionModel;
 import sturesy.items.SingleChoiceQuestion;
 import sturesy.items.TextQuestion;
-import sturesy.items.feedback.FeedbackTypeModel;
+import sturesy.items.feedback.AbstractFeedbackType;
 import sturesy.util.Crypt;
 
 import javax.net.ssl.*;
@@ -155,7 +155,7 @@ public class WebCommands2
      * @param sheet
      * 		List of Feedback Questions
      */
-    public static String updateFeedbackSheet(String url, String lecturename, String password, List<FeedbackTypeModel> sheet)
+    public static String uploadFeedbackSheet(String url, String lecturename, String password, List<AbstractFeedbackType> sheet)
     {
     	JSONObject js = new JSONObject();
     	js.put("command", "update");
@@ -165,7 +165,7 @@ public class WebCommands2
     	
     	JSONArray fbarray = new JSONArray();
         int count = 0;
-    	for (FeedbackTypeModel fb : sheet)
+    	for (AbstractFeedbackType fb : sheet)
 		{
     		JSONObject fbObject = new JSONObject();
             fbObject.put("fbid", fb.getId());

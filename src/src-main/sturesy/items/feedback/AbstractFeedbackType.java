@@ -8,7 +8,7 @@ package sturesy.items.feedback;
  * 
  * @author henrik
  */
-public abstract class FeedbackTypeModel
+public abstract class AbstractFeedbackType
 {
     protected int id;
 	protected String title = "New Item";

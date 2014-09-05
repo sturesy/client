@@ -5,8 +5,8 @@ import org.json.JSONObject;
 import sturesy.core.Controller;
 import sturesy.feedback.gui.FeedbackViewerUI;
 import sturesy.items.LectureID;
+import sturesy.items.feedback.AbstractFeedbackType;
 import sturesy.items.feedback.FeedbackTypeMapping;
-import sturesy.items.feedback.FeedbackTypeModel;
 import sturesy.util.CommonDialogs;
 import sturesy.util.Settings;
 import sturesy.util.web.WebCommands2;
@@ -28,7 +28,7 @@ public class FeedbackViewer implements Controller {
     private final Settings _settings;
     private FeedbackViewerUI _gui;
 
-    private DefaultListModel<FeedbackTypeModel> _questionList;
+    private DefaultListModel<AbstractFeedbackType> _questionList;
     private DefaultListModel<FeedbackViewerUserEntry> _userList;
 
     public FeedbackViewer() {
@@ -82,7 +82,7 @@ public class FeedbackViewer implements Controller {
         // fill view with feedback sheet
         for (int i = 0; i < sheet.length(); i++) {
             JSONObject jobj = sheet.getJSONObject(i);
-            FeedbackTypeModel mo = FeedbackTypeMapping.instantiateAndInitializeWithJson(jobj);
+            AbstractFeedbackType mo = FeedbackTypeMapping.instantiateAndInitializeWithJson(jobj);
             if(mo != null)
                 _questionList.addElement(mo);
         }
@@ -126,7 +126,7 @@ public class FeedbackViewer implements Controller {
         JList lsm = (JList)e.getSource();
         if(!lsm.isSelectionEmpty()) {
             _gui.getUserList().clearSelection();
-            FeedbackTypeModel mo = (FeedbackTypeModel)lsm.getSelectedValue();
+            AbstractFeedbackType mo = (AbstractFeedbackType)lsm.getSelectedValue();
 
             showFeedbackForQuestion(mo);
         }
@@ -166,7 +166,7 @@ public class FeedbackViewer implements Controller {
 
         // gather user feedback and add it to the UI
         for (int id : user.getFeedbackIDs()) {
-            FeedbackTypeModel mo = getFeedbackModelForId(id);
+            AbstractFeedbackType mo = getFeedbackModelForId(id);
 
             JPanel responsePanel = new JPanel();
             responsePanel.setLayout(new BoxLayout(responsePanel, BoxLayout.Y_AXIS));
@@ -185,17 +185,17 @@ public class FeedbackViewer implements Controller {
         _gui.setRightPanel(scrollPane);
     }
 
-    private FeedbackTypeModel getFeedbackModelForId(int id)
+    private AbstractFeedbackType getFeedbackModelForId(int id)
     {
         for(Object obj : _questionList.toArray()) {
-            FeedbackTypeModel mo = (FeedbackTypeModel)obj;
+            AbstractFeedbackType mo = (AbstractFeedbackType)obj;
             if(mo.getId() == id)
                 return mo;
         }
         return null;
     }
 
-    private void showFeedbackForQuestion(FeedbackTypeModel fb)
+    private void showFeedbackForQuestion(AbstractFeedbackType fb)
     {
         JPanel questionPanel = new JPanel();
         questionPanel.setBorder(BorderFactory.createTitledBorder(fb.getTitle()));

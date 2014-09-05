@@ -9,8 +9,8 @@ import sturesy.core.ui.UIObserver;
 import sturesy.feedback.editcontroller.IFeedbackEditController;
 import sturesy.feedback.gui.FeedbackSheetEditorUI;
 import sturesy.items.LectureID;
+import sturesy.items.feedback.AbstractFeedbackType;
 import sturesy.items.feedback.FeedbackTypeMapping;
-import sturesy.items.feedback.FeedbackTypeModel;
 import sturesy.util.CommonDialogs;
 import sturesy.util.Settings;
 import sturesy.util.web.WebCommands2;
@@ -33,7 +33,7 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
     private FeedbackSheetEditorUI _gui;
     private Settings _settings;
 
-    private SwappableListModel<FeedbackTypeModel> _questions;
+    private SwappableListModel<AbstractFeedbackType> _questions;
     private List<Integer> _deletedFeedbackIds;
 
     public FeedbackSheetEditor() {
@@ -71,7 +71,7 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
      */
     private void addButtonAction() {
         JPopupMenu menu = new JPopupMenu();
-        for (FeedbackTypeModel mo : FeedbackTypeMapping.getAllFeedbackTypes()) {
+        for (AbstractFeedbackType mo : FeedbackTypeMapping.getAllFeedbackTypes()) {
             menu.add(new JMenuItem2(mo.getTypeLong(), e -> _questions.addElement(mo)));
         }
 
@@ -86,7 +86,7 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
         int[] selected = _gui.getQuestionList().getSelectedIndices();
         for (int i = selected.length - 1; i >= 0; i--) {
             // mark for deletion when the new sheet is being uploaded
-            FeedbackTypeModel mo = _questions.get(selected[i]);
+            AbstractFeedbackType mo = _questions.get(selected[i]);
             if(mo.getId() != 0)
                 _deletedFeedbackIds.add(mo.getId());
 
@@ -98,7 +98,7 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
      * {@link ActionListener} for Item Selection
      */
     private void questionSelected() {
-        FeedbackTypeModel sel = _gui.getQuestionList().getSelectedValue();
+        AbstractFeedbackType sel = _gui.getQuestionList().getSelectedValue();
         IFeedbackEditController controller = FeedbackTypeMapping.getControllerForTypeClass(sel.getClass());
 
         // avoid unwanted listener calls during panel switch
@@ -109,10 +109,16 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
         controller.setObserver(this);
     }
 
+    /**
+     * called when a FeedbackTypeModel is modified
+     */
     @Override
     public void update() {
         int sel = _gui.getQuestionList().getSelectedIndex();
 
+        // replace the old FeedbackTypeModel with an updated object
+        // e.g. due to changes made (title, description, etc)
+        // this is necessary because the EditController and the ListModel carry two different copies
         IFeedbackEditController controller = FeedbackTypeMapping.
                 getControllerForTypeClass(_questions.get(sel).getClass());
         _questions.setElementAt(controller.getFeedbackItem(), sel);
@@ -122,9 +128,9 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
         LectureID selectedLecture = CommonDialogs.showLectureSelection();
         if (selectedLecture != null) {
             // convert ListModel to List
-            List<FeedbackTypeModel> fbList = new LinkedList<>();
+            List<AbstractFeedbackType> fbList = new LinkedList<>();
             for (Object obj : _questions.toArray()) {
-                fbList.add((FeedbackTypeModel) obj);
+                fbList.add((AbstractFeedbackType) obj);
             }
 
             // delete remotely that were marked for removal locally
@@ -133,7 +139,7 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
                         selectedLecture.getLectureID(), selectedLecture.getPassword(), _deletedFeedbackIds);
 
             // upload new sheet
-            WebCommands2.updateFeedbackSheet(selectedLecture.getHost().toString(),
+            WebCommands2.uploadFeedbackSheet(selectedLecture.getHost().toString(),
                     selectedLecture.getLectureID(), selectedLecture.getPassword(), fbList);
             downloadLecture(selectedLecture);
         }
@@ -145,7 +151,7 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
             // clear current list
             _questions.clear();
 
-            List<FeedbackTypeModel> models = downloadLecture(selectedLecture);
+            List<AbstractFeedbackType> models = downloadLecture(selectedLecture);
             models.forEach(_questions::addElement);
 
             _deletedFeedbackIds.clear();
@@ -154,14 +160,14 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
         }
     }
 
-    private List<FeedbackTypeModel> downloadLecture(LectureID lecture) {
-        List<FeedbackTypeModel> models = new ArrayList<>();
+    private List<AbstractFeedbackType> downloadLecture(LectureID lecture) {
+        List<AbstractFeedbackType> models = new ArrayList<>();
         JSONArray response = WebCommands2.downloadFeedbackSheet(lecture.getHost().toString(),
                 lecture.getLectureID(), lecture.getPassword());
         if (response != null) {
             for (int i = 0; i < response.length(); i++) {
                 JSONObject jobj = response.getJSONObject(i);
-                FeedbackTypeModel mo = FeedbackTypeMapping.instantiateAndInitializeWithJson(jobj);
+                AbstractFeedbackType mo = FeedbackTypeMapping.instantiateAndInitializeWithJson(jobj);
 
                 if (mo != null) {
                     models.add(mo);
@@ -182,8 +188,8 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
             if(result == JOptionPane.YES_OPTION) {
                 List<Integer> deleteList = new LinkedList<>();
 
-                List<FeedbackTypeModel> models = downloadLecture(selectedLecture);
-                deleteList.addAll(models.stream().map(FeedbackTypeModel::getId).collect(Collectors.toList()));
+                List<AbstractFeedbackType> models = downloadLecture(selectedLecture);
+                deleteList.addAll(models.stream().map(AbstractFeedbackType::getId).collect(Collectors.toList()));
 
                 WebCommands2.deleteFeedbackQuestions(selectedLecture.getHost().toString(),
                         selectedLecture.getLectureID(), selectedLecture.getPassword(), deleteList);

@@ -141,7 +141,14 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
             // upload new sheet
             WebCommands2.uploadFeedbackSheet(selectedLecture.getHost().toString(),
                     selectedLecture.getLectureID(), selectedLecture.getPassword(), fbList);
-            downloadLecture(selectedLecture);
+
+            // clear current list
+            _questions.clear();
+            _deletedFeedbackIds.clear();
+
+            // download sheet again to get feedback IDs
+            List<AbstractFeedbackType> models = downloadLecture(selectedLecture);
+            models.forEach(_questions::addElement);
         }
     }
 

@@ -55,8 +55,8 @@ public class MainScreenUI extends JFrame
         _question = new JButton(Localize.getString(Localize.QUESTIONEDITOR),
                 Loader.getImageIcon(Loader.IMAGE_QUESTIONEDITOR));
         _voting = new JButton(Localize.getString(Localize.VOTING), Loader.getImageIcon(Loader.IMAGE_VOTING));
-        _feedbacksheet = new JButton("Feedback-Sheets");
-        _livefeedback = new JButton("Live-Feedback");
+        _feedbacksheet = new JButton("Feedback-Sheets", Loader.getImageIcon(Loader.IMAGE_FEEDBACK));
+        _livefeedback = new JButton("Live-Feedback", Loader.getImageIcon(Loader.IMAGE_FEEDBACK_LIVE));
         
         _voting.setHorizontalAlignment(SwingConstants.LEFT);
         _question.setHorizontalAlignment(SwingConstants.LEFT);

@@ -84,7 +84,13 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
      */
     private void delButtonAction() {
         int[] selected = _gui.getQuestionList().getSelectedIndices();
+
+        // close editor panel
+        if(selected.length > 0)
+            _gui.updateEditorPanel(null);
+
         for (int i = selected.length - 1; i >= 0; i--) {
+
             // mark for deletion when the new sheet is being uploaded
             AbstractFeedbackType mo = _questions.get(selected[i]);
             if(mo.getId() != 0)
@@ -116,12 +122,8 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
     public void update() {
         int sel = _gui.getQuestionList().getSelectedIndex();
 
-        // replace the old FeedbackTypeModel with an updated object
-        // e.g. due to changes made (title, description, etc)
-        // this is necessary because the EditController and the ListModel carry two different copies
-        IFeedbackEditController controller = FeedbackTypeMapping.
-                getControllerForTypeClass(_questions.get(sel).getClass());
-        _questions.setElementAt(controller.getFeedbackItem(), sel);
+        // notify ListModel that a feedback item was updated
+        _questions.update(sel);
     }
 
     private void uploadButtonAction() {
@@ -139,16 +141,18 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
                         selectedLecture.getLectureID(), selectedLecture.getPassword(), _deletedFeedbackIds);
 
             // upload new sheet
-            WebCommands2.uploadFeedbackSheet(selectedLecture.getHost().toString(),
-                    selectedLecture.getLectureID(), selectedLecture.getPassword(), fbList);
+            if(WebCommands2.uploadFeedbackSheet(selectedLecture.getHost().toString(),
+                    selectedLecture.getLectureID(), selectedLecture.getPassword(), fbList).equals("OK")) {
+                // clear current list
+                _questions.clear();
+                _deletedFeedbackIds.clear();
 
-            // clear current list
-            _questions.clear();
-            _deletedFeedbackIds.clear();
-
-            // download sheet again to get feedback IDs
-            List<AbstractFeedbackType> models = downloadLecture(selectedLecture);
-            models.forEach(_questions::addElement);
+                // download sheet again to get feedback IDs
+                List<AbstractFeedbackType> models = downloadLecture(selectedLecture);
+                models.forEach(_questions::addElement);
+            }
+            else
+                JOptionPane.showMessageDialog(_gui, "Could not upload lecture sheet.");
         }
     }
 

@@ -42,6 +42,8 @@ public class Loader
     public static final String IMAGE_EVALUATE = "image/evaluate.png";
     public static final String IMAGE_QUESTIONEDITOR = "image/question_gen.png";
     public static final String IMAGE_QUESTION = "image/question.png";
+    public static final String IMAGE_FEEDBACK_LIVE = "image/live-feedback.png";
+    public static final String IMAGE_FEEDBACK = "image/feedback.png";
     public static final String IMAGE_GENERALINFO = "image/general-info.png";
     public static final String IMAGE_WEB = "image/wlan-icon.png";
     public static final String IMAGE_BARCODE = "image/barcode.png";

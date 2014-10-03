@@ -41,6 +41,9 @@ public class FeedbackEditControllerChoice extends FeedbackEditControllerBasic {
         table = new JTable(tableModel);
         table.setTableHeader(null);
 
+        // leave 'edit mode' when the cell has lost focus
+        table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
+
         container.add(header, BorderLayout.NORTH);
         container.add(new JScrollPane(table), BorderLayout.CENTER);
         centerPanel.add(container);

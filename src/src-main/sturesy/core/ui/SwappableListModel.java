@@ -48,4 +48,13 @@ public class SwappableListModel<E> extends DefaultListModel<E>
         super.set(i, super.set(j, super.get(i)));
     }
 
+    /**
+     * Fires an event indicating that an element was modified.
+     * This will re-render the UI widgets displaying the relevant element.
+     * @param index
+     */
+    public void update(int index)
+    {
+        fireContentsChanged(this, index, index);
+    }
 }

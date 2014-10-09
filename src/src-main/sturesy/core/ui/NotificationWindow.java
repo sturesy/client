@@ -71,7 +71,8 @@ public class NotificationWindow extends JFrame {
         titlePanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY));
 
         JPanel centerPanel = new JPanel();
-        centerPanel.add(new JLabel(message));
+        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.PAGE_AXIS));
+        centerPanel.add(new JLabel("<html><p style=\"width:" + getWidth() + "px\">"+message+"</p></html>"));
 
         add(titlePanel, BorderLayout.PAGE_START);
         add(centerPanel, BorderLayout.CENTER);

@@ -17,6 +17,7 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -224,20 +225,55 @@ public class FeedbackViewer implements Controller {
         cons.anchor = GridBagConstraints.PAGE_START;
         cons.weightx = 1;
 
+        // summary ui widgets and data
+        JPanel summaryPanel = new JPanel();
+        summaryPanel.setLayout(new BoxLayout(summaryPanel, BoxLayout.Y_AXIS));
+        summaryPanel.setBorder(BorderFactory.createTitledBorder("Summary"));
+        Map<String, Integer> responseCounts = new HashMap<>();
+        responsePanel.add(summaryPanel, cons);
+
+        // keeps track of submissions/selections
+        int submissionCount = 0;
+
         // get feedback for this question
         for(Object obj : _userList.toArray()) {
             FeedbackViewerUserEntry ue = (FeedbackViewerUserEntry)obj;
 
             String response = ue.getResponseForFeedbackId(fb.getId());
             if(response != null) {
+                // populate panel with response by current user
                 JPanel responseContainer = new JPanel();
                 responseContainer.setLayout(new BoxLayout(responseContainer, BoxLayout.Y_AXIS));
-
                 responseContainer.setBorder(BorderFactory.createTitledBorder("User: " + ue.getUserId()));
                 responseContainer.add(new JLabel("Response: " + response));
-
                 responsePanel.add(responseContainer, cons);
+
+                // gather summary data if "choice" or "grade" question
+                if(fb.getType().equals("choice") || fb.getType().equals("grades")) {
+                    JSONArray responses = new JSONArray(response);
+                    for(int idx = 0; idx < responses.length(); idx++) {
+                        String selectedChoice = responses.getString(idx);
+
+                        if (responseCounts.containsKey(selectedChoice)) {
+                            responseCounts.replace(selectedChoice, responseCounts.get(selectedChoice) + 1);
+                        } else
+                            responseCounts.put(selectedChoice, 1);
+                        submissionCount++;
+                    }
+                }
+                else // other question types
+                    submissionCount++;
             }
+        }
+        summaryPanel.add(new JLabel("Total Submissions: " + submissionCount));
+
+        // add count of selections and percentage to summary panel
+        for(String choice : responseCounts.keySet()) {
+            int count = responseCounts.get(choice);
+            double percentage = (count/(double)submissionCount)*100.0;
+            String displayPercentage = new DecimalFormat("#.##").format(percentage);
+
+            summaryPanel.add(new JLabel(choice + ": " + count + " (" + displayPercentage + "%)"));
         }
 
         // fill up remaining space with greedy invisible panel

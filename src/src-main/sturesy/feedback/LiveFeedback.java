@@ -1,5 +1,6 @@
 package sturesy.feedback;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import sturesy.core.Controller;
@@ -149,6 +150,11 @@ public class LiveFeedback implements Controller {
                 String name = msg.getString("name");
                 String subject = msg.getString("subject");
                 String message = msg.getString("message");
+
+                // sanitize user input to prevent injection of html tags
+                name = StringUtils.replaceEach(name, new String[]{"&", "\"", "<", ">"}, new String[]{"&amp;", "&quot;", "&lt;", "&gt;"});
+                subject = StringUtils.replaceEach(subject, new String[]{"&", "\"", "<", ">"}, new String[]{"&amp;", "&quot;", "&lt;", "&gt;"});
+                message = StringUtils.replaceEach(message, new String[]{"&", "\"", "<", ">"}, new String[]{"&amp;", "&quot;", "&lt;", "&gt;"});
 
                 // parse to java.util.Date, use current date in case parsing fails
                 Date date = new Date();

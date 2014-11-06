@@ -14,6 +14,7 @@ import javax.swing.JSplitPane;
 import javax.swing.ListSelectionModel;
 
 import sturesy.core.backend.Loader;
+import sturesy.core.ui.NumberedListCellRenderer;
 import sturesy.core.ui.SFrame;
 import sturesy.feedback.editcontroller.IFeedbackEditController;
 import sturesy.items.feedback.AbstractFeedbackType;
@@ -63,6 +64,7 @@ public class FeedbackSheetEditorUI extends SFrame
 		panel.setLayout(new BorderLayout());
 		
 		_questionlist = new JList<>(questions);
+		_questionlist.setCellRenderer(new NumberedListCellRenderer());
 		_addbutton = new JButton("+");
 		_delbutton = new JButton("-");
 		_mvupbutton = new JButton("↑");

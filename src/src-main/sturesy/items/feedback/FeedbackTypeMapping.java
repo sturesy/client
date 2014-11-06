@@ -26,6 +26,7 @@ public class FeedbackTypeMapping {
 	    // this is where feedback types are mapped to their edit controllers
         typeClassMap.put(FeedbackTypeComment.class, new FeedbackEditControllerBasic());
         typeClassMap.put(FeedbackTypeGrades.class, new FeedbackEditControllerBasic());
+        typeClassMap.put(FeedbackTypeLikert.class, new FeedbackEditControllerBasic());
         typeClassMap.put(FeedbackTypeChoice.class, new FeedbackEditControllerChoice());
     }
 

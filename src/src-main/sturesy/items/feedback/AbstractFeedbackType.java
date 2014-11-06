@@ -18,6 +18,15 @@ public abstract class AbstractFeedbackType
 	protected boolean mandatory = false;
 
 	/**
+	 * Optional: Called when an item is added to the sheet for the first time.
+	 * This can be used to modify items in a template-like manner, since it is
+	 * not called when the sheet was downloaded from the server.
+	 */
+	public void init() {
+		return;
+	}
+
+	/**
 	 * 
 	 * @return Human readable type
 	 */

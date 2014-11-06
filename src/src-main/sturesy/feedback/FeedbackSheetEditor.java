@@ -72,7 +72,7 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
     private void addButtonAction() {
         JPopupMenu menu = new JPopupMenu();
         for (AbstractFeedbackType mo : FeedbackTypeMapping.getAllFeedbackTypes()) {
-            menu.add(new JMenuItem2(mo.getTypeLong(), e -> _questions.addElement(mo)));
+            menu.add(new JMenuItem2(mo.getTypeLong(), e -> { mo.init(); _questions.addElement(mo); }));
         }
 
         menu.show(_gui.getAddButton(), _gui.getAddButton().getX(), _gui

@@ -3,9 +3,8 @@ package sturesy.items.feedback;
 
 public class FeedbackTypeGrades extends FeedbackTypeChoice
 {
-	public FeedbackTypeGrades() {
-		super();
-
+	@Override
+	public void init() {
 		for(int i = 1; i <= 6; i++)
 			addChoice(Integer.toString(i));
 
@@ -16,5 +15,13 @@ public class FeedbackTypeGrades extends FeedbackTypeChoice
 	public String getTypeLong()
 	{
 		return "School Grades";
+	}
+
+	/**
+	 * @return Machine readable type
+	 */
+	@Override
+	public String getType() {
+		return super.getType() + ":grades";
 	}
 }

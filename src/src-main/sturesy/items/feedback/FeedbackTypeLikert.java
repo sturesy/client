@@ -5,9 +5,8 @@ package sturesy.items.feedback;
  * Created by henrik on 11/6/14.
  */
 public class FeedbackTypeLikert extends FeedbackTypeChoice {
-    public FeedbackTypeLikert() {
-        super();
-
+    @Override
+    public void init() {
         addChoice("strongly agree");
         addChoice("agree");
         addChoice("neutral");
@@ -23,5 +22,13 @@ public class FeedbackTypeLikert extends FeedbackTypeChoice {
     @Override
     public String getTypeLong() {
         return "Likert Scale";
+    }
+
+    /**
+     * @return Machine readable type
+     */
+    @Override
+    public String getType() {
+        return super.getType() + ":likert";
     }
 }

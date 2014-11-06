@@ -1,16 +1,20 @@
 package sturesy.items.feedback;
 
 
-public class FeedbackTypeGrades extends AbstractFeedbackType
+public class FeedbackTypeGrades extends FeedbackTypeChoice
 {
+	public FeedbackTypeGrades() {
+		super();
+
+		for(int i = 1; i <= 6; i++)
+			addChoice(Integer.toString(i));
+
+		setMultipleChoice(false);
+	}
+
 	@Override
 	public String getTypeLong()
 	{
-		return "Grades";
-	}
-	@Override
-	public String getType()
-	{
-		return "grades";
+		return "School Grades";
 	}
 }

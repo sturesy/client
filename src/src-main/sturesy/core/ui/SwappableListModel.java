@@ -18,11 +18,13 @@
 package sturesy.core.ui;
 
 import javax.swing.DefaultListModel;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Adds Method to swap Elements in {@link DefaultListModel}
+ * Adds Method to swap Elements in {@link DefaultListModel} and other various helpers
  * 
- * @author w.posdorfer
+ * @author w.posdorfer, henrik
  */
 public class SwappableListModel<E> extends DefaultListModel<E>
 {
@@ -56,5 +58,18 @@ public class SwappableListModel<E> extends DefaultListModel<E>
     public void update(int index)
     {
         fireContentsChanged(this, index, index);
+    }
+
+    /**
+     * Converts the model to a list and returns it
+     * @return newly created List of items
+     */
+    @SuppressWarnings("unchecked")
+    public List<E> toList() {
+        List<E> list = new LinkedList<>();
+        for(Object obj : toArray()) {
+            list.add((E)obj);
+        }
+        return list;
     }
 }

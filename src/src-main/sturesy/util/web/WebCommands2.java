@@ -162,26 +162,36 @@ public class WebCommands2
     	js.put("time", System.currentTimeMillis() / 1000);
     	js.put("target", "fbsheet");
     	js.put("name", encode(lecturename));
-    	
-    	JSONArray fbarray = new JSONArray();
-        int count = 0;
-    	for (AbstractFeedbackType fb : sheet)
-		{
-    		JSONObject fbObject = new JSONObject();
-            fbObject.put("fbid", fb.getId());
-    		fbObject.put("title", fb.getTitle());
-    		fbObject.put("desc", fb.getDescription());
-    		fbObject.put("type", fb.getType());
-    		fbObject.put("extra", fb.getExtra());
-            fbObject.put("mandatory", fb.isMandatory());
-            fbObject.put("position", count++);
-    		
-    		fbarray.put(fbObject);
-			
-		}
+
+        JSONArray fbarray = serializeFeedbackSheet(sheet);
     	js.put("sheet", fbarray);
     	
     	return sendJSONObject(url, js, password);
+    }
+
+    /**
+     * Serializes a Feedback Sheet composed of a List of FeedbackType-objects to a JSONArray
+     * @param sheet Sheet to be serialized
+     * @return JSONArray for sheet
+     */
+    public static JSONArray serializeFeedbackSheet(List<AbstractFeedbackType> sheet) {
+        JSONArray fbarray = new JSONArray();
+        int count = 0;
+        for (AbstractFeedbackType fb : sheet)
+        {
+            JSONObject fbObject = new JSONObject();
+            fbObject.put("fbid", fb.getId());
+            fbObject.put("title", fb.getTitle());
+            fbObject.put("description", fb.getDescription());
+            fbObject.put("type", fb.getType());
+            fbObject.put("extra", fb.getExtra());
+            fbObject.put("mandatory", fb.isMandatory());
+            fbObject.put("position", count++);
+
+            fbarray.put(fbObject);
+
+        }
+        return fbarray;
     }
 
     /**

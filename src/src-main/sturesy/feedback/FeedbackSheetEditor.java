@@ -21,6 +21,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -126,14 +129,66 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
         _questions.update(sel);
     }
 
+    private void loadButtonAction() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Select a sheet file to load");
+        fileChooser.setFileFilter(new FeedbackFileFilter());
+
+        int selection = fileChooser.showOpenDialog(_gui);
+
+        // add all items in loaded array to question model
+        if(selection == JFileChooser.APPROVE_OPTION) {
+            try {
+                String data = new String(Files.readAllBytes(Paths.get(fileChooser.getSelectedFile().getAbsolutePath())));
+                JSONArray array = new JSONArray(data);
+
+                if (array != null) {
+                    _questions.clear();
+
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject jobj = array.getJSONObject(i);
+                        AbstractFeedbackType mo = FeedbackTypeMapping.instantiateAndInitializeWithJson(jobj);
+
+                        if (mo != null) {
+                            _questions.addElement(mo);
+                        } else
+                            System.err.println("Invalid Feedback type: " + jobj.getString("type"));
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void saveButtonAction() {
+        // serialize current feedback sheet
+        List<AbstractFeedbackType> fbList = _questions.toList();
+        JSONArray serializedFeedbackSheet = WebCommands2.serializeFeedbackSheet(fbList);
+
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setSelectedFile(new File("sheet.json"));
+        fileChooser.setDialogTitle("Where do you want me to save the Feedback Sheet?");
+        fileChooser.setFileFilter(new FeedbackFileFilter());
+        int selection = fileChooser.showSaveDialog(_gui);
+
+        // write sheet to file
+        if(selection == JFileChooser.APPROVE_OPTION) {
+            try {
+                PrintWriter out = new PrintWriter(fileChooser.getSelectedFile());
+                out.write(serializedFeedbackSheet.toString());
+                out.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private void uploadButtonAction() {
         LectureID selectedLecture = CommonDialogs.showLectureSelection();
         if (selectedLecture != null) {
             // convert ListModel to List
-            List<AbstractFeedbackType> fbList = new LinkedList<>();
-            for (Object obj : _questions.toArray()) {
-                fbList.add((AbstractFeedbackType) obj);
-            }
+            List<AbstractFeedbackType> fbList = _questions.toList();
 
             // delete remotely that were marked for removal locally
             if(_deletedFeedbackIds.size() > 0)
@@ -245,6 +300,8 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
 
         _gui.getAddButton().addActionListener(e -> addButtonAction());
         _gui.getDelButton().addActionListener(e -> delButtonAction());
+        _gui.getLoadButton().addActionListener(e -> loadButtonAction());
+        _gui.getSaveButton().addActionListener(e -> saveButtonAction());
         _gui.getUploadButton().addActionListener(e -> uploadButtonAction());
         _gui.getDownloadButton().addActionListener(e -> downloadButtonAction());
         _gui.getClearButton().addActionListener(e -> clearSheetAction());

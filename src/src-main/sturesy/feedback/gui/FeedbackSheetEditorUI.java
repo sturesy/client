@@ -33,6 +33,8 @@ public class FeedbackSheetEditorUI extends SFrame
 	private JButton _mvdownbutton;
 
     // Action Buttons
+	private JButton _loadbutton;
+	private JButton _savebutton;
 	private JButton _uploadbutton;
 	private JButton _downloadbutton;
 	private JButton _clearbutton;
@@ -69,7 +71,9 @@ public class FeedbackSheetEditorUI extends SFrame
 		_delbutton = new JButton("-");
 		_mvupbutton = new JButton("↑");
 		_mvdownbutton = new JButton("↓");
-		
+
+		_loadbutton = new JButton("Load Sheet");
+		_savebutton = new JButton("Save Sheet");
 		_uploadbutton = new JButton("Upload Sheet");
 		_downloadbutton = new JButton("Download Sheet");
 		_clearbutton = new JButton("Clear Sheet on Server");
@@ -117,6 +121,8 @@ public class FeedbackSheetEditorUI extends SFrame
 		panel.add(editorPanel, BorderLayout.CENTER);
 		
 		JPanel buttonPanel = new JPanel();
+		buttonPanel.add(_loadbutton);
+		buttonPanel.add(_savebutton);
 		buttonPanel.add(_uploadbutton);
 		buttonPanel.add(_downloadbutton);
 		buttonPanel.add(_clearbutton);
@@ -151,6 +157,14 @@ public class FeedbackSheetEditorUI extends SFrame
 	public JList<AbstractFeedbackType> getQuestionList()
 	{
 		return _questionlist;
+	}
+
+	public JButton getLoadButton() {
+		return _loadbutton;
+	}
+
+	public JButton getSaveButton() {
+		return _savebutton;
 	}
 
 	public JButton getUploadButton() { return _uploadbutton; }

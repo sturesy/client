@@ -173,8 +173,20 @@ public class FeedbackViewer implements Controller {
             responsePanel.setLayout(new BoxLayout(responsePanel, BoxLayout.Y_AXIS));
             responsePanel.setBorder(BorderFactory.createTitledBorder(mo.getTitle()));
 
-            responsePanel.add(new JLabel("Description: " + mo.getDescription()));
-            responsePanel.add(new JLabel("Response: " + user.getResponseForFeedbackId(id)));
+            //responsePanel.add(new JLabel("Description: " + mo.getDescription()));
+
+            // "choice" items can have multiple responses stored in a json array
+            if(mo.getType().startsWith("choice")) {
+                JSONArray responses = new JSONArray(user.getResponseForFeedbackId(id));
+
+                String resp = "";
+                for(int i = 0; i < responses.length(); i++) {
+                    resp += (i > 0 ? ", " : "") + responses.getString(i);
+                }
+                responsePanel.add(new JLabel(resp));
+            } else
+                responsePanel.add(new JLabel(user.getResponseForFeedbackId(id)));
+
             userPanel.add(responsePanel, cons);
         }
 
@@ -215,7 +227,7 @@ public class FeedbackViewer implements Controller {
 
         // panel containing responses
         JPanel responsePanel = new JPanel(new GridBagLayout());
-        responsePanel.setBorder(BorderFactory.createTitledBorder("Responses"));
+        // responsePanel.setBorder(BorderFactory.createTitledBorder("Responses"));
 
         // fill horizontally
         GridBagConstraints cons = new GridBagConstraints();
@@ -245,13 +257,17 @@ public class FeedbackViewer implements Controller {
                 JPanel responseContainer = new JPanel();
                 responseContainer.setLayout(new BoxLayout(responseContainer, BoxLayout.Y_AXIS));
                 responseContainer.setBorder(BorderFactory.createTitledBorder("User: " + ue.getUserId()));
-                responseContainer.add(new JLabel("Response: " + response));
                 responsePanel.add(responseContainer, cons);
 
-                // gather summary data if "choice" or "grade" question
-                if(fb.getType().equals("choice") || fb.getType().equals("grades")) {
+                // aggregate the multiple responses (in case of a "choice" question)
+                if(fb.getType().startsWith("choice")) {
                     JSONArray responses = new JSONArray(response);
-                    for(int idx = 0; idx < responses.length(); idx++) {
+                    JLabel responseLabel = new JLabel();
+                    for (int idx = 0; idx < responses.length(); idx++) {
+                        String append = (idx > 0 ? ", " : "") + responses.getString(idx);
+                        responseLabel.setText(responseLabel.getText() + append);
+
+                        // gather summary data for all responses if "choice" question
                         String selectedChoice = responses.getString(idx);
 
                         if (responseCounts.containsKey(selectedChoice)) {
@@ -260,9 +276,15 @@ public class FeedbackViewer implements Controller {
                             responseCounts.put(selectedChoice, 1);
                         submissionCount++;
                     }
+
+                    responseContainer.add(responseLabel);
                 }
-                else // other question types
+                // in case the question is not of the type "choice"
+                else {
+                    responseContainer.add(new JLabel(response));
                     submissionCount++;
+                }
+
             }
         }
         summaryPanel.add(new JLabel("Total Submissions: " + submissionCount));

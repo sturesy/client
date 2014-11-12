@@ -1,6 +1,7 @@
 package sturesy.feedback.gui;
 
 import sturesy.core.ui.SFrame;
+import sturesy.core.ui.SmartScroller;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,10 +17,18 @@ public class LiveFeedbackUI extends SFrame {
     private final JCheckBox autoScrollCheckBox;
     private final JCheckBox notificationCheckBox;
     private final JButton startStopButton;
+    private final SmartScroller smartScroller;
 
     public LiveFeedbackUI() {
         super();
         setTitle("Live-Feedback");
+
+        messagePanel = new JPanel();
+        messagePanel.setLayout(new GridBagLayout());
+        JScrollPane msgScrollPane = new JScrollPane(messagePanel);
+        msgScrollPane.setViewportBorder(null);
+        smartScroller = new SmartScroller(msgScrollPane);
+        messagePanel.setBorder(BorderFactory.createTitledBorder("Messages"));
 
         JPanel bottomPanel = new JPanel();
         startStopButton = new JButton("Start Live-Feedback");
@@ -29,13 +38,9 @@ public class LiveFeedbackUI extends SFrame {
         bottomPanel.add(notificationCheckBox);
 
         autoScrollCheckBox = new JCheckBox("Autoscroll messages", true);
+        autoScrollCheckBox.addItemListener(l -> onAutoScrollCheckBox());
         bottomPanel.add(autoScrollCheckBox);
-
-        messagePanel = new JPanel();
-        messagePanel.setLayout(new GridBagLayout());
-        JScrollPane msgScrollPane = new JScrollPane(messagePanel);
-        msgScrollPane.setViewportBorder(null);
-        messagePanel.setBorder(BorderFactory.createTitledBorder("Messages"));
+        smartScroller.setActive(true);
 
         add(msgScrollPane, BorderLayout.CENTER);
         add(bottomPanel, BorderLayout.PAGE_END);
@@ -49,13 +54,13 @@ public class LiveFeedbackUI extends SFrame {
         cons.weighty = 1;
         cons.fill = GridBagConstraints.BOTH;
         messagePanel.add(new JPanel(), cons);
+    }
 
-        // auto-scroll to the bottom (if enabled)
-        // TODO: find a better way to do this (the current code blocks interaction with the scrollbar)
-        msgScrollPane.getVerticalScrollBar().addAdjustmentListener(e -> {
-            if(autoScrollCheckBox.isSelected())
-                e.getAdjustable().setValue(e.getAdjustable().getMaximum());
-        });
+    /**
+     * Disable/Enable the SmartScroller when the checkbox was ticked
+     */
+    private void onAutoScrollCheckBox() {
+        smartScroller.setActive(autoScrollCheckBox.isSelected());
     }
 
     /**
@@ -80,7 +85,7 @@ public class LiveFeedbackUI extends SFrame {
 
             messagePanel.revalidate();
             messagePanel.repaint();
-    });
+        });
     }
 
     /**

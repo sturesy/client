@@ -1,6 +1,7 @@
 package sturesy.feedback;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import sturesy.core.Controller;
 import sturesy.core.ui.JMenuItem2;
@@ -142,21 +143,22 @@ public class FeedbackSheetEditor implements Controller, UIObserver {
                 String data = new String(Files.readAllBytes(Paths.get(fileChooser.getSelectedFile().getAbsolutePath())));
                 JSONArray array = new JSONArray(data);
 
-                if (array != null) {
-                    _questions.clear();
+                _questions.clear();
 
-                    for (int i = 0; i < array.length(); i++) {
-                        JSONObject jobj = array.getJSONObject(i);
-                        AbstractFeedbackType mo = FeedbackTypeMapping.instantiateAndInitializeWithJson(jobj);
+                for (int i = 0; i < array.length(); i++) {
+                    JSONObject jobj = array.getJSONObject(i);
+                    AbstractFeedbackType mo = FeedbackTypeMapping.instantiateAndInitializeWithJson(jobj);
 
-                        if (mo != null) {
-                            _questions.addElement(mo);
-                        } else
-                            System.err.println("Invalid Feedback type: " + jobj.getString("type"));
-                    }
+                    if (mo != null) {
+                        _questions.addElement(mo);
+                    } else
+                        System.err.println("Invalid Feedback type: " + jobj.getString("type"));
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+            catch (JSONException e) {
+                JOptionPane.showMessageDialog(_gui, "Invalid file format.");
             }
         }
     }

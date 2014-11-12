@@ -1,7 +1,10 @@
 package sturesy.feedback.gui;
 
 import sturesy.core.backend.Loader;
+import sturesy.core.ui.NumberedListCellRenderer;
 import sturesy.core.ui.SFrame;
+import sturesy.feedback.FeedbackViewerUserEntry;
+import sturesy.items.feedback.AbstractFeedbackType;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,15 +14,16 @@ import java.awt.*;
  * Created by henrik on 6/22/14.
  */
 public class FeedbackViewerUI extends SFrame {
-
+    private JButton loadButton;
+    private JButton saveButton;
     private JButton downloadButton;
 
     private JSplitPane splitPane;
 
-    private JList questionList;
-    private JList userList;
+    private JList<AbstractFeedbackType> questionList;
+    private JList<FeedbackViewerUserEntry> userList;
 
-    public FeedbackViewerUI(DefaultListModel questionListModel, DefaultListModel userListModel)
+    public FeedbackViewerUI(DefaultListModel<AbstractFeedbackType> questionListModel, DefaultListModel<FeedbackViewerUserEntry> userListModel)
     {
         super();
         setTitle("Feedback Viewer");
@@ -31,9 +35,10 @@ public class FeedbackViewerUI extends SFrame {
         JPanel leftPanel = new JPanel();
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
 
-        questionList = new JList(questionListModel);
+        questionList = new JList<>(questionListModel);
         questionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        userList = new JList(userListModel);
+        questionList.setCellRenderer(new NumberedListCellRenderer());
+        userList = new JList<>(userListModel);
         userList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane questionListScrollPane = new JScrollPane(questionList);
         JScrollPane userListScrollPane = new JScrollPane(userList);
@@ -58,7 +63,12 @@ public class FeedbackViewerUI extends SFrame {
     {
         JPanel b = new JPanel();
 
+        loadButton = new JButton("Load Feedback");
+        saveButton = new JButton("Save Feedback");
         downloadButton = new JButton("Download Feedback");
+
+        b.add(loadButton);
+        b.add(saveButton);
         b.add(downloadButton);
 
         b.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.LIGHT_GRAY));
@@ -66,15 +76,23 @@ public class FeedbackViewerUI extends SFrame {
         return b;
     }
 
+    public JButton getLoadButton() {
+        return loadButton;
+    }
+
+    public JButton getSaveButton() {
+        return saveButton;
+    }
+
     public JButton getDownloadButton() {
         return downloadButton;
     }
 
-    public JList getQuestionList() {
+    public JList<sturesy.items.feedback.AbstractFeedbackType> getQuestionList() {
         return questionList;
     }
 
-    public JList getUserList() {
+    public JList<FeedbackViewerUserEntry> getUserList() {
         return userList;
     }
 

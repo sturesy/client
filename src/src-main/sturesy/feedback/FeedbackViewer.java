@@ -1,6 +1,7 @@
 package sturesy.feedback;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import sturesy.core.Controller;
 import sturesy.feedback.gui.FeedbackViewerUI;
@@ -17,6 +18,12 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +38,8 @@ public class FeedbackViewer implements Controller {
 
     private DefaultListModel<AbstractFeedbackType> _questionList;
     private DefaultListModel<FeedbackViewerUserEntry> _userList;
+    private JSONArray _sheet;
+    private JSONObject _feedbackToSheet;
 
     public FeedbackViewer() {
         _questionList = new DefaultListModel<>();
@@ -38,6 +47,9 @@ public class FeedbackViewer implements Controller {
 
         _gui = new FeedbackViewerUI(_questionList, _userList);
         _settings = Settings.getInstance();
+
+        _sheet = new JSONArray();
+        _feedbackToSheet = new JSONObject();
 
         addListeners();
     }
@@ -59,17 +71,75 @@ public class FeedbackViewer implements Controller {
         settings.save();
     }
 
+    private void loadButtonAction() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Select a feedback file to load");
+        fileChooser.setFileFilter(new FeedbackFileFilter());
+
+        int selection = fileChooser.showOpenDialog(_gui);
+
+        // load sheet & feedback from file, afterwards populate the ui
+        if(selection == JFileChooser.APPROVE_OPTION) {
+            try {
+                String data = new String(Files.readAllBytes(Paths.get(fileChooser.getSelectedFile().getAbsolutePath())));
+                JSONObject input = new JSONObject(data);
+
+                if (input.has("sheet") && input.has("feedback")) {
+                    _sheet = input.getJSONArray("sheet");
+                    _feedbackToSheet = input.getJSONObject("feedback");
+
+                    _questionList.clear();
+                    _userList.clear();
+
+                    populateFeedbackQuestionList(_sheet);
+                    populateFeedbackUserList(_feedbackToSheet);
+                }
+                else
+                    JOptionPane.showMessageDialog(_gui, "File contains no feedback data.");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            catch (JSONException e) {
+                JOptionPane.showMessageDialog(_gui, "Invalid file format.");
+            }
+        }
+    }
+
+    private void saveButtonAction() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setSelectedFile(new File("feedback.json"));
+        fileChooser.setDialogTitle("Where do you want me to save the Feedback Sheet?");
+        fileChooser.setFileFilter(new FeedbackFileFilter());
+        int selection = fileChooser.showSaveDialog(_gui);
+
+        // write sheet to file
+        if(selection == JFileChooser.APPROVE_OPTION) {
+            try {
+                PrintWriter out = new PrintWriter(fileChooser.getSelectedFile());
+
+                JSONObject output = new JSONObject();
+                output.put("sheet", _sheet);
+                output.put("feedback", _feedbackToSheet);
+
+                out.write(output.toString());
+                out.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private void downloadButtonAction() {
         LectureID lid = CommonDialogs.showLectureSelection();
         if (lid != null) {
-            JSONArray sheet = WebCommands2.downloadFeedbackSheet(lid.getHost().toString(),
+            _sheet = WebCommands2.downloadFeedbackSheet(lid.getHost().toString(),
                     lid.getLectureID(), lid.getPassword());
-            JSONObject fb = WebCommands2.downloadFeedback(lid.getHost().toString(),
+            _feedbackToSheet = WebCommands2.downloadFeedback(lid.getHost().toString(),
                     lid.getLectureID(), lid.getPassword());
 
-            if(sheet != null && fb != null) {
-                populateFeedbackQuestionList(sheet);
-                populateFeedbackUserList(fb);
+            if(_sheet != null && _feedbackToSheet != null) {
+                populateFeedbackQuestionList(_sheet);
+                populateFeedbackUserList(_feedbackToSheet);
             }
             else
                 JOptionPane.showMessageDialog(_gui, "No feedback or feedback sheet available for given lecture.");
@@ -108,14 +178,18 @@ public class FeedbackViewer implements Controller {
                     int fbid = Integer.valueOf(key);
 
                     if(!userToResponses.containsKey(guid)) {
-                        userToResponses.put(guid, new FeedbackViewerUserEntry(guid));
+                        userToResponses.put(guid, new FeedbackViewerUserEntry());
                     }
                     userToResponses.get(guid).setReponse(fbid, input);
                 }
             }
         }
         // populate list in GUI with extracted data
-        userToResponses.values().forEach(_userList::addElement);
+        int count = 0;
+        for(FeedbackViewerUserEntry ue : userToResponses.values()) {
+            ue.setId(++count);
+            _userList.addElement(ue);
+        }
     }
 
     /**
@@ -151,7 +225,7 @@ public class FeedbackViewer implements Controller {
     private void showFeedbackFromUser(FeedbackViewerUserEntry user)
     {
         JPanel userPanel = new JPanel();
-        userPanel.setBorder(BorderFactory.createTitledBorder("Feedback from " + user.toString()));
+        userPanel.setBorder(BorderFactory.createTitledBorder("Feedback from user " + user.toString()));
         userPanel.setLayout(new GridBagLayout());
 
         JScrollPane scrollPane = new JScrollPane(userPanel);
@@ -240,7 +314,7 @@ public class FeedbackViewer implements Controller {
         // summary ui widgets and data
         JPanel summaryPanel = new JPanel();
         summaryPanel.setLayout(new BoxLayout(summaryPanel, BoxLayout.Y_AXIS));
-        summaryPanel.setBorder(BorderFactory.createTitledBorder("Summary"));
+        summaryPanel.setBorder(BorderFactory.createTitledBorder("<html><i>Summary<i>"));
         Map<String, Integer> responseCounts = new HashMap<>();
         responsePanel.add(summaryPanel, cons);
 
@@ -256,7 +330,7 @@ public class FeedbackViewer implements Controller {
                 // populate panel with response by current user
                 JPanel responseContainer = new JPanel();
                 responseContainer.setLayout(new BoxLayout(responseContainer, BoxLayout.Y_AXIS));
-                responseContainer.setBorder(BorderFactory.createTitledBorder("User: " + ue.getUserId()));
+                responseContainer.setBorder(BorderFactory.createTitledBorder("User " + ue.getId()));
                 responsePanel.add(responseContainer, cons);
 
                 // aggregate the multiple responses (in case of a "choice" question)
@@ -325,6 +399,8 @@ public class FeedbackViewer implements Controller {
             }
         });
 
+        _gui.getLoadButton().addActionListener(a -> loadButtonAction());
+        _gui.getSaveButton().addActionListener(a -> saveButtonAction());
         _gui.getDownloadButton().addActionListener(a -> downloadButtonAction());
         _gui.getQuestionList().addListSelectionListener(this::questionSelected);
         _gui.getUserList().addListSelectionListener(this::userSelected);

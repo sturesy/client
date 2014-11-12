@@ -9,16 +9,14 @@ import java.util.Map;
  */
 public class FeedbackViewerUserEntry {
     private Map<Integer, String> responses;
-    private String userId;
+    private int id;
 
     /**
      * Constructor for FeedbackViewerUserEntry
-     * @param userId User ID of feedback submitter
      */
-    public FeedbackViewerUserEntry(String userId)
+    public FeedbackViewerUserEntry()
     {
         this.responses = new HashMap<>();
-        this.userId = userId;
     }
 
     /**
@@ -40,8 +38,12 @@ public class FeedbackViewerUserEntry {
         return responses.get(fbid);
     }
 
-    public String getUserId() {
-        return userId;
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     /**
@@ -53,6 +55,6 @@ public class FeedbackViewerUserEntry {
 
     @Override
     public String toString() {
-        return userId;
+        return Integer.toString(id);
     }
 }

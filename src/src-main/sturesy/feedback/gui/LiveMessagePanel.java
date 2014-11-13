@@ -1,5 +1,7 @@
 package sturesy.feedback.gui;
 
+import sturesy.core.ui.TextDisplay;
+
 import javax.swing.*;
 import java.awt.*;
 import java.text.DateFormat;
@@ -13,19 +15,41 @@ import java.util.Date;
 public class LiveMessagePanel extends JPanel {
     private static DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
+    private JLabel infoLabel;
+    private TextDisplay msgText;
+
+    // these hold the default font sizes determined by java
+    private int initialSizeInfo;
+    private int initialSizeMessage;
+
     public LiveMessagePanel(String name, String subject, String message, Date date) {
         super();
         setBorder(BorderFactory.createTitledBorder(name));
-        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        setLayout(new BorderLayout());
 
         String time = dateFormat.format(date);
         String sub = (subject.length() > 0 ? subject : "<no subject>");
-        String msg = message.replace("\n", "<br/>");
 
-        add(new JLabel("At " + time + " regarding: " + sub));
+        // make info label 1pt smaller
+        infoLabel = new JLabel("At " + time + " regarding: " + sub);
+        initialSizeInfo = infoLabel.getFont().getSize() - 1;
+        add(infoLabel, BorderLayout.NORTH);
 
-        JLabel msgLabel = new JLabel("<html><b>" + msg);
-        msgLabel.setFont(new Font("Sans", Font.PLAIN, 18));
-        add(msgLabel);
+        // make message 2pt larger
+        msgText = new TextDisplay(message);
+        initialSizeMessage = msgText.getFont().getSize() + 2;
+        add(msgText, BorderLayout.CENTER);
+    }
+
+    /**
+     * Used to scale font sizes of the labels displaying the message
+     * @param offset Offset for scaling
+     */
+    public void resizeFonts(int offset) {
+        Font infoFont = infoLabel.getFont();
+        infoLabel.setFont(new Font(infoFont.getFontName(), Font.ITALIC, initialSizeInfo + offset));
+
+        Font msgFont = msgText.getFont();
+        msgText.setFont(new Font(msgFont.getFontName(), Font.BOLD, initialSizeMessage + offset));
     }
 }

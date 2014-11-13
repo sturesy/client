@@ -73,9 +73,9 @@ public class NotificationWindow extends JFrame {
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.PAGE_AXIS));
 
-        TextDisplay msgLabel = new TextDisplay(message);
-        centerPanel.add(msgLabel);
-        System.out.println(msgLabel.getText());
+        TextDisplay msgText = new TextDisplay(message);
+        centerPanel.add(msgText);
+        System.out.println(msgText.getText());
 
         add(titlePanel, BorderLayout.PAGE_START);
         add(centerPanel, BorderLayout.CENTER);

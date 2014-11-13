@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -285,23 +284,13 @@ public class FeedbackViewer implements Controller {
     private void showFeedbackForQuestion(AbstractFeedbackType fb)
     {
         JPanel questionPanel = new JPanel();
-        questionPanel.setBorder(BorderFactory.createTitledBorder(fb.getTitle()));
         questionPanel.setLayout(new BorderLayout());
 
-        JLabel descLabel = new JLabel("Description: " + fb.getDescription());
-        JCheckBox mandatoryCheck = new JCheckBox("Response is mandatory", fb.isMandatory());
-        mandatoryCheck.setEnabled(false);
-
-        // panel containing question data
-        JPanel topPanel = new JPanel();
-        topPanel.setBorder(BorderFactory.createTitledBorder("Question Data"));
-        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
-        topPanel.add(descLabel);
-        topPanel.add(mandatoryCheck);
+        // get top panel
+        JPanel topPanel = _gui.createQuestionDataPanel(fb);
 
         // panel containing responses
         JPanel responsePanel = new JPanel(new GridBagLayout());
-        // responsePanel.setBorder(BorderFactory.createTitledBorder("Responses"));
 
         // fill horizontally
         GridBagConstraints cons = new GridBagConstraints();
@@ -313,13 +302,15 @@ public class FeedbackViewer implements Controller {
 
         // summary ui widgets and data
         JPanel summaryPanel = new JPanel();
-        summaryPanel.setLayout(new BoxLayout(summaryPanel, BoxLayout.Y_AXIS));
+        summaryPanel.setLayout(new GridLayout(0, 2));
         summaryPanel.setBorder(BorderFactory.createTitledBorder("<html><i>Summary<i>"));
+
         Map<String, Integer> responseCounts = new HashMap<>();
         responsePanel.add(summaryPanel, cons);
 
         // keeps track of submissions/selections
-        int submissionCount = 0;
+        int singleSubmissionCount = 0; // used to calculate percentages
+        int totalSubmissionCount = 0; // used to display total submissions
 
         // get feedback for this question
         for(Object obj : _userList.toArray()) {
@@ -348,28 +339,36 @@ public class FeedbackViewer implements Controller {
                             responseCounts.replace(selectedChoice, responseCounts.get(selectedChoice) + 1);
                         } else
                             responseCounts.put(selectedChoice, 1);
-                        submissionCount++;
+                        singleSubmissionCount++;
                     }
-
                     responseContainer.add(responseLabel);
                 }
                 // in case the question is not of the type "choice"
                 else {
                     responseContainer.add(new JLabel(response));
-                    submissionCount++;
+                    singleSubmissionCount++;
                 }
+                totalSubmissionCount++;
 
             }
         }
-        summaryPanel.add(new JLabel("Total Submissions: " + submissionCount));
+        summaryPanel.add(new JLabel("Total Submissions: " + totalSubmissionCount));
+        summaryPanel.add(new JPanel()); // add empty panel to match grid
 
         // add count of selections and percentage to summary panel
         for(String choice : responseCounts.keySet()) {
             int count = responseCounts.get(choice);
-            double percentage = (count/(double)submissionCount)*100.0;
-            String displayPercentage = new DecimalFormat("#.##").format(percentage);
 
-            summaryPanel.add(new JLabel(choice + ": " + count + " (" + displayPercentage + "%)"));
+            JPanel voteDetailPanel = new JPanel();
+            voteDetailPanel.add(new JLabel(choice + ": " + count + " vote(s)"));
+
+            JProgressBar progressBar = new JProgressBar(0, singleSubmissionCount);
+            progressBar.setStringPainted(true);
+            progressBar.setValue(count);
+            voteDetailPanel.add(progressBar);
+
+            summaryPanel.add(new JLabel(choice + ": " + count + " vote(s)"));
+            summaryPanel.add(progressBar);
         }
 
         // fill up remaining space with greedy invisible panel

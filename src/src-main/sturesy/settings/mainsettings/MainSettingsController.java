@@ -158,7 +158,7 @@ public class MainSettingsController extends ObservableMainSettings implements IS
         service.setPosition((String) _gui.getPosition().getSelectedItem());
 
         // if position/screen has changed, reset service
-        if (!oldPos.equals(service.getPosition()) || !oldScreen.equals(service.getScreen())) {
+        if (oldScreen == null || !oldPos.equals(service.getPosition()) || !oldScreen.equals(service.getScreen())) {
             service.reset();
         }
 

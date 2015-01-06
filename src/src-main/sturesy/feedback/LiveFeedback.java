@@ -18,7 +18,7 @@ import java.awt.event.WindowListener;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -42,6 +42,7 @@ public class LiveFeedback implements Controller {
     private LectureID selectedLecture;
     private final ScheduledExecutorService scheduler;
     private ScheduledFuture<?> pollingTaskHandle;
+    private LinkedHashSet<String> guids;
 
     public LiveFeedback() {
         _gui = new LiveFeedbackUI();
@@ -49,6 +50,7 @@ public class LiveFeedback implements Controller {
         _gui.setFontSizeOffset(_settings.getInteger(Settings.LIVEFEEDBACKFONTSIZEOFFSET));
         notificationService = NotificationService.getInstance();
         scheduler = Executors.newScheduledThreadPool(1);
+        guids = new LinkedHashSet<>();
 
         addListeners();
         initNotificationService();
@@ -103,6 +105,7 @@ public class LiveFeedback implements Controller {
                 if(WebCommands2.setLiveFeedbackState(selectedLecture.getHost().toString(),
                         selectedLecture.getLectureID(), selectedLecture.getPassword(), true)) {
                     liveActive = true;
+                    guids.clear();
                     startPolling();
                 }
             }
@@ -151,6 +154,11 @@ public class LiveFeedback implements Controller {
                 String name = msg.getString("name");
                 String subject = msg.getString("subject");
                 String message = msg.getString("message");
+                String guid = msg.getString("guid");
+                guids.add(guid);
+
+                // check if this guid has already submitted a message
+                int index = new ArrayList<>(guids).indexOf(guid) +1;
 
                 // parse to java.util.Date, use current date in case parsing fails
                 Date date = new Date();
@@ -159,7 +167,8 @@ public class LiveFeedback implements Controller {
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-                _gui.addMessage(name, subject, message, date);
+
+                _gui.addMessage(name + " (ID: " + index + ")", subject, message, date);
 
                 if(_gui.getNotificationCheckBox().isSelected())
                     notificationService.addNotification(name + ": " + (subject.length() > 0 ? subject : "<no subject>"),

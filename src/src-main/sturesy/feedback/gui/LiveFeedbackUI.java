@@ -155,7 +155,7 @@ public class LiveFeedbackUI extends SFrame {
      * Plus button pressed. Increase font size and update panels.
      */
     public void onPlusButton() {
-        if(fontSizeOffset <= 10)
+        if(fontSizeOffset <= 14)
             fontSizeOffset++;
 
         for(LiveMessagePanel panel : messagePanels) {

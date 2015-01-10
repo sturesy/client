@@ -52,6 +52,7 @@ public class Settings
     public static final String FEEDBACKVIEWERSIZE = "feedbackviewer.window.size";
     public static final String LIVEFEEDBACKSIZE = "livefeedback.window.size";
     public static final String LIVEFEEDBACKFONTSIZEOFFSET = "livefeedback.fontsizeoffset";
+    public static final String LIVEFEEDBACKNOTIFICATIONS = "livefeedback.notifications";
 
     public static final String UPDATE_FREQUENCY = "update.frequency";
     public static final String UPDATE_LASTUPDATE = "update.last.update";

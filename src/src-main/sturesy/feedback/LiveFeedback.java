@@ -48,6 +48,7 @@ public class LiveFeedback implements Controller {
         _gui = new LiveFeedbackUI();
         _settings = Settings.getInstance();
         _gui.setFontSizeOffset(_settings.getInteger(Settings.LIVEFEEDBACKFONTSIZEOFFSET));
+        _gui.getNotificationCheckBox().setSelected(_settings.getBoolean(Settings.LIVEFEEDBACKNOTIFICATIONS));
         notificationService = NotificationService.getInstance();
         scheduler = Executors.newScheduledThreadPool(1);
         guids = new LinkedHashSet<>();
@@ -85,6 +86,7 @@ public class LiveFeedback implements Controller {
         Settings settings = _settings;
         settings.setProperty(Settings.LIVEFEEDBACKSIZE, _gui.getSize());
         settings.setProperty(Settings.LIVEFEEDBACKFONTSIZEOFFSET, _gui.getFontSizeOffset());
+        settings.setProperty(Settings.LIVEFEEDBACKNOTIFICATIONS, _gui.getNotificationCheckBox().isSelected());
         settings.save();
 
         if(liveActive) {

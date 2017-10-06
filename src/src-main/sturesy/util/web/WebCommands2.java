@@ -170,10 +170,6 @@ public class WebCommands2
         {
             ((HttpURLConnection) connection).setRequestMethod("POST");
         }
-        else if (connection instanceof HttpsURLConnection)
-        {
-            ((HttpsURLConnection) connection).setRequestMethod("POST");
-        }
 
         OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
         wr.write("data=" + data + "&hash=" + hashed);
@@ -189,6 +185,8 @@ public class WebCommands2
         }
         wr.close();
         rd.close();
+
+        System.out.println("result: >" + buffer + "<");
 
         return buffer.toString();
     }

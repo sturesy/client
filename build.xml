@@ -99,7 +99,7 @@
 
 	<target name="checkstyle" depends="clean">
 		<taskdef resource="checkstyletask.properties"
-		         classpath="${checkstyle.dir}/checkstyle-5.6-all.jar" />
+		         classpath="${checkstyle.dir}/checkstyle-5.7-all.jar" />
 		<mkdir dir="${reports.dir}" />
 		<checkstyle config="${checkstyle.dir}/checkstyle-config.xml"
 		            maxErrors="1000">

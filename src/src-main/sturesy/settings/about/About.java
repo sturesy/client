@@ -84,7 +84,7 @@ public class About implements ISettingsScreen
             JPanel northpanel = new JPanel(new BorderLayout());
 
             JLabel name = new JLabel("<html><center>StuReSy - Version " + Version.CURRENTVERSION
-                    + "<br>\u00A9 2012-2013 StuReSy-Team</center></html>");
+                    + "<br>\u00A9 2012-2017 StuReSy-Team</center></html>");
             name.setFont(name.getFont().deriveFont(20.0f));
             name.setHorizontalAlignment(JLabel.CENTER);
 

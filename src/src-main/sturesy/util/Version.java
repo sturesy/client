@@ -26,7 +26,7 @@ package sturesy.util;
 public class Version
 {
 
-    public static final String CURRENTVERSION = "0.6.1";
+    public static final String CURRENTVERSION = "0.6.2";
 
     /**
      * Checks if provided version is higher than currentversion

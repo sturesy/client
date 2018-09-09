@@ -86,13 +86,14 @@ public class WebSettingsPassword
      * 
      * @return PasswordTableModel
      */
-    private PasswordTableModel getTableModel()
+    private PasswordTableModel<String> getTableModel()
     {
         String[] columnnames = { Localize.getString("label.lecture.id"), Localize.getString("label.password"),
                 Localize.getString("label.server.adress") };
+        Vector<String> colNames = new Vector<>(Arrays.asList(columnnames));
 
-        PasswordTableModel model = new PasswordTableModel(getLecturesAndPasswords(), new Vector<String>(
-                Arrays.asList(columnnames)), 1);
+        Vector<Vector<String>> data = getLecturesAndPasswords();
+        PasswordTableModel<String> model = new PasswordTableModel<>(data, colNames, 1);
         model.setPasswordVisible(_ui.getPasswordVisibleBox().isSelected());
         return model;
     }
@@ -140,7 +141,7 @@ public class WebSettingsPassword
         }
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private void deleteLectureAction(final int row, final JPopupMenu menu)
     {
         String lid = (String) _ui.getTable().getValueAt(row, 0);
@@ -168,7 +169,7 @@ public class WebSettingsPassword
      */
     private void updateTable()
     {
-        PasswordTableModel model = getTableModel();
+        PasswordTableModel<String> model = getTableModel();
         _ui.getTable().setModel(model);
         model.fireTableStructureChanged();
         model.fireTableDataChanged();
@@ -180,9 +181,10 @@ public class WebSettingsPassword
      * @param visible
      *            should the password be visible
      */
+    @SuppressWarnings("unchecked")
     private void changePasswordVisible(boolean visible)
     {
-        PasswordTableModel model = (PasswordTableModel) _ui.getTable().getModel();
+        PasswordTableModel<String> model = (PasswordTableModel<String>) _ui.getTable().getModel();
         model.setPasswordVisible(visible);
         model.fireTableDataChanged();
     }

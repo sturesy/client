@@ -42,8 +42,7 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.border.BevelBorder;
 
-import org.jfree.ui.IntegerDocument;
-
+import hitt.IntegerDocument;
 import sturesy.Macintosh;
 import sturesy.core.Localize;
 import sturesy.core.backend.Loader;

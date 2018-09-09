@@ -36,9 +36,9 @@ import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
+import org.jfree.chart.ui.TextAnchor;
 import org.jfree.data.Range;
 import org.jfree.data.category.CategoryDataset;
-import org.jfree.ui.TextAnchor;
 
 import sturesy.core.Localize;
 import sturesy.voting.gui.renderer.AnswersBarRenderer;
@@ -144,13 +144,13 @@ public class VotingEvaluationPanelUI extends JPanel
 
         final CategoryItemRenderer renderer = new AnswersBarRenderer(showAnswers, correctAnswers);
 
-        renderer.setBaseItemLabelsVisible(true);
-        renderer.setBaseItemLabelFont(renderer.getBaseItemLabelFont().deriveFont(16.0f));
+        renderer.setDefaultItemLabelsVisible(true);
+        renderer.setDefaultItemLabelFont(renderer.getDefaultItemLabelFont().deriveFont(16.0f));
 
         final ItemLabelPosition p = new ItemLabelPosition(ItemLabelAnchor.CENTER, TextAnchor.CENTER, TextAnchor.CENTER,
                 45.0);
 
-        renderer.setBasePositiveItemLabelPosition(p);
+        renderer.setDefaultPositiveItemLabelPosition(p);
 
         plot.setRenderer(renderer);
 
@@ -163,12 +163,12 @@ public class VotingEvaluationPanelUI extends JPanel
 
         if (showPercent)
         {
-            renderer.setBaseItemLabelGenerator(new AppendPercentRenderer());
+            renderer.setDefaultItemLabelGenerator(new AppendPercentRenderer());
             rangeAxis.setRange(new Range(0, upperrange > 100 ? 100 : upperrange), false, false);
         }
         else
         {
-            renderer.setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator());
+            renderer.setDefaultItemLabelGenerator(new StandardCategoryItemLabelGenerator());
         }
 
         plot.getDomainAxis().setMaximumCategoryLabelLines(5);

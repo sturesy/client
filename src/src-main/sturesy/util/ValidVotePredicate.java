@@ -17,7 +17,7 @@
  */
 package sturesy.util;
 
-import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections4.Predicate;
 
 import sturesy.core.plugin.QuestionVoteMatcher;
 import sturesy.items.Vote;
@@ -29,7 +29,7 @@ import sturesy.items.Vote;
  * @author w.posdorfer
  * 
  */
-public class ValidVotePredicate implements Predicate
+public class ValidVotePredicate implements Predicate<Vote>
 {
 
     private final int _upperbound;
@@ -50,8 +50,8 @@ public class ValidVotePredicate implements Predicate
     /**
      * Returns <b>true</b> if the Vote should stay in the Collection
      */
-    public boolean evaluate(Object vote)
+    public boolean evaluate(Vote vote)
     {
-        return QuestionVoteMatcher.isValidVote((Vote) vote, _upperbound);
+        return QuestionVoteMatcher.isValidVote(vote, _upperbound);
     }
 }

@@ -26,7 +26,7 @@ import javax.swing.table.DefaultTableModel;
  * 
  * @author w.posdorfer
  */
-public class UneditableTableModel extends DefaultTableModel
+public class UneditableTableModel<K> extends DefaultTableModel
 {
 
     private static final long serialVersionUID = -7048773242989879658L;
@@ -36,7 +36,7 @@ public class UneditableTableModel extends DefaultTableModel
         super(tablevalues, strings);
     }
 
-    public UneditableTableModel(Vector<?> data, Vector<?> columnNames)
+    public UneditableTableModel(Vector<Vector<K>> data, Vector<K> columnNames)
     {
         super(data, columnNames);
     }

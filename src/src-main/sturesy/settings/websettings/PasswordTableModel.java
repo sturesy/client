@@ -21,7 +21,7 @@ import java.util.Vector;
 
 import sturesy.core.ui.UneditableTableModel;
 
-public class PasswordTableModel extends UneditableTableModel
+public class PasswordTableModel<K> extends UneditableTableModel<K>
 {
     private static final long serialVersionUID = 3252478574916068063L;
 
@@ -35,7 +35,7 @@ public class PasswordTableModel extends UneditableTableModel
         _columnToObfuscate = columnToObfuscate;
     }
 
-    public PasswordTableModel(Vector<?> data, Vector<?> columnNames, int columnToObfuscate)
+    public PasswordTableModel(Vector<Vector<K>> data, Vector<K> columnNames, int columnToObfuscate)
     {
         super(data, columnNames);
         _columnToObfuscate = columnToObfuscate;

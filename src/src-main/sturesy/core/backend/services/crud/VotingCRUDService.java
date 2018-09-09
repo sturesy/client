@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import sturesy.core.Log;
 import sturesy.core.error.XMLException;

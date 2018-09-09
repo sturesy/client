@@ -32,7 +32,7 @@ import javax.swing.JFrame;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import sturesy.core.Controller;
 import sturesy.core.Localize;

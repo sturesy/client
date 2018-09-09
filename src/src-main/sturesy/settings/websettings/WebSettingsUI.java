@@ -29,8 +29,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.jfree.ui.IntegerDocument;
-
+import hitt.IntegerDocument;
 import sturesy.core.Localize;
 import sturesy.core.Log;
 import sturesy.core.backend.Loader;

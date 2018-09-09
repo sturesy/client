@@ -29,12 +29,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import hitt.IntegerDocument;
 import sturesy.core.Localize;
 import sturesy.core.Log;
 import sturesy.core.backend.Loader;
 import sturesy.core.plugin.ISettingsScreen;
 import sturesy.core.ui.JGap;
+import sturesy.voting.gui.IntegerDocument;
 
 /**
  * The Panel which gets displayed on {@link ISettingsScreen#getPanel()}

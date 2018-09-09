@@ -6,7 +6,7 @@
 
     <groupId>com.github.sturesy</groupId>
     <version>0.6.1-SNAPSHOT</version>
-    <artifactId>client</artifactId>
+    <artifactId>sturesy-client</artifactId>
 
     <repositories>
         <repository>
